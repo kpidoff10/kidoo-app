@@ -1,0 +1,22 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "strict": true,
+    "jsx": "react-native",
+    "jsxImportSource": "react",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@shared": ["../shared/index.ts"],
+      "@shared/*": ["../shared/*"],
+      "@/shared": ["../shared/index.ts"],
+      "@/shared/*": ["../shared/*"]
+    },
+    "typeRoots": ["./node_modules/@types"],
+    "skipLibCheck": true
+  },
+  "include": ["index.tsx", "App.tsx", "types.d.ts", "src/**/*", "../shared/**/*"]
+}

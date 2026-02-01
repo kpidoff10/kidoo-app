@@ -1,0 +1,275 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "done": "Terminé",
+    "yes": "Oui",
+    "no": "Non",
+    "ok": "OK",
+    "search": "Rechercher",
+    "noResults": "Aucun résultat",
+    "offline": "Vous êtes hors ligne",
+    "required": "Requis"
+  },
+  "auth": {
+    "login": {
+      "title": "Connexion",
+      "subtitle": "Connectez-vous à votre compte",
+      "email": "Email",
+      "emailPlaceholder": "votre@email.com",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Votre mot de passe",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "createAccount": "Créer un compte",
+      "forgotPassword": "Mot de passe oublié ?"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "subtitle": "Rejoignez Kidoo",
+      "name": "Nom complet",
+      "namePlaceholder": "Votre nom",
+      "email": "Email",
+      "emailPlaceholder": "votre@email.com",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Créez un mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
+      "submit": "Créer mon compte",
+      "hasAccount": "Déjà un compte ?",
+      "login": "Se connecter"
+    },
+    "errors": {
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "emailRequired": "L'email est requis",
+      "emailInvalid": "Email invalide",
+      "passwordRequired": "Le mot de passe est requis",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "nameRequired": "Le nom est requis"
+    }
+  },
+  "home": {
+    "title": "Accueil",
+    "welcome": "Bienvenue",
+    "welcomeBack": "Bon retour, {{name}} !",
+    "noKidoos": "Vous n'avez pas encore de Kidoo",
+    "addKidoo": "Ajouter un Kidoo"
+  },
+  "kidoos": {
+    "title": "Mes Kidoos",
+    "empty": "Aucun Kidoo",
+    "emptyDescription": "Ajoutez votre premier Kidoo pour commencer",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "model": "Modèle",
+    "lastSeen": "Vu il y a {{time}}",
+    "addKidoo": "Nouveau Kidoo détecté",
+    "add": "Ajouter",
+    "addKidooMessage": "Voulez-vous ajouter ce Kidoo à votre liste ?",
+    "unknownDevice": "Appareil inconnu",
+    "name": "Nom de l'appareil",
+    "editName": "Modifier le nom",
+    "status": "Statut",
+    "macAddress": "Adresse MAC",
+    "deviceId": "ID Appareil",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce Kidoo ?",
+    "actions": {
+      "view": "Voir",
+      "settings": "Paramètres",
+      "delete": "Supprimer"
+    },
+    "features": {
+      "nfc": "NFC",
+      "potentiometer": "Potentiomètre",
+      "dreamMode": "Mode Dream",
+      "available": "Disponible",
+      "configure": "Configurer"
+    },
+    "detail": {
+      "offline": {
+        "title": "Kidoo hors ligne",
+        "message": "Les modifications seront envoyées à la reconnexion WiFi"
+      }
+    },
+    "dream": {
+      "bedtime": {
+        "title": "Heure de coucher",
+        "configure": "Configurer",
+        "selectTime": "Sélectionnez l'heure de coucher",
+        "selectColor": "Sélectionnez la couleur",
+        "brightness": "Luminosité",
+        "nightlightAllNight": "Veilleuse allumée toute la nuit",
+        "test": "Tester",
+        "saved": "Configuration enregistrée"
+      }
+    },
+    "wifiConfig": {
+      "title": "Configuration WiFi",
+      "requiresDirectConnection": "Connexion directe nécessaire",
+      "step1": {
+        "title": "Connexion BLE",
+        "loading": "Pour modifier le WiFi, mettez le Kidoo en mode appairage en appuyant 3 secondes sur le bouton reset. Il doit s'allumer en mode respiration bleu.",
+        "success": "Connexion BLE établie",
+        "error": {
+          "title": "Kidoo non disponible en BLE",
+          "message": "Pour modifier la configuration WiFi, le Kidoo doit être en mode appairage. Appuyez 3 secondes sur le bouton reset. Le Kidoo doit respirer en bleu.",
+          "notFound": "Kidoo non trouvé en BLE",
+          "connectionFailed": "Échec de la connexion BLE"
+        }
+      },
+      "step2": {
+        "title": "Identifiants WiFi"
+      },
+      "step3": {
+        "title": "Configuration",
+        "loading": "Configuration WiFi en cours...",
+        "success": "Configuration WiFi réussie",
+        "successMessage": "Le Kidoo est maintenant connecté au réseau WiFi",
+        "error": "Erreur de configuration",
+        "errorMessage": "Impossible de configurer le WiFi. Vérifiez les identifiants et réessayez."
+      }
+    }
+  },
+  "device": {
+    "add": {
+      "title": "Ajouter un nouveau Kidoo",
+      "complete": "Terminer",
+      "step1": {
+        "title": "Nom du Kidoo",
+        "description": "Donnez un nom à votre Kidoo"
+      },
+      "step2": {
+        "title": "Identifiants WiFi",
+        "description": "Configurez le WiFi de votre device"
+      },
+      "step3": {
+        "title": "Finalisation",
+        "description": "Finalisez l'ajout de votre device"
+      },
+      "form": {
+        "name": "Nom du Kidoo",
+        "namePlaceholder": "Ex: Kidoo du salon",
+        "nameRequired": "Le nom est requis",
+        "nameTooLong": "Le nom ne peut pas dépasser 100 caractères",
+        "wifiSSID": "Nom du réseau WiFi (SSID)",
+        "wifiSSIDPlaceholder": "Ex: MonWiFi",
+        "wifiPassword": "Mot de passe WiFi",
+        "wifiPasswordPlaceholder": "Mot de passe du réseau"
+      }
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "editProfile": "Modifier le profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "logoutConfirm": "Êtes-vous sûr de vouloir vous déconnecter ?",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteAccountConfirm": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
+    "accountDeleted": "Compte supprimé avec succès",
+    "editName": "Modifier le nom",
+    "name": "Nom",
+    "email": "Email",
+    "changePassword": "Modifier le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "currentPasswordPlaceholder": "Entrez votre mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+    "passwordChanged": "Mot de passe modifié avec succès",
+    "version": "Version {{version}}",
+    "developerModeEnabled": "Mode développeur activé",
+    "developerModeDisabled": "Mode développeur désactivé"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "appearance": "Apparence",
+    "darkMode": "Mode sombre",
+    "language": "Langue",
+    "notifications": "Notifications",
+    "security": "Sécurité",
+    "biometric": "Déverrouillage biométrique",
+    "about": "À propos"
+  },
+  "errors": {
+    "generic": "Une erreur est survenue",
+    "network": "Erreur de connexion",
+    "notFound": "Non trouvé",
+    "unauthorized": "Non autorisé",
+    "tryAgain": "Veuillez réessayer",
+    "auth": {
+      "unauthorized": "Authentification requise",
+      "forbidden": "Accès non autorisé",
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "tokenExpired": "Session expirée, veuillez vous reconnecter",
+      "tokenInvalid": "Session invalide",
+      "passwordIncorrect": "Mot de passe incorrect",
+      "passwordTooWeak": "Le mot de passe est trop faible",
+      "emailAlreadyExists": "Cet email est déjà utilisé"
+    },
+    "validation": {
+      "error": "Erreur de validation",
+      "missingField": "Champ manquant",
+      "invalidFormat": "Format invalide"
+    },
+    "resource": {
+      "notFound": "Ressource non trouvée",
+      "alreadyExists": "Ressource déjà existante",
+      "conflict": "Conflit de ressources"
+    },
+    "server": {
+      "internalError": "Une erreur est survenue",
+      "serviceUnavailable": "Service indisponible",
+      "badGateway": "Erreur de communication"
+    },
+    "kidoo": {
+      "notFound": "Kidoo non trouvé",
+      "notOwned": "Vous n'êtes pas autorisé à accéder à ce Kidoo",
+      "alreadyRegistered": "Ce Kidoo est déjà enregistré",
+      "notConfigured": "Kidoo non configuré (adresse MAC manquante)",
+      "offline": "Kidoo hors ligne"
+    }
+  },
+  "toast": {
+    "success": "Succès",
+    "saved": "Enregistré avec succès",
+    "deleted": "Supprimé avec succès",
+    "updated": "Mis à jour avec succès",
+    "error": "Erreur",
+    "networkError": "Erreur de connexion réseau"
+  },
+  "bluetooth": {
+    "scanStarted": "Scan Bluetooth démarré",
+    "scanStopped": "Scan Bluetooth arrêté",
+    "connected": "Connecté à {{name}}",
+    "disconnected": "Déconnecté",
+    "signalStrength": "Signal",
+    "scanning": "Recherche en cours...",
+    "scanningDescription": "Mettez votre Kidoo en mode association : maintenez le bouton reset pendant 3 secondes. Le Kidoo doit respirer en bleu.",
+    "scanKidoos": "Rechercher un Kidoo",
+    "noDevicesFound": "Aucun Kidoo trouvé",
+    "noDevicesDescription": "Appuyez sur \"Rechercher\" pour scanner à nouveau",
+    "scan": "Rechercher",
+    "errors": {
+      "notAvailable": "Le Bluetooth n'est pas disponible",
+      "notEnabled": "Le Bluetooth n'est pas activé",
+      "permissionsDenied": "Les permissions Bluetooth sont requises",
+      "permissionsError": "Erreur lors de la demande de permissions",
+      "scanError": "Erreur lors du démarrage du scan",
+      "deviceNotFound": "Appareil non trouvé",
+      "connectionError": "Erreur lors de la connexion",
+      "disconnectionError": "Erreur lors de la déconnexion",
+      "notConnected": "Aucun appareil connecté",
+      "sendError": "Erreur lors de l'envoi de la commande"
+    }
+  }
+}
