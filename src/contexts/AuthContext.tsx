@@ -11,6 +11,8 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
+import { AxiosError } from 'axios';
 import { authApi, User, LoginRequest, RegisterRequest } from '@/api';
 import { tokenStorage, developerStorage } from '@/utils/storage';
 import { showToast } from '@/components/ui/Toast';
@@ -55,6 +57,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     checkAuth();
     loadDeveloperMode();
+  }, []);
+
+  // Réessayer de restaurer la session quand l'app revient au premier plan (ex. après erreur réseau au démarrage)
+  useEffect(() => {
+    let prevAppState = AppState.currentState;
+    const subscription = AppState.addEventListener('change', (nextState: AppStateStatus) => {
+      if (prevAppState.match(/inactive|background/) && nextState === 'active') {
+        tokenStorage.hasTokens().then((hasTokens) => {
+          if (hasTokens) checkAuth();
+        });
+      }
+      prevAppState = nextState;
+    });
+    return () => subscription.remove();
   }, []);
 
   const loadDeveloperMode = async () => {
@@ -105,10 +121,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isAuthenticated: true,
       }));
     } catch (error) {
-      // Token invalide ou expiré
-      await tokenStorage.clearTokens();
-      // Réinitialiser le contexte utilisateur dans Sentry
-      setSentryUser(null);
+      // Ne supprimer les tokens que si le token est invalide/expiré (401), pas en cas d'erreur réseau
+      const status = error instanceof AxiosError ? error.response?.status : undefined;
+      if (status === 401) {
+        await tokenStorage.clearTokens();
+        setSentryUser(null);
+      }
       setState((prev) => ({
         ...prev,
         user: null,
@@ -176,9 +194,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         message: t('home.welcome'),
       });
     } catch (error) {
+      const message =
+        error instanceof AxiosError && typeof error.response?.data?.error === 'string'
+          ? error.response.data.error
+          : t('errors.generic');
       showToast.error({
         title: t('toast.error'),
-        message: t('errors.generic'),
+        message,
       });
       throw error;
     }

@@ -37,3 +37,6 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# env files (can opt-in for committing if needed)
+.env*

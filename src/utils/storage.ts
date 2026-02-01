@@ -7,6 +7,11 @@
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
+// Options pour que les tokens persistent après fermeture de l'app (iOS keychain / Android keystore)
+const TOKEN_STORE_OPTIONS = Platform.OS === 'web' ? undefined : {
+  keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+};
+
 const KEYS = {
   ACCESS_TOKEN: 'kidoo_access_token',
   REFRESH_TOKEN: 'kidoo_refresh_token',
@@ -19,14 +24,20 @@ const KEYS = {
 const isWeb = Platform.OS === 'web';
 
 /**
- * Stocker une valeur de manière sécurisée
+ * Stocker une valeur de manière sécurisée.
+ * SecureStore n'accepte que des chaînes ; les autres types sont rejetés.
  */
 export async function setSecureItem(key: string, value: string): Promise<void> {
+  if (typeof value !== 'string') {
+    const msg = `SecureStore requires string values; got ${typeof value} for key ${key}. Use String() or JSON.stringify() for other types.`;
+    console.error(msg);
+    throw new Error(msg);
+  }
   try {
     if (isWeb) {
       localStorage.setItem(key, value);
     } else {
-      await SecureStore.setItemAsync(key, value);
+      await SecureStore.setItemAsync(key, value, TOKEN_STORE_OPTIONS);
     }
   } catch (error) {
     console.error(`Error storing ${key}:`, error);
@@ -42,7 +53,12 @@ export async function getSecureItem(key: string): Promise<string | null> {
     if (isWeb) {
       return localStorage.getItem(key);
     }
-    return await SecureStore.getItemAsync(key);
+    let value = await SecureStore.getItemAsync(key, TOKEN_STORE_OPTIONS);
+    // Fallback: lire sans options (tokens enregistrés avant l'ajout des options)
+    if (value == null && TOKEN_STORE_OPTIONS) {
+      value = await SecureStore.getItemAsync(key);
+    }
+    return value;
   } catch (error) {
     console.error(`Error getting ${key}:`, error);
     return null;
@@ -57,7 +73,7 @@ export async function deleteSecureItem(key: string): Promise<void> {
     if (isWeb) {
       localStorage.removeItem(key);
     } else {
-      await SecureStore.deleteItemAsync(key);
+      await SecureStore.deleteItemAsync(key, TOKEN_STORE_OPTIONS);
     }
   } catch (error) {
     console.error(`Error deleting ${key}:`, error);
@@ -83,9 +99,15 @@ export const tokenStorage = {
   },
 
   async setTokens(accessToken: string, refreshToken: string): Promise<void> {
+    const a = typeof accessToken === 'string' ? accessToken : (accessToken != null ? String(accessToken) : '');
+    const r = typeof refreshToken === 'string' ? refreshToken : (refreshToken != null ? String(refreshToken) : '');
+    if (!a || !r) {
+      console.warn('setTokens: skipping store because one or both tokens are missing', { hasAccess: !!a, hasRefresh: !!r });
+      return;
+    }
     await Promise.all([
-      setSecureItem(KEYS.ACCESS_TOKEN, accessToken),
-      setSecureItem(KEYS.REFRESH_TOKEN, refreshToken),
+      setSecureItem(KEYS.ACCESS_TOKEN, a),
+      setSecureItem(KEYS.REFRESH_TOKEN, r),
     ]);
   },
 

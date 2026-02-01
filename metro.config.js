@@ -36,7 +36,8 @@ config.resolver = {
 };
 
 // Add shared packages to watchFolders
-config.watchFolders = [monorepoRoot];
+const sharedPath = path.resolve(projectRoot, '../kidoo-shared');
+config.watchFolders = [monorepoRoot, sharedPath];
 
 // Ensure Metro resolves packages from the monorepo
 config.resolver.nodeModulesPaths = [
@@ -47,8 +48,8 @@ config.resolver.nodeModulesPaths = [
 // Configurer les alias pour @shared et @/
 config.resolver.alias = {
   ...config.resolver?.alias,
-  '@shared': path.resolve(__dirname, '../shared/index.ts'),
-  '@/shared': path.resolve(__dirname, '../shared/index.ts'),
+  '@shared': path.resolve(__dirname, '../kidoo-shared/index.ts'),
+  '@/shared': path.resolve(__dirname, '../kidoo-shared/index.ts'),
   // Alias @/ pour pointer vers kidoo-app/src/
   '@': path.resolve(__dirname, 'src'),
   '@/': path.resolve(__dirname, 'src'),

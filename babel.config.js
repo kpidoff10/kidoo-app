@@ -8,13 +8,13 @@ module.exports = function (api) {
       [
         'module-resolver',
         {
-          root: ['./src', '../shared'],
+          root: ['./src', '../kidoo-shared'],
           extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
           alias: {
             '@': './src',
-            '@shared': path.resolve(__dirname, '../shared'),
-            '@/shared': path.resolve(__dirname, '../shared'),
-            '@/shared/*': path.resolve(__dirname, '../shared/*'),
+            '@shared': path.resolve(__dirname, '../kidoo-shared'),
+            '@/shared': path.resolve(__dirname, '../kidoo-shared'),
+            '@/shared/*': path.resolve(__dirname, '../kidoo-shared/*'),
           },
         },
       ],
