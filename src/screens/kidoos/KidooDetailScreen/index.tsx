@@ -8,13 +8,15 @@ import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useQueryClient } from '@tanstack/react-query';
 import { MenuList, ContentScrollView } from '@/components/ui';
 import { showToast } from '@/components/ui/Toast';
 import { useTheme } from '@/theme';
 import { useKidooContext } from '@/contexts';
-import { useBottomSheet } from '@/hooks/useBottomSheet';
+import { useBottomSheet, useFirmwareUpdateAvailable } from '@/hooks';
 import { RootStackParamList } from '@/navigation/types';
-import { KidooNotFound, DeleteKidooButton, EditKidooNameSheet, WiFiConfigSheet, BrightnessConfigSheet, useKidooMenuItems } from './components';
+import { kidoosApi, Kidoo } from '@/api';
+import { KidooNotFound, DeleteKidooButton, EditKidooNameSheet, WiFiConfigSheet, BrightnessConfigSheet, FirmwareUpdateSheet, useKidooMenuItems } from './components';
 
 type RouteParams = {
   kidooId: string;
@@ -32,12 +34,23 @@ export function KidooDetailScreen() {
   const editNameSheet = useBottomSheet();
   const wifiConfigSheet = useBottomSheet();
   const brightnessConfigSheet = useBottomSheet();
+  const firmwareUpdateSheet = useBottomSheet();
 
   const kidoo = getKidooById(kidooId);
   const modelHandler = kidoo ? getKidooModelHandler(kidooId) : undefined;
+  const queryClient = useQueryClient();
 
   // Ref pour éviter d'appeler checkOnline plusieurs fois pour le même kidooId dans une session
   const hasCheckedOnlineRef = useRef<string | null>(null);
+
+  // À chaque focus : invalider le cache "dernière version firmware" pour refetch (évite d'afficher 1.0.1 après avoir créé 1.0.2)
+  useFocusEffect(
+    useCallback(() => {
+      if (kidoo?.model) {
+        queryClient.invalidateQueries({ queryKey: ['firmware', 'latest', kidoo.model] });
+      }
+    }, [kidoo?.model, queryClient])
+  );
 
   // Vérifier si le Kidoo est en ligne quand on arrive sur l'écran ou quand on revient dessus
   useFocusEffect(
@@ -45,7 +58,7 @@ export function KidooDetailScreen() {
       // Réinitialiser le ref si on change de Kidoo
       if (hasCheckedOnlineRef.current !== kidooId) {
         hasCheckedOnlineRef.current = kidooId;
-        
+
         // Vérifier que le Kidoo existe et a une adresse MAC avant de vérifier
         if (kidoo && kidoo.macAddress) {
           // Appeler checkOnline pour mettre à jour le statut
@@ -54,11 +67,11 @@ export function KidooDetailScreen() {
               // Si le Kidoo n'est pas en ligne, afficher un toast warning
               if (!result.isOnline) {
                 showToast.warning({
-                  title: t('kidoos.detail.offline.title', { 
-                    defaultValue: 'Kidoo hors ligne' 
+                  title: t('kidoos.detail.offline.title', {
+                    defaultValue: 'Kidoo hors ligne',
                   }),
                   message: t('kidoos.detail.offline.message', {
-                    defaultValue: 'Les modifications seront envoyées à la reconnexion WiFi'
+                    defaultValue: 'Les modifications seront envoyées à la reconnexion WiFi',
                   }),
                 });
               }
@@ -91,9 +104,39 @@ export function KidooDetailScreen() {
     navigation.navigate('WakeupConfig', { kidooId });
   }, [navigation, kidooId]);
 
-  const menuItems = useKidooMenuItems({ 
-    kidoo, 
-    modelHandler, 
+  const { hasFirmwareUpdate, isLoading: isFirmwareCheckLoading, latestVersion: latestFirmwareVersion, latestChangelog: latestFirmwareChangelog } = useFirmwareUpdateAvailable(kidoo);
+
+  const handleFirmwareUpdatePress = useCallback(() => {
+    firmwareUpdateSheet.open();
+  }, [firmwareUpdateSheet]);
+
+  const handleStartFirmwareUpdate = useCallback(async () => {
+    if (!kidoo || !latestFirmwareVersion) throw new Error('Kidoo ou version manquant');
+    return kidoosApi.startFirmwareUpdate(kidoo.id, latestFirmwareVersion);
+  }, [kidoo, latestFirmwareVersion]);
+
+  const handleFirmwareUpdateSuccess = useCallback(
+    (newVersion: string) => {
+      queryClient.setQueryData<Kidoo[]>(['kidoos'], (old) =>
+        old
+          ? old.map((k) =>
+              k.id === kidooId ? { ...k, firmwareVersion: newVersion } : k
+            )
+          : old
+      );
+      queryClient.invalidateQueries({ queryKey: ['firmware', 'latest', kidoo?.model] });
+      checkOnline.mutate(kidooId);
+    },
+    [queryClient, kidooId, kidoo?.model, checkOnline]
+  );
+
+  const menuItems = useKidooMenuItems({
+    kidoo,
+    modelHandler,
+    hasFirmwareUpdate,
+    isFirmwareCheckLoading,
+    latestFirmwareVersion,
+    onFirmwareUpdatePress: handleFirmwareUpdatePress,
     onEditName: handleEditName,
     onConfigureWiFi: handleConfigureWiFi,
     onConfigureBrightness: handleConfigureBrightness,
@@ -147,6 +190,18 @@ export function KidooDetailScreen() {
         <BrightnessConfigSheet
           bottomSheet={brightnessConfigSheet}
           kidoo={kidoo}
+        />
+      )}
+
+      {/* Bottom Sheet mise à jour firmware (quand une nouvelle version est disponible) */}
+      {kidoo && latestFirmwareVersion && (
+        <FirmwareUpdateSheet
+          bottomSheet={firmwareUpdateSheet}
+          kidoo={kidoo}
+          version={latestFirmwareVersion}
+          changelog={latestFirmwareChangelog ?? null}
+          onStartUpdate={handleStartFirmwareUpdate}
+          onUpdateSuccess={handleFirmwareUpdateSuccess}
         />
       )}
     </View>

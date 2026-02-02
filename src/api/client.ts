@@ -8,9 +8,14 @@ import * as Sentry from '@sentry/react-native';
 import { tokenStorage } from '@/utils/storage';
 
 // URL de l'API depuis la variable d'environnement
-// En dev : définir EXPO_PUBLIC_API_URL dans .env (ex: http://192.168.1.217:3000)
+// En dev : définir EXPO_PUBLIC_API_URL dans .env (ex: http://192.168.1.217:3000 ou 192.168.1.217:3000)
 // En prod : https://api.kidoo.com
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+function normalizeApiUrl(url: string | undefined): string {
+  const raw = url || 'http://localhost:3000';
+  if (/^https?:\/\//i.test(raw)) return raw;
+  return `http://${raw}`;
+}
+const API_URL = normalizeApiUrl(process.env.EXPO_PUBLIC_API_URL);
 
 export const apiClient = axios.create({
   baseURL: API_URL,

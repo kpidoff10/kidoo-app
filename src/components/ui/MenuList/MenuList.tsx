@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ViewStyle, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@/components/ui/Typography/Text';
 import { useTheme } from '@/theme';
@@ -21,6 +21,11 @@ export interface MenuListItem {
   value: string;
   
   /**
+   * Sous-chaîne de value à afficher en couleur success (ex: nouvelle version "1.0.1" dans "1.0.0 → 1.0.1")
+   */
+  valueHighlight?: string;
+  
+  /**
    * Nom de l'icône Ionicons
    */
   icon?: keyof typeof Ionicons.glyphMap;
@@ -34,6 +39,16 @@ export interface MenuListItem {
    * Si true, l'item est désactivé/grisé (non cliquable)
    */
   disabled?: boolean;
+  
+  /**
+   * Icône optionnelle à droite (ex: warning pour "mise à jour disponible")
+   */
+  trailingIcon?: keyof typeof Ionicons.glyphMap;
+  
+  /**
+   * Si true, affiche un loader à droite (ex: pendant la vérification MAJ firmware)
+   */
+  trailingLoader?: boolean;
   
   /**
    * Style personnalisé pour l'item
@@ -112,17 +127,39 @@ export function MenuList({ items, style }: MenuListProps) {
               >
                 {item.label}
               </Text>
-              <Text color={item.disabled ? 'tertiary' : undefined}>
-                {item.value}
-              </Text>
+              {item.valueHighlight ? (
+                <Text color={item.disabled ? 'tertiary' : undefined}>
+                  {item.value.split(item.valueHighlight)[0]}
+                  <Text style={{ color: colors.success }}>{item.valueHighlight}</Text>
+                  {item.value.split(item.valueHighlight).slice(1).join(item.valueHighlight)}
+                </Text>
+              ) : (
+                <Text color={item.disabled ? 'tertiary' : undefined}>
+                  {item.value}
+                </Text>
+              )}
             </View>
           </View>
-          {isClickable && (
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color={colors.textTertiary}
-            />
+          {(item.trailingIcon || item.trailingLoader || isClickable) && (
+            <View style={styles.listItemRight}>
+              {item.trailingLoader ? (
+                <ActivityIndicator size="small" color={colors.textTertiary} style={{ marginRight: isClickable ? spacing[2] : 0 }} />
+              ) : item.trailingIcon ? (
+                <Ionicons
+                  name={item.trailingIcon}
+                  size={20}
+                  color={colors.warning}
+                  style={{ marginRight: isClickable ? spacing[2] : 0 }}
+                />
+              ) : null}
+              {isClickable && (
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colors.textTertiary}
+                />
+              )}
+            </View>
           )}
         </View>
       </ItemWrapper>
@@ -158,5 +195,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+  },
+  listItemRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

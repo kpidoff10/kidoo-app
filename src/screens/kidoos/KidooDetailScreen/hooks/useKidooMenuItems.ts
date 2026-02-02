@@ -15,6 +15,14 @@ import moment from 'moment';
 interface UseKidooMenuItemsParams {
   kidoo: Kidoo | undefined;
   modelHandler: ModelHandler | undefined;
+  /** Si true, affiche une icône warning sur la ligne "Version du firmware" (MAJ disponible) */
+  hasFirmwareUpdate?: boolean;
+  /** Si true, affiche un loader sur la ligne "Version du firmware" (vérification en cours) */
+  isFirmwareCheckLoading?: boolean;
+  /** Dernière version firmware disponible (pour afficher "1.0.0 → 1.0.1" avec 1.0.1 en vert) */
+  latestFirmwareVersion?: string | null;
+  /** Callback quand on clique sur la ligne "Version du firmware" (MAJ disponible) */
+  onFirmwareUpdatePress?: () => void;
   onEditName?: () => void;
   onConfigureWiFi?: () => void;
   onConfigureBrightness?: () => void;
@@ -22,7 +30,7 @@ interface UseKidooMenuItemsParams {
   onConfigureWakeup?: () => void;
 }
 
-export function useKidooMenuItems({ kidoo, modelHandler, onEditName, onConfigureWiFi, onConfigureBrightness, onConfigureBedtime, onConfigureWakeup }: UseKidooMenuItemsParams): MenuListItem[] {
+export function useKidooMenuItems({ kidoo, modelHandler, hasFirmwareUpdate, isFirmwareCheckLoading, latestFirmwareVersion, onFirmwareUpdatePress, onEditName, onConfigureWiFi, onConfigureBrightness, onConfigureBedtime, onConfigureWakeup }: UseKidooMenuItemsParams): MenuListItem[] {
   const { t } = useTranslation();
   const { isDeveloper } = useAuth();
 
@@ -91,14 +99,30 @@ export function useKidooMenuItems({ kidoo, modelHandler, onEditName, onConfigure
     }
 
     // Items spécifiques au modèle (via le handler)
-    const modelSpecificItems = modelHandler 
+    const modelSpecificItems = modelHandler
       ? modelHandler.getMenuItems(kidoo, t, {
           onConfigureBedtime,
           onConfigureWakeup,
         })
       : [];
 
-    // Fusionner les items communs et spécifiques
-    return [...commonItems, ...modelSpecificItems];
-  }, [kidoo, modelHandler, isDeveloper, onEditName, onConfigureWiFi, onConfigureBrightness, onConfigureBedtime, onConfigureWakeup, t]);
+    // Version du firmware (toujours en dernier, après les items communs et custom)
+    const currentVersion = kidoo.firmwareVersion ?? t('kidoos.firmwareVersion.unknown', { defaultValue: 'Non connue' });
+    const firmwareValue =
+      !isFirmwareCheckLoading && hasFirmwareUpdate && latestFirmwareVersion
+        ? `${currentVersion} → ${latestFirmwareVersion}`
+        : currentVersion;
+    const firmwareItem: MenuListItem = {
+      label: t('kidoos.firmwareVersion.title', { defaultValue: 'Version du firmware' }),
+      value: firmwareValue,
+      ...(!isFirmwareCheckLoading && hasFirmwareUpdate && latestFirmwareVersion && { valueHighlight: latestFirmwareVersion }),
+      icon: 'code-slash-outline',
+      disabled: !onFirmwareUpdatePress || isFirmwareCheckLoading || !hasFirmwareUpdate,
+      ...(isFirmwareCheckLoading && { trailingLoader: true }),
+      ...(!isFirmwareCheckLoading && hasFirmwareUpdate && { trailingIcon: 'warning-outline' as const }),
+      ...(!isFirmwareCheckLoading && hasFirmwareUpdate && onFirmwareUpdatePress && { onPress: onFirmwareUpdatePress }),
+    };
+
+    return [...commonItems, ...modelSpecificItems, firmwareItem];
+  }, [kidoo, modelHandler, isDeveloper, hasFirmwareUpdate, isFirmwareCheckLoading, latestFirmwareVersion, onFirmwareUpdatePress, onEditName, onConfigureWiFi, onConfigureBrightness, onConfigureBedtime, onConfigureWakeup, t]);
 }

@@ -10,3 +10,5 @@ export type { UpdateProfileRequest } from './useProfile';
 export { useOptimisticUpdate } from './useOptimisticUpdate';
 export type { OptimisticUpdateContext, UseOptimisticUpdateOptions } from './useOptimisticUpdate';
 export { useCurrentWiFiSSID } from './useCurrentWiFiSSID';
+export { useFirmwareUpdateAvailable } from './useFirmwareUpdateAvailable';
+export type { UseFirmwareUpdateAvailableReturn } from './useFirmwareUpdateAvailable';

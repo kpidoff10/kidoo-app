@@ -6,14 +6,15 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import type { KidooModelId } from '@kidoo/shared';
 import DreamIcon from '@/assets/dream.svg';
 import { useTheme } from '@/theme';
 
 export interface ModelIconProps {
   /**
-   * Modèle Kidoo ('BASIC', 'DREAM', 'Kidoo-Basic', 'Kidoo-Dream')
+   * Id du modèle Kidoo ('basic' | 'dream') — aligné sur l'enum partagé
    */
-  model: string;
+  model: KidooModelId;
   
   /**
    * Taille de l'icône
@@ -37,34 +38,27 @@ export interface ModelIconProps {
  */
 export function ModelIcon({ model, size = 32, color, style }: ModelIconProps) {
   const { colors, isDark } = useTheme();
-  const normalizedModel = model.toLowerCase();
-  
+
   // Pour le modèle Dream, utiliser le SVG avec couleur selon le thème
-  if (normalizedModel.includes('dream')) {
-    // Blanc en mode sombre, noir en mode clair
+  if (model === 'dream') {
     const dreamIconColor = color || (isDark ? '#FFFFFF' : '#000000');
-    
     return (
       <View style={[styles.container, { width: size, height: size }, style]}>
-        <DreamIcon 
-          width={size} 
-          height={size} 
+        <DreamIcon
+          width={size}
+          height={size}
           fill={dreamIconColor}
           color={dreamIconColor}
         />
       </View>
     );
   }
-  
-  // Pour les autres modèles, utiliser Ionicons
+
+  // Pour basic (et tout autre id futur), utiliser Ionicons
   const iconColor = color || colors.primary;
-  
-  // Pour les autres modèles, utiliser Ionicons
-  const iconName = normalizedModel.includes('basic') ? 'cube-outline' : 'cube-outline';
-  
   return (
     <View style={[styles.container, { width: size, height: size }, style]}>
-      <Ionicons name={iconName as any} size={size} color={iconColor} />
+      <Ionicons name="cube-outline" size={size} color={iconColor} />
     </View>
   );
 }

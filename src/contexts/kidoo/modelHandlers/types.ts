@@ -2,6 +2,7 @@
  * Types pour les handlers de modèles
  */
 
+import type { KidooModelId } from '@kidoo/shared';
 import { Kidoo } from '@/api';
 import { MenuListItem } from '@/components/ui/MenuList/MenuList';
 
@@ -46,9 +47,9 @@ export interface CustomAction {
  */
 export interface ModelHandler {
   /**
-   * Nom du modèle (ex: 'BASIC', 'DREAM')
+   * Id du modèle (ex: 'basic', 'dream') — aligné sur l'enum Prisma
    */
-  model: string;
+  model: KidooModelId;
 
   /**
    * Vérifier si le modèle supporte une fonctionnalité

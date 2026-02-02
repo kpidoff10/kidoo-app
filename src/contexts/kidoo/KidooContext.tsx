@@ -4,6 +4,7 @@
  */
 
 import React, { createContext, useContext, useMemo, useCallback } from 'react';
+import type { KidooModelId } from '@kidoo/shared';
 import { Kidoo } from '@/api';
 import { useKidoos, useKidoo, useCreateKidoo, useUpdateKidoo, useKidooCheckOnline, useDeleteKidoo } from '@/hooks/useKidoos';
 import { getModelHandler, ModelHandler } from './modelHandlers';
@@ -27,7 +28,7 @@ interface KidooContextType {
   hasKidoos: boolean;
   
   // Handlers de modèles
-  getModelHandler: (model: string) => ModelHandler;
+  getModelHandler: (model: KidooModelId) => ModelHandler;
   getKidooModelHandler: (kidooId: string) => ModelHandler | undefined;
 }
 
@@ -57,7 +58,7 @@ export function KidooProvider({ children }: KidooProviderProps) {
   }, [kidoos]);
 
   // Fonction pour obtenir le handler d'un modèle
-  const getModelHandlerFn = useCallback((model: string): ModelHandler => {
+  const getModelHandlerFn = useCallback((model: KidooModelId): ModelHandler => {
     return getModelHandler(model);
   }, []);
 

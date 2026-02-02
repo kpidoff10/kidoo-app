@@ -7,7 +7,7 @@ import { MenuListItem } from '@/components/ui/MenuList/MenuList';
 import { Kidoo } from '@/api';
 
 export class DreamModelHandler implements ModelHandler {
-  model = 'DREAM';
+  model = 'dream' as const;
 
   supportsFeature(feature: string): boolean {
     const supportedFeatures = ['led', 'audio'];

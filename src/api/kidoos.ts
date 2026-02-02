@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from './client';
+import type { KidooModelId } from '@kidoo/shared';
 
 export interface Kidoo {
   id: string;
@@ -11,13 +12,14 @@ export interface Kidoo {
   macAddress: string | null; // Adresse MAC WiFi (renvoyée par l'ESP32 lors du setup)
   bluetoothMacAddress: string | null; // Adresse MAC Bluetooth (pour comparer lors des scans automatiques)
   deviceId: string;
-  model: string;
+  model: KidooModelId;
   isConnected: boolean;
   lastConnected: string | null;
   userId: string | null;
   createdAt: string;
   updatedAt: string;
   brightness?: number; // Luminosité générale (0-100%)
+  firmwareVersion?: string; // Version du firmware ESP32 (renvoyée par l'API / get-info)
 }
 
 // Response wrapper du serveur
@@ -31,7 +33,7 @@ export interface CreateKidooRequest {
   name: string;
   macAddress?: string; // Adresse MAC WiFi (renvoyée par l'ESP32 lors du setup)
   bluetoothMacAddress?: string; // Adresse MAC Bluetooth (pour comparer lors des scans automatiques)
-  model: 'BASIC' | 'DREAM';
+  model: KidooModelId;
   deviceId: string; // UUID requis par le serveur
   wifiSSID?: string;
   firmwareVersion?: string;
@@ -208,6 +210,26 @@ export const kidoosApi = {
    */
   async sendCommand(id: string, command: string, params?: Record<string, unknown>): Promise<void> {
     await apiClient.post(`/api/kidoos/${id}/command`, { command, params });
+  },
+
+  /**
+   * Lancer une mise à jour firmware sur un Kidoo.
+   * Le serveur envoie la commande puis attend la réponse de l'ESP (comme get-info). La requête peut prendre jusqu'à 10 min.
+   * @returns { status: 'done', version } | { status: 'failed', error } — lance en cas de timeout (408) ou erreur réseau
+   */
+  async startFirmwareUpdate(
+    id: string,
+    version: string
+  ): Promise<{ status: 'done'; version: string } | { status: 'failed'; error: string }> {
+    const FIRMWARE_UPDATE_TIMEOUT_MS = 11 * 60 * 1000; // 11 min (serveur timeout 10 min)
+    const response = await apiClient.post<
+      ApiResponse<{ status: 'done'; version: string } | { status: 'failed'; error: string }>
+    >(`/api/kidoos/${id}/firmware-update`, { version }, { timeout: FIRMWARE_UPDATE_TIMEOUT_MS });
+    const data = response.data.data;
+    if (data.status !== 'done' && data.status !== 'failed') {
+      throw new Error('Réponse serveur invalide');
+    }
+    return data;
   },
 
   /**

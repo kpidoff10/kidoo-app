@@ -1,86 +1,49 @@
 /**
- * Configuration des modèles de Kidoo
+ * Configuration des modèles Kidoo
+ * Basée sur l'enum partagé (@kidoo/shared) pour rester alignée avec l'API et la base.
  */
 
-/**
- * Liste de tous les modèles de Kidoo disponibles
- */
-export const KIDOO_MODELS = [
-  'Kidoo-Basic',
-  'Kidoo-Dream',
-] as const;
+import {
+  KIDOO_MODELS,
+  getKidooModel,
+  isKidooModelId,
+  type KidooModelId,
+  type KidooModel,
+} from '@kidoo/shared';
+
+// Ré-export pour usage dans l'app
+export { KIDOO_MODELS, getKidooModel, isKidooModelId };
+export type { KidooModelId, KidooModel };
+
+/** Noms BLE diffusés par le firmware (pour détecter le modèle depuis device.name) */
+export const BLE_MODEL_NAMES = ['Kidoo-Basic', 'Kidoo-Dream'] as const;
 
 /**
- * Type pour les modèles de Kidoo
+ * Convertir un nom BLE (détecté depuis device.name) vers l'id modèle API / base (KidooModelId).
  */
-export type KidooModel = typeof KIDOO_MODELS[number];
-
-/**
- * Vérifier si une chaîne est un modèle valide
- */
-export function isValidKidooModel(model: string): model is KidooModel {
-  return KIDOO_MODELS.includes(model as KidooModel);
+export function convertBleModelToApiModel(bleName: string): KidooModelId {
+  const normalized = bleName.toLowerCase();
+  if (normalized.includes('basic')) return 'basic';
+  if (normalized.includes('dream')) return 'dream';
+  return 'basic';
 }
 
 /**
- * Obtenir le nom d'affichage d'un modèle
- * Accepte les formats API ('BASIC', 'DREAM') et BLE ('Kidoo-Basic', 'Kidoo-Dream')
+ * Obtenir le nom d'affichage d'un modèle (accepte KidooModelId ou chaîne pour rétrocompat).
  */
-export function getKidooModelDisplayName(model: string): string {
-  // Normaliser le modèle pour la comparaison
-  const normalizedModel = model.toLowerCase();
-  
-  // Mapping des modèles vers leurs libellés d'affichage
-  if (normalizedModel.includes('basic')) {
-    return 'Kidoo Basic';
-  } else if (normalizedModel.includes('dream')) {
-    return 'Kidoo Dream';
-  }
-  
-  // Si le modèle n'est pas reconnu, retourner le modèle original
-  return model;
+export function getKidooModelDisplayName(model: KidooModelId | string): string {
+  const m = typeof model === 'string' ? getKidooModel(model) : getKidooModel(model);
+  return m?.label ?? model;
 }
 
 /**
- * Obtenir le nom de l'icône Ionicons pour un modèle
- * Accepte les formats API ('BASIC', 'DREAM') et BLE ('Kidoo-Basic', 'Kidoo-Dream')
- * @returns Nom de l'icône Ionicons (ex: "cube-outline", "sparkles-outline")
+ * Obtenir le nom de l'icône Ionicons pour un modèle.
  */
-export function getKidooModelIcon(model: string): string {
-  // Normaliser le modèle pour la comparaison
-  const normalizedModel = model.toLowerCase();
-  
-  // Mapping des modèles vers leurs icônes
-  if (normalizedModel.includes('basic')) {
-    return 'cube-outline';
-  } else if (normalizedModel.includes('dream')) {
-    return 'sparkles-outline';
-  }
-  
-  // Icône par défaut si le modèle n'est pas reconnu
-  return 'cube-outline';
+export function getKidooModelIcon(model: KidooModelId | string): string {
+  const m = typeof model === 'string' ? getKidooModel(model) : getKidooModel(model);
+  if (!m) return 'cube-outline';
+  return m.id === 'dream' ? 'sparkles-outline' : 'cube-outline';
 }
 
-/**
- * Type pour les modèles API (utilisés dans les requêtes vers le serveur)
- */
-export type KidooApiModel = 'BASIC' | 'DREAM';
-
-/**
- * Convertir un modèle BLE (détecté depuis le nom du device) vers le modèle API
- * @param bleModel Modèle détecté depuis le nom BLE (ex: "Kidoo-Basic", "Kidoo-Dream")
- * @returns Modèle API correspondant (ex: "BASIC", "DREAM")
- */
-export function convertBleModelToApiModel(bleModel: string): KidooApiModel {
-  // Normaliser le modèle pour la comparaison (insensible à la casse)
-  const normalizedModel = bleModel.toLowerCase();
-  
-  if (normalizedModel.includes('basic')) {
-    return 'BASIC';
-  } else if (normalizedModel.includes('dream')) {
-    return 'DREAM';
-  }
-  
-  // Par défaut BASIC si modèle inconnu
-  return 'BASIC';
-}
+/** @deprecated Utiliser KidooModelId */
+export type KidooApiModel = KidooModelId;

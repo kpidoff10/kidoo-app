@@ -7,21 +7,16 @@ export { BasicModelHandler } from './basicHandler';
 export { DreamModelHandler } from './dreamHandler';
 
 /**
- * Factory pour obtenir le handler approprié selon le modèle
+ * Factory pour obtenir le handler approprié selon le modèle (KidooModelId)
  */
+import type { KidooModelId } from '@kidoo/shared';
 import { BasicModelHandler } from './basicHandler';
 import { DreamModelHandler } from './dreamHandler';
 import { ModelHandler } from './types';
 
-export function getModelHandler(model: string): ModelHandler {
-  const normalizedModel = model.toUpperCase();
-  
-  if (normalizedModel.includes('BASIC')) {
-    return new BasicModelHandler();
-  } else if (normalizedModel.includes('DREAM')) {
+export function getModelHandler(model: KidooModelId): ModelHandler {
+  if (model === 'dream') {
     return new DreamModelHandler();
   }
-  
-  // Par défaut, retourner le handler Basic
   return new BasicModelHandler();
 }

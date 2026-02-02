@@ -16,7 +16,8 @@ import { Platform, PermissionsAndroid } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { BleManager, Device, State } from 'react-native-ble-plx';
 import { showToast } from '@/components/ui/Toast';
-import { KIDOO_MODELS, isValidKidooModel, convertBleModelToApiModel } from '@/config';
+import { KIDOO_MODELS, BLE_MODEL_NAMES, convertBleModelToApiModel } from '@/config';
+import type { KidooModelId } from '@kidoo/shared';
 import { useBottomSheet, UseBottomSheetReturn } from '@/hooks/useBottomSheet';
 import { useKidoos } from '@/hooks/useKidoos';
 import { useCreateKidoo } from '@/hooks/useKidoos';
@@ -58,8 +59,8 @@ interface BluetoothContextType extends BluetoothState {
   addKidooSheet: UseBottomSheetReturn; // Bottom sheet intégré pour ajouter un Kidoo
   addDeviceSheet: UseBottomSheetReturn; // Bottom sheet pour AddDeviceSheet
   scanKidoosSheet: UseBottomSheetReturn; // Bottom sheet pour ScanKidoosSheet
-  pendingDeviceForAddSheet: { device: BLEDevice; detectedModel: string } | null; // Device en attente pour AddDeviceSheet
-  detectedModelForAddSheet: string | null; // Modèle détecté pour AddDeviceSheet
+  pendingDeviceForAddSheet: { device: BLEDevice; detectedModel: KidooModelId } | null; // Device en attente pour AddDeviceSheet
+  detectedModelForAddSheet: KidooModelId | null; // Modèle détecté pour AddDeviceSheet
   handleAddKidooClose: () => void; // Handler pour fermer AddKidooSheet
   handleAddKidoo: (device?: BLEDevice) => Promise<void>; // Handler pour ajouter un Kidoo
   handleAddDeviceClose: () => void; // Handler pour fermer AddDeviceSheet
@@ -85,7 +86,7 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
   const scanKidoosSheet = useBottomSheet(); // Bottom sheet pour ScanKidoosSheet
   const { data: kidoos } = useKidoos(); // Liste des Kidoos pour vérifier si déjà lié
   const createKidoo = useCreateKidoo();
-  const [pendingDeviceForAddSheet, setPendingDeviceForAddSheet] = useState<{ device: BLEDevice; detectedModel: string } | null>(null);
+  const [pendingDeviceForAddSheet, setPendingDeviceForAddSheet] = useState<{ device: BLEDevice; detectedModel: KidooModelId } | null>(null);
   const isOpeningAddDeviceSheetRef = useRef(false); // Flag pour éviter les ouvertures multiples
   const isManualAddInProgressRef = useRef(false); // Flag pour indiquer qu'un ajout manuel est en cours
   const dismissedDeviceIdsRef = useRef<Set<string>>(new Set()); // Liste des IDs des devices annulés/refusés
@@ -275,22 +276,15 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
     };
   }, []);
 
-  // Fonction pour vérifier si un appareil est un Kidoo
+  // Fonction pour vérifier si un appareil est un Kidoo (d'après le nom BLE)
   const isKidooDevice = useCallback((device: BLEDevice): boolean => {
     if (!device.name) {
       return false;
     }
-    // Normaliser le nom en minuscules pour la comparaison (insensible à la casse)
     const normalizedName = device.name.toLowerCase();
-    
-    // Vérifier si le nom correspond à un modèle Kidoo
-    // Le firmware diffuse "KIDOO-Basic" ou "KIDOO-Dream" (tout en majuscules pour KIDOO)
-    // On accepte aussi "Kidoo-Basic", "KIDOO-Basic", etc.
-    return KIDOO_MODELS.some((model) => {
-      const normalizedModel = model.toLowerCase();
-      // Chercher "kidoo-basic" ou "kidoo-dream" dans le nom (insensible à la casse)
-      return normalizedName.includes(normalizedModel) || normalizedName === normalizedModel;
-    });
+    return BLE_MODEL_NAMES.some((name) =>
+      normalizedName.includes(name.toLowerCase()) || normalizedName === name.toLowerCase()
+    );
   }, []);
 
   const startScan = useCallback(async () => {
@@ -964,9 +958,7 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
     const { device, detectedModel } = pendingDeviceForAddSheet;
 
     try {
-      // Convertir le modèle BLE vers le modèle API
-      const apiModel = convertBleModelToApiModel(detectedModel);
-      
+      // detectedModel est déjà un KidooModelId
       // Utiliser l'UUID renvoyé par l'ESP32 (généré lors de la commande setup)
       if (!formData.deviceId) {
         console.error('Erreur: deviceId manquant (devrait être renvoyé par l\'ESP32)');
@@ -977,7 +969,7 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
         name: formData.name || device.name || `Kidoo ${detectedModel}`,
         macAddress: formData.macAddress || undefined, // Adresse MAC WiFi renvoyée par l'ESP32
         bluetoothMacAddress: formData.bluetoothMacAddress || device.id, // Adresse MAC Bluetooth (device.id est l'ID BLE qui correspond à l'adresse MAC)
-        model: apiModel,
+        model: detectedModel,
         deviceId: formData.deviceId, // UUID renvoyé par l'ESP32
         wifiSSID: formData.wifiSSID || undefined,
         firmwareVersion: formData.firmwareVersion || undefined,
@@ -1059,19 +1051,10 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
       isManualAddInProgressRef.current = true;
     }
 
-    // Détecter le modèle depuis le device
-    const deviceName = deviceToUse.name?.toLowerCase() || '';
-    let detectedModel: string | null = null;
-    
-    for (const model of KIDOO_MODELS) {
-      const normalizedModel = model.toLowerCase();
-      if (deviceName.includes(normalizedModel) || deviceName === normalizedModel) {
-        detectedModel = model;
-        break;
-      }
-    }
-
-    if (!detectedModel) {
+    // Détecter le modèle (KidooModelId) depuis le nom BLE du device
+    const detectedModel = convertBleModelToApiModel(deviceToUse.name || '');
+    const isValidModel = KIDOO_MODELS.some((m) => m.id === detectedModel);
+    if (!isValidModel) {
       isManualAddInProgressRef.current = false;
       return;
     }
@@ -1155,20 +1138,11 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
     }
   }, [scanKidoosSheet, addKidooSheet, addDeviceSheet]);
 
-  // Détecter le modèle depuis le device pending
-  const detectedModelForAddSheet = useMemo(() => {
+  const detectedModelForAddSheet = useMemo((): KidooModelId | null => {
     if (!pendingDeviceForAddSheet?.device?.name) {
       return null;
     }
-    
-    const normalizedName = pendingDeviceForAddSheet.device.name.toLowerCase();
-    for (const model of KIDOO_MODELS) {
-      const normalizedModel = model.toLowerCase();
-      if (normalizedName.includes(normalizedModel) || normalizedName === normalizedModel) {
-        return model;
-      }
-    }
-    return null;
+    return convertBleModelToApiModel(pendingDeviceForAddSheet.device.name);
   }, [pendingDeviceForAddSheet]);
 
   const value = useMemo<BluetoothContextType>(

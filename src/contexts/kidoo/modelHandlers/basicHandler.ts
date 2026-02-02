@@ -7,7 +7,7 @@ import { MenuListItem } from '@/components/ui/MenuList/MenuList';
 import { Kidoo } from '@/api';
 
 export class BasicModelHandler implements ModelHandler {
-  model = 'BASIC';
+  model = 'basic' as const;
 
   supportsFeature(feature: string): boolean {
     const supportedFeatures = ['nfc', 'led', 'audio', 'potentiometer'];

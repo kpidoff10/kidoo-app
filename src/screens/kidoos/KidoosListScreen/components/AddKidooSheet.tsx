@@ -12,7 +12,7 @@ import { BLEDevice, useBluetooth } from '@/contexts';
 import { useAuth } from '@/contexts';
 import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
 import { useKidoos } from '@/hooks/useKidoos';
-import { KIDOO_MODELS } from '@/config';
+import { convertBleModelToApiModel, isKidooModelId } from '@/config';
 
 interface AddKidooSheetProps {
   bottomSheet: UseBottomSheetReturn;
@@ -29,25 +29,11 @@ export function AddKidooSheet({ bottomSheet, device, onClose, onAdd }: AddKidooS
   const { openAddDeviceSheet } = useBluetooth(); // Méthode pour ouvrir AddDeviceSheet depuis le provider
   const shouldOpenAddDeviceSheetRef = useRef(false); // Flag pour savoir si on doit ouvrir AddDeviceSheet
 
-  // Détecter le modèle du Kidoo depuis le nom
+  // Détecter le modèle (KidooModelId) depuis le nom BLE du device
   const detectedModel = useMemo(() => {
-    if (!device?.name) {
-      return null;
-    }
-    
-    // Normaliser le nom en minuscules pour la comparaison (insensible à la casse)
-    const normalizedName = device.name.toLowerCase();
-    
-    // Chercher le modèle dans le nom (insensible à la casse)
-    // Le firmware diffuse "KIDOO-Basic" ou "KIDOO-Dream"
-    for (const model of KIDOO_MODELS) {
-      const normalizedModel = model.toLowerCase();
-      if (normalizedName.includes(normalizedModel) || normalizedName === normalizedModel) {
-        return model; // Retourner le modèle avec la casse correcte
-      }
-    }
-    
-    return null;
+    if (!device?.name) return null;
+    const id = convertBleModelToApiModel(device.name);
+    return isKidooModelId(id) ? id : null;
   }, [device?.name]);
 
   // Vérifier si le Kidoo est déjà lié à l'utilisateur
