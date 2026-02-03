@@ -4,6 +4,7 @@
 
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Title, Text, Card } from '@/components/ui';
 import { useTheme } from '@/theme';
@@ -13,6 +14,7 @@ import { WelcomeCard } from './components/WelcomeCard';
 export function HomeScreen() {
   const { t } = useTranslation();
   const { colors, spacing } = useTheme();
+  const insets = useSafeAreaInsets();
   const { data: user } = useProfile();
   const { data: kidoos } = useKidoos();
 
@@ -23,7 +25,10 @@ export function HomeScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: colors.background }]}
-      contentContainerStyle={[styles.content, { padding: spacing[4] }]}
+      contentContainerStyle={[
+        styles.content,
+        { padding: spacing[4], paddingBottom: insets.bottom + 24 },
+      ]}
     >
       <WelcomeCard userName={user?.name || ''} />
 

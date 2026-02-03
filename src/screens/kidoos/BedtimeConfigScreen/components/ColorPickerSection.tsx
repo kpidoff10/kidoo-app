@@ -3,11 +3,11 @@
  * Section avec le ColorPicker
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ColorPicker } from '@/components/ui';
-import { Controller, Control, useWatch } from 'react-hook-form';
+import { Controller, Control } from 'react-hook-form';
 
 interface ColorPickerSectionProps {
   control: Control<{
@@ -33,29 +33,8 @@ const DEFAULT_BEDTIME_COLORS = [
 
 export function ColorPickerSection({ control }: ColorPickerSectionProps) {
   const { t } = useTranslation();
-  const selectedColor = useWatch({ control, name: 'color' });
-
-  // Ajouter la couleur sélectionnée à la liste si elle n'y est pas déjà
-  const colors = useMemo(() => {
-    if (!selectedColor) {
-      return DEFAULT_BEDTIME_COLORS;
-    }
-    
-    // Normaliser la couleur sélectionnée (majuscules pour cohérence)
-    const normalizedSelected = selectedColor.toUpperCase();
-    
-    // Vérifier si la couleur est déjà dans la liste (comparaison insensible à la casse)
-    const colorExists = DEFAULT_BEDTIME_COLORS.some(
-      color => color.toUpperCase() === normalizedSelected
-    );
-    
-    if (colorExists) {
-      return DEFAULT_BEDTIME_COLORS;
-    }
-    
-    // Ajouter la couleur normalisée au début de la liste pour qu'elle soit visible
-    return [normalizedSelected, ...DEFAULT_BEDTIME_COLORS];
-  }, [selectedColor]);
+  // Liste fixe : on n'ajoute jamais de couleur non présente dans la liste
+  const colors = DEFAULT_BEDTIME_COLORS;
 
   return (
     <View style={styles.container}>

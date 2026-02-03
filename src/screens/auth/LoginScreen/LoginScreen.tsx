@@ -4,6 +4,7 @@
 
 import React, { useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { Title, Text } from '@/components/ui';
@@ -14,6 +15,7 @@ import { LoginForm } from './LoginForm';
 export function LoginScreen() {
   const { t } = useTranslation();
   const { colors, spacing } = useTheme();
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +41,10 @@ export function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { padding: spacing[6] }]}
+        contentContainerStyle={[
+        styles.scrollContent,
+        { padding: spacing[6], paddingBottom: insets.bottom + 24 },
+      ]}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>

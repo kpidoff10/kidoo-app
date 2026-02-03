@@ -3,11 +3,11 @@
  * Section pour choisir entre une couleur fixe ou un effet pour le mode bedtime
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ColorPicker } from '@/components/ui';
-import { Controller, Control, useWatch } from 'react-hook-form';
+import { Controller, Control } from 'react-hook-form';
 import { useTheme } from '@/theme';
 
 interface ColorOrEffectSectionProps {
@@ -44,29 +44,8 @@ const BEDTIME_EFFECTS = [
 export function ColorOrEffectSection({ control }: ColorOrEffectSectionProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const selectedColor = useWatch({ control, name: 'color' });
-
-  // Ajouter la couleur sélectionnée à la liste si elle n'y est pas déjà
-  const colorList = useMemo(() => {
-    if (!selectedColor) {
-      return DEFAULT_BEDTIME_COLORS;
-    }
-    
-    // Normaliser la couleur sélectionnée (majuscules pour cohérence)
-    const normalizedSelected = selectedColor.toUpperCase();
-    
-    // Vérifier si la couleur est déjà dans la liste (comparaison insensible à la casse)
-    const colorExists = DEFAULT_BEDTIME_COLORS.some(
-      color => color.toUpperCase() === normalizedSelected
-    );
-    
-    if (colorExists) {
-      return DEFAULT_BEDTIME_COLORS;
-    }
-    
-    // Ajouter la couleur normalisée au début de la liste pour qu'elle soit visible
-    return [normalizedSelected, ...DEFAULT_BEDTIME_COLORS];
-  }, [selectedColor]);
+  // Liste fixe : on n'ajoute jamais de couleur non présente dans la liste
+  const colorList = DEFAULT_BEDTIME_COLORS;
 
   return (
     <View style={styles.container}>
