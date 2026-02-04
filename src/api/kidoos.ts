@@ -20,6 +20,8 @@ export interface Kidoo {
   updatedAt: string;
   brightness?: number; // Luminosité générale (0-100%)
   firmwareVersion?: string; // Version du firmware ESP32 (renvoyée par l'API / get-info)
+  /** État courant du device (Dream), renvoyé par check-online / get-info */
+  deviceState?: 'idle' | 'bedtime' | 'wakeup';
 }
 
 // Response wrapper du serveur
@@ -198,10 +200,15 @@ export const kidoosApi = {
   },
 
   /**
-   * Vérifier si un Kidoo est en ligne
+   * Vérifier si un Kidoo est en ligne (envoie get-info à l'ESP).
+   * Pour les Dream, retourne aussi deviceState (idle, bedtime, wakeup) quand disponible.
    */
-  async checkOnline(id: string): Promise<{ isOnline: boolean; reason?: string }> {
-    const response = await apiClient.get<ApiResponse<{ isOnline: boolean; reason?: string }>>(`/api/kidoos/${id}/check-online`);
+  async checkOnline(
+    id: string
+  ): Promise<{ isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' }> {
+    const response = await apiClient.get<
+      ApiResponse<{ isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' }>
+    >(`/api/kidoos/${id}/check-online`);
     return response.data.data;
   },
 

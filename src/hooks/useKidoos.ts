@@ -170,9 +170,11 @@ export function useDreamBedtimeConfig(kidooId: string) {
 
 /**
  * Hook pour contrôler manuellement la routine de coucher (Dream)
+ * Après succès, relance checkOnline pour mettre à jour le deviceState dans le cache.
  */
 export function useControlDreamBedtime() {
   const { t } = useTranslation();
+  const checkOnline = useKidooCheckOnline();
 
   return useMutation({
     mutationFn: ({
@@ -188,22 +190,25 @@ export function useControlDreamBedtime() {
         message: t('errors.generic'),
       });
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       showToast.success({
         title: t('toast.success'),
-        message: variables.action === 'start' 
+        message: variables.action === 'start'
           ? t('kidoos.dream.bedtime.started', { defaultValue: 'Routine démarrée' })
           : t('kidoos.dream.bedtime.stopped', { defaultValue: 'Routine arrêtée' }),
       });
+      checkOnline.mutate(variables.id);
     },
   });
 }
 
 /**
  * Hook pour arrêter la routine active (bedtime ou wakeup) (Dream)
+ * Après succès, relance checkOnline pour mettre à jour le deviceState (idle) dans le cache.
  */
 export function useStopDreamRoutine() {
   const { t } = useTranslation();
+  const checkOnline = useKidooCheckOnline();
 
   return useMutation({
     mutationFn: (id: string) => kidoosApi.stopDreamRoutine(id),
@@ -213,11 +218,12 @@ export function useStopDreamRoutine() {
         message: t('errors.generic'),
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       showToast.success({
         title: t('toast.success'),
         message: t('kidoos.dream.routine.stopped', { defaultValue: 'Routine arrêtée' }),
       });
+      checkOnline.mutate(id);
     },
   });
 }
@@ -493,9 +499,8 @@ export function useKidooCheckOnline() {
       return { previousKidoos };
     },
     
-    // Mise à jour après succès
+    // Mise à jour après succès (isConnected, lastConnected, deviceState pour Dream)
     onSuccess: (data, id) => {
-      // Mettre à jour le cache avec le nouveau statut
       queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) => {
         return old?.map((kidoo) =>
           kidoo.id === id
@@ -503,6 +508,7 @@ export function useKidooCheckOnline() {
                 ...kidoo,
                 isConnected: data.isOnline,
                 lastConnected: data.isOnline ? new Date().toISOString() : kidoo.lastConnected,
+                ...(data.deviceState !== undefined && { deviceState: data.deviceState }),
               }
             : kidoo
         );
@@ -519,11 +525,8 @@ export function useKidooCheckOnline() {
         message: t('errors.generic'),
       });
     },
-    
-    // Toujours refetch après pour avoir les données à jour
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: KIDOOS_KEY });
-    },
+    // Ne pas invalider KIDOOS_KEY ici : le refetch getAll() écrase le cache et
+    // le serveur ne renvoie pas deviceState (il vient de check-online), donc on perdrait l'état.
   });
 }
 

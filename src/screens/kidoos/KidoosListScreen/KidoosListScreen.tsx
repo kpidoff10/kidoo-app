@@ -2,7 +2,7 @@
  * Kidoos List Screen
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, ScreenLoader } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { useKidoos } from '@/hooks';
-import { useBluetooth, BLEDevice } from '@/contexts';
+import { useBluetooth } from '@/contexts';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import { Kidoo } from '@/api';
 import { RootStackParamList } from '@/navigation/types';
@@ -25,6 +25,12 @@ export function KidoosListScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { data: kidoos, isLoading, refetch, isRefetching } = useKidoos();
   const { openScanSheet } = useBluetooth();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleRefresh = useCallback(async () => {
+    await refetch();
+    setRefreshTrigger((t) => t + 1);
+  }, [refetch]);
 
   const handleKidooPress = useCallback((kidoo: Kidoo) => {
     navigation.navigate('KidooDetail', { kidooId: kidoo.id });
@@ -36,7 +42,7 @@ export function KidoosListScreen() {
 
 
   const renderItem = ({ item }: { item: Kidoo }) => (
-    <KidooCard kidoo={item} onPress={() => handleKidooPress(item)} />
+    <KidooCard kidoo={item} onPress={() => handleKidooPress(item)} refreshTrigger={refreshTrigger} />
   );
 
   const renderEmpty = () => (
@@ -69,7 +75,7 @@ export function KidoosListScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={refetch}
+            onRefresh={handleRefresh}
             tintColor={colors.primary}
             colors={[colors.primary]}
           />

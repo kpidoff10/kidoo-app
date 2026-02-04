@@ -73,6 +73,14 @@
     "offline": "Offline",
     "model": "Model",
     "lastSeen": "Seen {{time}} ago",
+    "detail": {
+      "currentMode": "Current mode",
+      "deviceState": {
+        "idle": "Ready",
+        "bedtime": "Night",
+        "wakeup": "Wake-up in progress"
+      }
+    },
     "actions": {
       "view": "View",
       "settings": "Settings",

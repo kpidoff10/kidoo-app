@@ -99,6 +99,12 @@
       "offline": {
         "title": "Kidoo hors ligne",
         "message": "Les modifications seront envoyées à la reconnexion WiFi"
+      },
+      "currentMode": "Mode actuel",
+      "deviceState": {
+        "idle": "Prêt",
+        "bedtime": "Nuit",
+        "wakeup": "Réveil en cours"
       }
     },
     "dream": {
