@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.amazon.fr)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(find:*)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:fr.aliexpress.com)"
+    ]
+  }
+}

@@ -45,11 +45,15 @@ config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, 'node_modules'),
 ];
 
-// Configurer les alias pour @shared et @/
+// Point d'entrée shared sans Prisma (évite node:buffer en React Native)
+const sharedClientEntry = path.resolve(__dirname, '../kidoo-shared/client.ts');
+
+// Configurer les alias pour @shared, @kidoo/shared et @/
 config.resolver.alias = {
   ...config.resolver?.alias,
-  '@shared': path.resolve(__dirname, '../kidoo-shared/index.ts'),
-  '@/shared': path.resolve(__dirname, '../kidoo-shared/index.ts'),
+  '@shared': sharedClientEntry,
+  '@/shared': sharedClientEntry,
+  '@kidoo/shared': sharedClientEntry,
   // Alias @/ pour pointer vers kidoo-app/src/
   '@': path.resolve(__dirname, 'src'),
   '@/': path.resolve(__dirname, 'src'),

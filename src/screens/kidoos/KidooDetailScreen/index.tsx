@@ -9,7 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueryClient } from '@tanstack/react-query';
-import { MenuList, ContentScrollView } from '@/components/ui';
+import { Ionicons } from '@expo/vector-icons';
+import { MenuList, ContentScrollView, Text, Card } from '@/components/ui';
 import { showToast } from '@/components/ui/Toast';
 import { useTheme } from '@/theme';
 import { useKidooContext } from '@/contexts';
@@ -26,7 +27,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export function KidooDetailScreen() {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, spacing } = useTheme();
   const route = useRoute();
   const navigation = useNavigation<NavigationProp>();
   const { kidooId } = (route.params as RouteParams) || {};
@@ -155,13 +156,76 @@ export function KidooDetailScreen() {
     return <KidooNotFound />;
   }
 
+  const deviceState = kidoo.model === 'dream' ? (kidoo.deviceState ?? 'idle') : null;
+  const modeConfig = deviceState
+    ? {
+        bedtime: {
+          icon: 'moon' as const,
+          bg: colors.primary + '18',
+          border: colors.primary,
+          labelKey: 'kidoos.detail.deviceState.bedtime',
+        },
+        wakeup: {
+          icon: 'sunny' as const,
+          bg: colors.warning + '25',
+          border: colors.warning,
+          labelKey: 'kidoos.detail.deviceState.wakeup',
+        },
+        idle: {
+          icon: 'sparkles' as const,
+          bg: colors.backgroundSecondary,
+          border: colors.border,
+          labelKey: 'kidoos.detail.deviceState.idle',
+        },
+      }[deviceState]
+    : null;
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ContentScrollView>
-        {/* Liste des informations */}
+      {/* Mode actuel (Dream) — fixe en haut, ne défile pas */}
+      {modeConfig && (
+        <View
+          style={[
+            styles.currentModeSticky,
+            {
+              backgroundColor: colors.background,
+              paddingHorizontal: spacing[4],
+              paddingTop: spacing[2],
+              paddingBottom: spacing[3],
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
+            },
+          ]}
+        >
+          <Text variant="caption" color="secondary" style={styles.currentModeLabel}>
+            {t('kidoos.detail.currentMode')}
+          </Text>
+          <Card
+            variant="default"
+            padding="md"
+            style={[
+              styles.currentModeCard,
+              {
+                backgroundColor: modeConfig.bg,
+                borderLeftWidth: 4,
+                borderLeftColor: modeConfig.border,
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <View style={styles.currentModeRow}>
+              <View style={[styles.currentModeIconWrap, { backgroundColor: modeConfig.border + '30' }]}>
+                <Ionicons name={modeConfig.icon} size={28} color={modeConfig.border} />
+              </View>
+              <Text bold style={styles.currentModeText}>
+                {t(modeConfig.labelKey)}
+              </Text>
+            </View>
+          </Card>
+        </View>
+      )}
+      <ContentScrollView style={styles.scrollContent}>
         <MenuList items={menuItems} />
-
-        {/* Bouton Supprimer */}
         <DeleteKidooButton kidoo={kidoo} deleteKidoo={deleteKidoo} />
       </ContentScrollView>
 
@@ -210,6 +274,35 @@ export function KidooDetailScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  currentModeSticky: {
+    // Bloc fixe en haut, pas de flex pour qu'il prenne juste sa hauteur
+  },
+  currentModeLabel: {
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  currentModeCard: {
+    marginBottom: 0,
+  },
+  currentModeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  currentModeIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  currentModeText: {
+    fontSize: 18,
+  },
+  scrollContent: {
     flex: 1,
   },
 });

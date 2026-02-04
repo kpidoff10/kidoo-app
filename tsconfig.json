@@ -10,10 +10,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@shared": ["../kidoo-shared/index.ts"],
+      "@shared": ["../kidoo-shared/client.ts"],
       "@shared/*": ["../kidoo-shared/*"],
-      "@/shared": ["../kidoo-shared/index.ts"],
-      "@/shared/*": ["../kidoo-shared/*"]
+      "@/shared": ["../kidoo-shared/client.ts"],
+      "@/shared/*": ["../kidoo-shared/*"],
+      "@kidoo/shared": ["../kidoo-shared/client.ts"],
+      "@kidoo/shared/*": ["../kidoo-shared/*"]
     },
     "typeRoots": ["./node_modules/@types"],
     "skipLibCheck": true

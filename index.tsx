@@ -6,18 +6,17 @@ import * as Sentry from '@sentry/react-native';
 import { registerRootComponent } from 'expo';
 import { App } from './src/App.tsx';
 
-// Initialiser Sentry AVANT tout le reste
+// Initialiser Sentry AVANT tout le reste (uniquement en prod pour garder les logs Metro en dev)
 // Le DSN sera configuré via EXPO_PUBLIC_SENTRY_DSN ou SENTRY_DSN
 const sentryDsn = process.env.EXPO_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN;
+const isDev = __DEV__;
 
-if (sentryDsn) {
+if (sentryDsn && !isDev) {
   Sentry.init({
     dsn: sentryDsn,
-    enableInExpoDevelopment: true, // Activer pour tester en dev
-    debug: __DEV__, // Activer le debug uniquement en développement
-    environment: __DEV__ ? 'development' : 'production',
+    environment: 'production',
     // Options supplémentaires
-    tracesSampleRate: __DEV__ ? 1.0 : 0.1, // 100% en dev, 10% en prod pour les performances
+    tracesSampleRate: 0.1,
     enableAutoSessionTracking: true,
     enableNativeCrashHandling: true,
     // Capturer toutes les erreurs non catchées
