@@ -76,12 +76,22 @@ if (isStillConnected) {
 - Documentation : https://dotintent.github.io/react-native-ble-plx/
 - Stack Overflow : https://stackoverflow.com/questions/66422542/
 
+## Workaround "Cannot start scanning operation"
+
+Après une déconnexion BLE ou un scan précédent, la lib native peut renvoyer `BleError: Cannot start scanning operation` en boucle si on relance le scan automatiquement.
+
+**Solution (BluetoothContext.tsx) :**
+- Avant chaque `startDeviceScan()` : appeler `stopDeviceScan()` puis attendre 500 ms pour laisser la stack native se réinitialiser.
+- En cas d’erreur "Cannot start scanning operation" dans le callback : appeler `stopDeviceScan()`, activer un cooldown de 8 s (`scanErrorCooldownUntilRef`), et ne pas relancer le scan automatiquement pendant ce délai (évite la boucle d’erreurs).
+- L’utilisateur peut relancer manuellement (bouton Rafraîchir) après quelques secondes ; le `stopDeviceScan()` + délai au prochain `startScan()` améliore les chances de succès.
+
 ## Notes importantes
 
 1. **Ce bug est dans la bibliothèque native** - on ne peut pas le corriger complètement
 2. **Le workaround fonctionne** en évitant d'appeler `cancelConnection()` quand le device se déconnecte automatiquement
 3. **Le callback `onDisconnected()` est fiable** - il gère correctement les déconnexions automatiques
 4. **Les erreurs sont capturées dans Sentry** pour faciliter le debug si le problème persiste
+5. **Scan** : après une déconnexion, toujours faire `stopDeviceScan()` + court délai avant de redémarrer un scan pour limiter "Cannot start scanning operation"
 
 ## Test
 

@@ -81,6 +81,8 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
   const managerRef = useRef<BleManager | null>(null);
   const connectedDeviceRef = useRef<Device | null>(null); // Référence au Device BLE connecté
   const isScanningRef = useRef(false); // Ref pour suivre si un scan est en cours (synchrone)
+  /** Cooldown après "Cannot start scanning operation" pour éviter la boucle de relances (react-native-ble-plx) */
+  const scanErrorCooldownUntilRef = useRef(0);
   const addKidooSheet = useBottomSheet(); // Bottom sheet intégré
   const addDeviceSheet = useBottomSheet(); // Bottom sheet pour AddDeviceSheet
   const scanKidoosSheet = useBottomSheet(); // Bottom sheet pour ScanKidoosSheet
@@ -298,6 +300,15 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
         return; // Un scan est déjà en cours, ne pas en démarrer un nouveau
       }
 
+      // Workaround react-native-ble-plx : arrêter tout scan existant et laisser la stack native se réinitialiser
+      // (évite "Cannot start scanning operation" après une déconnexion ou un scan précédent)
+      try {
+        managerRef.current.stopDeviceScan();
+      } catch {
+        // ignore
+      }
+      await new Promise((r) => setTimeout(r, 500));
+
       // Vérifier les permissions
       const hasPermissions = await requestPermissions();
       if (!hasPermissions) {
@@ -328,8 +339,21 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
       // Démarrer le scan
       managerRef.current.startDeviceScan(null, null, (error, device) => {
         if (error) {
-          console.error('Erreur de scan:', error);
-          isScanningRef.current = false; // Réinitialiser le ref
+          const msg = error?.message ?? String(error);
+          const isCannotStartScan = /Cannot start scanning operation/i.test(msg);
+          if (isCannotStartScan) {
+            // Réinitialiser la stack native et éviter la boucle de relances
+            try {
+              managerRef.current?.stopDeviceScan();
+            } catch {
+              // ignore
+            }
+            scanErrorCooldownUntilRef.current = Date.now() + 8000; // 8 s avant de permettre un nouvel auto-scan
+          }
+          if (__DEV__ && !isCannotStartScan) {
+            console.error('Erreur de scan:', error);
+          }
+          isScanningRef.current = false;
           setState((prev) => ({
             ...prev,
             isScanning: false,
@@ -855,10 +879,15 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
 
 
   // Démarrer automatiquement le scan une fois que le Bluetooth est disponible
+  // Ne pas relancer pendant le cooldown après "Cannot start scanning operation" (évite la boucle d'erreurs)
   useEffect(() => {
-    if (state.isAvailable && state.isEnabled && !state.isScanning) {
-      startScan();
+    if (!state.isAvailable || !state.isEnabled || state.isScanning) {
+      return;
     }
+    if (Date.now() < scanErrorCooldownUntilRef.current) {
+      return;
+    }
+    startScan();
   }, [state.isAvailable, state.isEnabled, state.isScanning, startScan]);
 
   // Ref pour suivre si on a déjà tenté d'ouvrir le sheet pour ce device
