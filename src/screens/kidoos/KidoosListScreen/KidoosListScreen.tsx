@@ -45,6 +45,8 @@ export function KidoosListScreen() {
     <KidooCard kidoo={item} onPress={() => handleKidooPress(item)} refreshTrigger={refreshTrigger} />
   );
 
+  const ItemSeparator = () => <View style={{ height: spacing[3] }} />;
+
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
       <Text color="secondary" center>
@@ -66,6 +68,7 @@ export function KidoosListScreen() {
         data={kidoos}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        ItemSeparatorComponent={ItemSeparator}
         contentContainerStyle={[
           styles.listContent,
           { padding: spacing[4], paddingBottom: spacing[20] }, // Espace pour le FAB

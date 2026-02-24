@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Slider, Button, BottomSheet } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
-import { useUpdateBrightness } from '@/hooks/useKidoos';
+import { useUpdateBrightness } from '@/hooks';
 import { Kidoo } from '@/api';
 
 export interface BrightnessConfigSheetProps {

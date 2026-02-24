@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { BottomSheet } from '@/components/ui';
 import { BLEDevice, useBluetooth } from '@/contexts';
 import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
-import { useKidoos } from '@/hooks/useKidoos';
+import { useKidoos } from '@/hooks';
 import { DeviceItem, EmptyState, ScanIndicator, ScanActions } from './components';
 
 interface ScanKidoosSheetProps {

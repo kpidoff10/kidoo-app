@@ -11,7 +11,7 @@ import { useTheme } from '@/theme';
 import { BLEDevice, useBluetooth } from '@/contexts';
 import { useAuth } from '@/contexts';
 import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
-import { useKidoos } from '@/hooks/useKidoos';
+import { useKidoos } from '@/hooks';
 import { convertBleModelToApiModel, isKidooModelId } from '@/config';
 
 interface AddKidooSheetProps {

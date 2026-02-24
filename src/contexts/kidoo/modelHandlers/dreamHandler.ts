@@ -2,20 +2,21 @@
  * Handler pour le modèle Kidoo Dream
  */
 
-import { ModelHandler, CustomAction } from './types';
+import { ModelHandler, CustomAction, MODEL_FEATURES } from './types';
 import { MenuListItem } from '@/components/ui/MenuList/MenuList';
 import { Kidoo } from '@/api';
+
+const DREAM_FEATURES: string[] = [MODEL_FEATURES.LED, MODEL_FEATURES.AUDIO, MODEL_FEATURES.ENV];
 
 export class DreamModelHandler implements ModelHandler {
   model = 'dream' as const;
 
   supportsFeature(feature: string): boolean {
-    const supportedFeatures = ['led', 'audio'];
-    return supportedFeatures.includes(feature.toLowerCase());
+    return DREAM_FEATURES.includes(feature.toLowerCase());
   }
 
   getAvailableFeatures(): string[] {
-    return ['led', 'audio'];
+    return [...DREAM_FEATURES];
   }
 
   getMenuItems(

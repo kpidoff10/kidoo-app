@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { TextInput, Button, BottomSheet } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
-import { useUpdateKidooName } from '@/hooks/useKidoos';
+import { useUpdateKidooName } from '@/hooks';
 import { Kidoo } from '@/api';
 import { updateKidooNameSchema, UpdateKidooNameInput } from '@shared';
 

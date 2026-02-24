@@ -2,7 +2,7 @@
  * Model Handlers - Exports
  */
 
-export { ModelHandler } from './types';
+export { ModelHandler, MODEL_FEATURES } from './types';
 export { BasicModelHandler } from './basicHandler';
 export { DreamModelHandler } from './dreamHandler';
 

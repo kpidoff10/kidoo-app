@@ -24,6 +24,15 @@ export interface Kidoo {
   deviceState?: 'idle' | 'bedtime' | 'wakeup';
 }
 
+/** Réponse capteur env — alignée avec kidoo-shared models/common/commands/get-env */
+export interface KidooEnvResponse {
+  available: boolean;
+  temperatureC?: number | null;
+  humidityPercent?: number | null;
+  pressurePa?: number | null;
+  error?: string;
+}
+
 // Response wrapper du serveur
 interface ApiResponse<T> {
   success: boolean;
@@ -210,6 +219,19 @@ export const kidoosApi = {
       ApiResponse<{ isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' }>
     >(`/api/kidoos/${id}/check-online`);
     return response.data.data;
+  },
+
+  /**
+   * Récupérer température, humidité, pression (capteur env).
+   * Générique : tout modèle peut être interrogé ; available: false si pas de capteur.
+   */
+  async getEnv(id: string): Promise<KidooEnvResponse> {
+    const response = await apiClient.get<ApiResponse<KidooEnvResponse>>(
+      `/api/kidoos/${id}/get-env`,
+      { timeout: 10000 }
+    );
+    const body = response.data as ApiResponse<KidooEnvResponse>;
+    return body?.data ?? { available: false };
   },
 
   /**

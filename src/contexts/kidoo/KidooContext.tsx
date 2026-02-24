@@ -6,7 +6,7 @@
 import React, { createContext, useContext, useMemo, useCallback } from 'react';
 import type { KidooModelId } from '@kidoo/shared';
 import { Kidoo } from '@/api';
-import { useKidoos, useKidoo, useCreateKidoo, useUpdateKidoo, useKidooCheckOnline, useDeleteKidoo } from '@/hooks/useKidoos';
+import { useKidoos, useCreateKidoo, useUpdateKidoo, useKidooCheckOnline, useDeleteKidoo } from '@/hooks';
 import { getModelHandler, ModelHandler } from './modelHandlers';
 
 interface KidooContextType {

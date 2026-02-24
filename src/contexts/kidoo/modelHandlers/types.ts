@@ -7,6 +7,21 @@ import { Kidoo } from '@/api';
 import { MenuListItem } from '@/components/ui/MenuList/MenuList';
 
 /**
+ * Noms de fonctionnalités partagées entre modèles.
+ * Utiliser ces constantes pour supportsFeature() afin de rester cohérent.
+ */
+export const MODEL_FEATURES = {
+  /** Capteur environnement : température, humidité, pression (AHT20+BMP280 ou équivalent) */
+  ENV: 'env',
+  LED: 'led',
+  AUDIO: 'audio',
+  NFC: 'nfc',
+  POTENTIOMETER: 'potentiometer',
+} as const;
+
+export type ModelFeatureKey = (typeof MODEL_FEATURES)[keyof typeof MODEL_FEATURES];
+
+/**
  * Action personnalisée pour un modèle
  */
 export interface CustomAction {
