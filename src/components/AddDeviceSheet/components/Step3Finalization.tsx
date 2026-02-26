@@ -9,7 +9,7 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Stepper, StepperStep, Text, Button } from '@/components/ui';
-import { Title } from '@/components/ui/Typography/Title';
+import { Title } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { useBluetooth, BLEDevice } from '@/contexts';
 import { useAddDevice } from '../AddDeviceContext';

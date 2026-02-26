@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from './client';
+import type { ApiResponse } from './types';
 import type { KidooModelId } from '@kidoo/shared';
 
 export interface Kidoo {
@@ -33,11 +34,10 @@ export interface KidooEnvResponse {
   error?: string;
 }
 
-// Response wrapper du serveur
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
+/** Config temps réel PubNub pour abonnement aux canaux Kidoo */
+export interface KidooRealtimeConfig {
+  subscribeKey: string;
+  subscriptions: { channel: string; kidooId: string }[];
 }
 
 export interface CreateKidooRequest {
@@ -57,6 +57,16 @@ export interface UpdateKidooRequest {
 }
 
 export const kidoosApi = {
+  /**
+   * Récupérer la config temps réel PubNub (subscribeKey + channels par kidooId)
+   */
+  async getRealtimeConfig(): Promise<KidooRealtimeConfig> {
+    const response = await apiClient.get<ApiResponse<KidooRealtimeConfig>>(
+      '/api/kidoos/realtime-config'
+    );
+    return response.data.data ?? { subscribeKey: '', subscriptions: [] };
+  },
+
   /**
    * Récupérer tous les Kidoos de l'utilisateur
    */

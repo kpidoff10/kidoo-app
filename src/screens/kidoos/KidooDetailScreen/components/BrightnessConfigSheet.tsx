@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Slider, Button, BottomSheet } from '@/components/ui';
 import { useTheme } from '@/theme';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import type { UseBottomSheetReturn } from '@/hooks';
 import { useUpdateBrightness } from '@/hooks';
 import { Kidoo } from '@/api';
 

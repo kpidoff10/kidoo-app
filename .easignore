@@ -1,0 +1,52 @@
+# Copie de .gitignore - EAS remplace .gitignore quand ce fichier existe
+# Inclure kidoo-shared-*.tgz (négation) pour le build EAS
+
+# dependencies
+node_modules/
+android/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+app-example
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# Inclure .env pour le build EAS (EXPO_PUBLIC_* nécessaires pour l'API et Sentry)
+!.env
+
+# EAS build temp (script prepare-eas-build.js)
+.eas-build-package.json.bak
+
+# Inclure le .tgz généré par prepare-eas-build (nécessaire pour npm install)
+!kidoo-shared-*.tgz

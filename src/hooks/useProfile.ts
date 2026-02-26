@@ -5,13 +5,12 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { authApi, User } from '@/api';
-import { showToast } from '@/components/ui/Toast';
+import { showToast } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
 import { useOptimisticUpdate } from './useOptimisticUpdate';
 import { useAuth } from '@/contexts';
 import { queryClient } from '@/lib/queryClient';
-
-const PROFILE_KEY = ['profile'];
+import { PROFILE_KEY } from './profileKeys';
 
 export interface UpdateProfileRequest {
   name?: string;

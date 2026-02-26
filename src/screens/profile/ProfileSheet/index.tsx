@@ -12,8 +12,8 @@ import Constants from 'expo-constants';
 import { Text, Button, BottomSheet } from '@/components/ui';
 import { spacing, useTheme } from '@/theme';
 import { useAuth } from '@/contexts';
-import { UseBottomSheetReturn, useBottomSheet } from '@/hooks/useBottomSheet';
-import { useProfile } from '@/hooks/useProfile';
+import { useBottomSheet, useProfile } from '@/hooks';
+import type { UseBottomSheetReturn } from '@/hooks';
 import { ChangePasswordSheet } from '../EditProfileScreen/components/ChangePasswordSheet';
 
 interface ProfileSheetProps {

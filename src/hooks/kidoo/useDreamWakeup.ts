@@ -4,16 +4,10 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { kidoosApi } from '@/api';
-import { showToast } from '@/components/ui/Toast';
+import { showToast } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
 import { KIDOOS_KEY } from './keys';
-
-function hexToRgb(hex: string) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) }
-    : { r: 255, g: 200, b: 100 };
-}
+import { hexToRgb } from '@/utils/color';
 
 export function useDreamWakeupConfig(kidooId: string) {
   return useQuery({
@@ -62,7 +56,7 @@ export function useUpdateDreamWakeupConfig() {
       const queryKey = [...KIDOOS_KEY, id, 'dream-wakeup-config'];
       await queryClient.cancelQueries({ queryKey });
       const previousData = queryClient.getQueryData(queryKey);
-      const rgb = hexToRgb(data.color);
+      const rgb = hexToRgb(data.color) ?? { r: 0, g: 0, b: 0 };
       const optimisticData: Record<string, unknown> = {
         colorR: rgb.r,
         colorG: rgb.g,

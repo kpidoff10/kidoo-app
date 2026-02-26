@@ -5,9 +5,9 @@
 
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MenuListItem } from '@/components/ui/MenuList/MenuList';
+import type { MenuListItem } from '@/components/ui';
 import { Kidoo } from '@/api';
-import { ModelHandler } from '@/contexts/kidoo/modelHandlers';
+import { ModelHandler } from '@/contexts/kidoo/KidooModelHandler';
 import { getKidooModelDisplayName, getKidooModelIcon } from '@/config';
 import { useAuth } from '@/contexts';
 import moment from 'moment';

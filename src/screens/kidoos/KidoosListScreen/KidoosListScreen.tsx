@@ -12,7 +12,7 @@ import { Text, ScreenLoader } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { useKidoos } from '@/hooks';
 import { useBluetooth } from '@/contexts';
-import { useBottomSheet } from '@/hooks/useBottomSheet';
+import { useBottomSheet } from '@/hooks';
 import { Kidoo } from '@/api';
 import { RootStackParamList } from '@/navigation/types';
 import { KidooCard } from './components/KidooCard';

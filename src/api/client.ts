@@ -12,8 +12,9 @@ import { tokenStorage } from '@/utils/storage';
 // En prod : https://api.kidoo.com
 function normalizeApiUrl(url: string | undefined): string {
   const raw = url || 'http://localhost:3000';
-  if (/^https?:\/\//i.test(raw)) return raw;
-  return `http://${raw}`;
+  const withProtocol = /^https?:\/\//i.test(raw) ? raw : `http://${raw}`;
+  // Retirer le slash final pour éviter les doubles slashes (ex: baseURL + "/api/..." → "//api/...")
+  return withProtocol.replace(/\/+$/, '');
 }
 const API_URL = normalizeApiUrl(process.env.EXPO_PUBLIC_API_URL);
 

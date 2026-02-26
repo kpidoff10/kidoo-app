@@ -1,5 +1,5 @@
 /**
- * WeekdaySelectorSection Component
+ * WeekdaySelectorSection - Composant partagé Bedtime/Wakeup
  * Section avec le sélecteur de jour et le switch pour activer/désactiver
  */
 
@@ -9,7 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { WeekdaySelector, Weekday, Text } from '@/components/ui';
 import { useTheme } from '@/theme';
 
+export type ScheduleI18nPrefix = 'kidoos.dream.bedtime' | 'kidoos.dream.wakeup';
+
 interface WeekdaySelectorSectionProps {
+  i18nPrefix: ScheduleI18nPrefix;
   selectedDay: Weekday;
   activeDays: Weekday[];
   configuredDays: Weekday[];
@@ -19,6 +22,7 @@ interface WeekdaySelectorSectionProps {
 }
 
 export function WeekdaySelectorSection({
+  i18nPrefix,
   selectedDay,
   activeDays,
   configuredDays,
@@ -30,13 +34,13 @@ export function WeekdaySelectorSection({
   const { colors } = useTheme();
 
   const dayLabels: Record<Weekday, string> = {
-    monday: t('kidoos.dream.bedtime.monday', { defaultValue: 'Lundi' }),
-    tuesday: t('kidoos.dream.bedtime.tuesday', { defaultValue: 'Mardi' }),
-    wednesday: t('kidoos.dream.bedtime.wednesday', { defaultValue: 'Mercredi' }),
-    thursday: t('kidoos.dream.bedtime.thursday', { defaultValue: 'Jeudi' }),
-    friday: t('kidoos.dream.bedtime.friday', { defaultValue: 'Vendredi' }),
-    saturday: t('kidoos.dream.bedtime.saturday', { defaultValue: 'Samedi' }),
-    sunday: t('kidoos.dream.bedtime.sunday', { defaultValue: 'Dimanche' }),
+    monday: t(`${i18nPrefix}.monday`, { defaultValue: 'Lundi' }),
+    tuesday: t(`${i18nPrefix}.tuesday`, { defaultValue: 'Mardi' }),
+    wednesday: t(`${i18nPrefix}.wednesday`, { defaultValue: 'Mercredi' }),
+    thursday: t(`${i18nPrefix}.thursday`, { defaultValue: 'Jeudi' }),
+    friday: t(`${i18nPrefix}.friday`, { defaultValue: 'Vendredi' }),
+    saturday: t(`${i18nPrefix}.saturday`, { defaultValue: 'Samedi' }),
+    sunday: t(`${i18nPrefix}.sunday`, { defaultValue: 'Dimanche' }),
   };
 
   return (
@@ -46,19 +50,18 @@ export function WeekdaySelectorSection({
         activeDays={activeDays}
         configuredDays={activeDays}
         onDaySelect={onDaySelect}
-        label={t('kidoos.dream.bedtime.selectDayToConfigure', { 
-          defaultValue: 'Sélectionnez un jour pour configurer l\'heure' 
+        label={t(`${i18nPrefix}.selectDayToConfigure`, {
+          defaultValue: "Sélectionnez un jour pour configurer l'heure",
         })}
         containerStyle={styles.daySelectorContainer}
       />
 
-      {/* Switch pour activer/désactiver le jour sélectionné */}
       <View style={styles.switchContainer}>
         <View style={styles.switchRow}>
           <Text style={[styles.switchLabel, { color: colors.text }]}>
-            {t('kidoos.dream.bedtime.activateFor', { 
+            {t(`${i18nPrefix}.activateFor`, {
               defaultValue: `Activer pour ${dayLabels[selectedDay]}`,
-              day: dayLabels[selectedDay]
+              day: dayLabels[selectedDay],
             })}
           </Text>
           <Switch

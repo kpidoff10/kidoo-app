@@ -11,8 +11,8 @@ import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { TextInput, Button, Text, BottomSheet } from '@/components/ui';
 import { useTheme } from '@/theme';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
-import { useUpdateProfile, useProfile } from '@/hooks/useProfile';
+import { useUpdateProfile, useProfile } from '@/hooks';
+import type { UseBottomSheetReturn } from '@/hooks';
 
 const editNameSchema = z.object({
   name: z.string().min(1, 'auth.errors.nameRequired'),

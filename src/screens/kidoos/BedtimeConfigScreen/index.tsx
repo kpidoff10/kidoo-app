@@ -3,7 +3,7 @@
  * Page pour configurer l'heure de coucher du modèle Dream
  */
 
-import React, { useLayoutEffect, useCallback, useState, useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -14,25 +14,19 @@ import { useDreamBedtimeConfig, useUpdateDreamBedtimeConfig } from '@/hooks';
 import {
   WeekdaySelectorSection,
   TimePickerSection,
+  BrightnessSection,
+  useScheduleConfigScreen,
+} from '../shared';
+import {
   ColorPickerSection,
   ColorOrEffectSection,
-  BrightnessSection,
   NightlightSwitch,
 } from './components';
+import { rgbToHex } from '@/utils/color';
 
 type RouteParams = {
   kidooId: string;
 };
-
-// Fonction helper pour convertir RGB en hex
-function rgbToHex(r: number, g: number, b: number): string {
-  const hex = `#${[r, g, b].map((x) => {
-    const hexStr = x.toString(16);
-    return hexStr.length === 1 ? '0' + hexStr : hexStr;
-  }).join('')}`;
-  // Normaliser en majuscules pour cohérence avec ColorPicker
-  return hex.toUpperCase();
-}
 
 export function BedtimeConfigScreen() {
   const { t } = useTranslation();
@@ -44,16 +38,20 @@ export function BedtimeConfigScreen() {
   const { data: config, isLoading } = useDreamBedtimeConfig(kidooId);
   const updateConfig = useUpdateDreamBedtimeConfig();
 
-  // États pour la gestion des jours
-  const [selectedDayForTime, setSelectedDayForTime] = useState<Weekday>('monday');
-  const [weekdayTimes, setWeekdayTimes] = useState<Partial<Record<Weekday, { hour: number; minute: number; activated: boolean }>>>({});
-  const [savedConfiguredDays, setSavedConfiguredDays] = useState<Weekday[]>([]);
-  
-  // Refs pour le debounce de sauvegarde
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isInitializingRef = useRef(false);
-  const configLoadedRef = useRef(false);
-  const weekdayTimesRef = useRef<Partial<Record<Weekday, { hour: number; minute: number; activated: boolean }>>>({});
+  const {
+    selectedDayForTime,
+    setSelectedDayForTime,
+    weekdayTimes,
+    weekdayTimesRef,
+    savedConfiguredDays,
+    activeDays,
+    handleSwitchChange,
+    handleTimeChange,
+    initializeFromConfig,
+    debouncedSave,
+    isInitializingRef,
+    configLoadedRef,
+  } = useScheduleConfigScreen({ defaultHour: 22, defaultMinute: 0 });
 
   // Mettre à jour le titre de la page
   useLayoutEffect(() => {
@@ -74,13 +72,10 @@ export function BedtimeConfigScreen() {
 
   // Charger les données existantes depuis la config
   useEffect(() => {
-    // Si on a fini de charger (même si config est undefined/null, c'est OK pour une nouvelle config)
     if (!isLoading && !configLoadedRef.current) {
-      console.log('[BEDTIME-CONFIG] Initialisation:', { config, isLoading });
+      if (__DEV__) console.log('[BEDTIME-CONFIG] Initialisation:', { config, isLoading });
       isInitializingRef.current = true;
-      
       if (config) {
-        // Initialiser le formulaire avec les valeurs existantes
         const colorHex = rgbToHex(config.colorR, config.colorG, config.colorB);
         reset({
           color: colorHex,
@@ -88,60 +83,37 @@ export function BedtimeConfigScreen() {
           brightness: config.brightness,
           nightlightAllNight: config.nightlightAllNight,
         });
-
-        // Initialiser weekdayTimes avec les données existantes
-        if (config.weekdaySchedule) {
-          setWeekdayTimes(config.weekdaySchedule);
-          weekdayTimesRef.current = config.weekdaySchedule;
-          // Calculer les jours configurés
-          const configuredDays = Object.entries(config.weekdaySchedule)
-            .filter(([_, time]) => time.activated)
-            .map(([day]) => day as Weekday);
-          setSavedConfiguredDays(configuredDays);
-        } else {
-          // Initialiser avec un objet vide si pas de schedule
-          weekdayTimesRef.current = {};
-        }
+        initializeFromConfig(config);
       } else {
-        // Pas de config existante, utiliser les valeurs par défaut du formulaire
-        weekdayTimesRef.current = {};
+        initializeFromConfig(undefined);
       }
-      
-      // Marquer comme chargé APRÈS avoir initialisé toutes les données
-      // Utiliser requestAnimationFrame pour s'assurer que React a fini de mettre à jour
       requestAnimationFrame(() => {
         configLoadedRef.current = true;
         isInitializingRef.current = false;
-        console.log('[BEDTIME-CONFIG] Données chargées, sauvegarde activée');
+        if (__DEV__) console.log('[BEDTIME-CONFIG] Données chargées, sauvegarde activée');
       });
     }
-  }, [config, isLoading, reset]);
+  }, [config, isLoading, reset, initializeFromConfig]);
 
   // Fonction pour sauvegarder la configuration
   const saveConfig = useCallback(() => {
     // Vérifications de base
     if (!kidooId) {
-      console.log('[BEDTIME-CONFIG] Sauvegarde ignorée: pas de kidooId');
+      if (__DEV__) console.log('[BEDTIME-CONFIG] Sauvegarde ignorée: pas de kidooId');
       return;
     }
 
     if (isInitializingRef.current) {
-      console.log('[BEDTIME-CONFIG] Sauvegarde ignorée: initialisation en cours');
+      if (__DEV__) console.log('[BEDTIME-CONFIG] Sauvegarde ignorée: initialisation en cours');
       return;
     }
 
     if (!configLoadedRef.current) {
-      console.log('[BEDTIME-CONFIG] Sauvegarde ignorée: config pas encore chargée');
+      if (__DEV__) console.log('[BEDTIME-CONFIG] Sauvegarde ignorée: config pas encore chargée');
       return;
     }
 
-    // Annuler le timeout précédent s'il existe
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    // Débouncer la sauvegarde de 500ms
-    saveTimeoutRef.current = setTimeout(() => {
+    debouncedSave(() => {
       const formValues = getValues();
       const color = formValues.color || '#FF6B6B';
       const effect = formValues.effect;
@@ -160,7 +132,7 @@ export function BedtimeConfigScreen() {
         }
       });
 
-      console.log('[BEDTIME-CONFIG] Sauvegarde en cours:', {
+      if (__DEV__) console.log('[BEDTIME-CONFIG] Sauvegarde en cours:', {
         kidooId,
         weekdaySchedule,
         color,
@@ -200,27 +172,20 @@ export function BedtimeConfigScreen() {
         },
         {
           onSuccess: () => {
-            console.log('[BEDTIME-CONFIG] Sauvegarde réussie');
+            if (__DEV__) console.log('[BEDTIME-CONFIG] Sauvegarde réussie');
           },
           onError: (error) => {
             console.error('[BEDTIME-CONFIG] Erreur de sauvegarde:', error);
           },
         },
       );
-
-      saveTimeoutRef.current = null;
-    }, 500);
-  }, [kidooId, getValues, updateConfig]);
-
-  // Mettre à jour la ref quand weekdayTimes change
-  useEffect(() => {
-    weekdayTimesRef.current = weekdayTimes;
-  }, [weekdayTimes]);
+    });
+  }, [kidooId, getValues, updateConfig, debouncedSave]);
 
   // Sauvegarder automatiquement lors des changements de weekdayTimes
   useEffect(() => {
     if (!isInitializingRef.current && configLoadedRef.current) {
-      console.log('[BEDTIME-CONFIG] Changement de weekdayTimes détecté:', weekdayTimes);
+      if (__DEV__) console.log('[BEDTIME-CONFIG] Changement de weekdayTimes détecté:', weekdayTimes);
       saveConfig();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -234,66 +199,11 @@ export function BedtimeConfigScreen() {
   
   useEffect(() => {
     if (!isInitializingRef.current && configLoadedRef.current) {
-      console.log('[BEDTIME-CONFIG] Changement de formulaire détecté:', { color, effect, brightness, nightlightAllNight });
+      if (__DEV__) console.log('[BEDTIME-CONFIG] Changement de formulaire détecté:', { color, effect, brightness, nightlightAllNight });
       saveConfig();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [color, effect, brightness, nightlightAllNight]);
-
-  // Nettoyage au démontage
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Gestion du switch pour activer/désactiver un jour
-  const handleSwitchChange = useCallback((day: Weekday, activated: boolean) => {
-    setWeekdayTimes(prev => {
-      const currentTime = prev[day];
-      if (activated) {
-        if (!currentTime) {
-          return {
-            ...prev,
-            [day]: { hour: 22, minute: 0, activated: true },
-          };
-        } else {
-          return {
-            ...prev,
-            [day]: { ...currentTime, activated: true },
-          };
-        }
-      } else {
-        if (currentTime) {
-          return {
-            ...prev,
-            [day]: { ...currentTime, activated: false },
-          };
-        }
-        return prev;
-      }
-    });
-  }, []);
-
-  // Gestion du changement d'heure
-  const handleTimeChange = useCallback((day: Weekday, hour: number, minute: number) => {
-    setWeekdayTimes(prev => ({
-      ...prev,
-      [day]: {
-        hour,
-        minute,
-        activated: prev[day]?.activated ?? true,
-      },
-    }));
-  }, []);
-
-
-  // Calculer les jours actifs
-  const activeDays = Object.entries(weekdayTimes)
-    .filter(([_, time]) => time?.activated === true)
-    .map(([day]) => day as Weekday);
 
   if (isLoading) {
     return <ScreenLoader />;
@@ -304,6 +214,7 @@ export function BedtimeConfigScreen() {
       <ContentScrollView>
         <View style={styles.content}>
           <WeekdaySelectorSection
+            i18nPrefix="kidoos.dream.bedtime"
             selectedDay={selectedDayForTime}
             activeDays={activeDays}
             configuredDays={savedConfiguredDays}
@@ -314,6 +225,7 @@ export function BedtimeConfigScreen() {
 
           {weekdayTimes[selectedDayForTime]?.activated && (
             <TimePickerSection
+              i18nPrefix="kidoos.dream.bedtime"
               selectedDay={selectedDayForTime}
               hour={weekdayTimes[selectedDayForTime]?.hour ?? 22}
               minute={weekdayTimes[selectedDayForTime]?.minute ?? 0}
@@ -323,7 +235,7 @@ export function BedtimeConfigScreen() {
 
           <ColorOrEffectSection control={control} />
 
-          <BrightnessSection control={control} />
+          <BrightnessSection control={control} i18nPrefix="kidoos.dream.bedtime" />
 
           <NightlightSwitch control={control} />
         </View>

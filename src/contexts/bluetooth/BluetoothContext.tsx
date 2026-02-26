@@ -15,10 +15,11 @@ import React, {
 import { Platform, PermissionsAndroid } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { BleManager, Device, State } from 'react-native-ble-plx';
-import { showToast } from '@/components/ui/Toast';
+import { showToast } from '@/components/ui';
 import { KIDOO_MODELS, BLE_MODEL_NAMES, convertBleModelToApiModel } from '@/config';
 import type { KidooModelId } from '@kidoo/shared';
-import { useBottomSheet, UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import { useBottomSheet } from '@/hooks';
+import type { UseBottomSheetReturn } from '@/hooks';
 import { useKidoos, useCreateKidoo } from '@/hooks';
 import { captureError } from '@/lib/sentry';
 import * as BLECommands from './commands';

@@ -8,15 +8,16 @@ import React, { createContext, useContext, useCallback, useLayoutEffect, useRef,
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useQueryClient } from '@tanstack/react-query';
 import type { UseMutationResult } from '@tanstack/react-query';
-import { showToast } from '@/components/ui/Toast';
+import { showToast } from '@/components/ui';
 import { useKidooContext } from '@/contexts';
-import { useBottomSheet, useFirmwareUpdateAvailable } from '@/hooks';
-import { KIDOOS_KEY } from '@/hooks';
+import { useBottomSheet, useFirmwareUpdateAvailable, KIDOOS_KEY } from '@/hooks';
+import { firmwareQueryKey } from '@/config/timings';
 import { RootStackParamList } from '@/navigation/types';
 import { kidoosApi, Kidoo } from '@/api';
-import type { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import type { UseBottomSheetReturn } from '@/hooks';
+import { queryClient } from '@/lib/queryClient';
+import type { FirmwareUpdateResult } from '../components/FirmwareUpdateSheet';
 
 export interface KidooDetailContextValue {
   kidoo: Kidoo;
@@ -35,7 +36,7 @@ export interface KidooDetailContextValue {
   handleConfigureWiFi: () => void;
   handleConfigureBrightness: () => void;
   handleFirmwareUpdatePress: () => void;
-  handleStartFirmwareUpdate: () => Promise<unknown>;
+  handleStartFirmwareUpdate: () => Promise<FirmwareUpdateResult>;
   handleFirmwareUpdateSuccess: (newVersion: string) => void;
   hasFirmwareUpdate: boolean;
   isFirmwareCheckLoading: boolean;
@@ -63,7 +64,6 @@ export function KidooDetailProvider({ kidoo, kidooId, children }: KidooDetailPro
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { checkOnline } = useKidooContext();
-  const queryClient = useQueryClient();
   const editNameSheet = useBottomSheet();
   const wifiConfigSheet = useBottomSheet();
   const brightnessConfigSheet = useBottomSheet();
@@ -73,7 +73,7 @@ export function KidooDetailProvider({ kidoo, kidooId, children }: KidooDetailPro
   useFocusEffect(
     useCallback(() => {
       if (kidoo?.model) {
-        queryClient.invalidateQueries({ queryKey: ['firmware', 'latest', kidoo.model] });
+        queryClient.invalidateQueries({ queryKey: firmwareQueryKey(kidoo.model) });
       }
     }, [kidoo?.model, queryClient])
   );
@@ -128,7 +128,7 @@ export function KidooDetailProvider({ kidoo, kidooId, children }: KidooDetailPro
       queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) =>
         old ? old.map((k) => (k.id === kidooId ? { ...k, firmwareVersion: newVersion } : k)) : old
       );
-      queryClient.invalidateQueries({ queryKey: ['firmware', 'latest', kidoo?.model] });
+      queryClient.invalidateQueries({ queryKey: firmwareQueryKey(kidoo?.model ?? '') });
       checkOnline.mutate(kidooId);
     },
     [queryClient, kidooId, kidoo?.model, checkOnline]

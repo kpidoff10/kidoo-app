@@ -1,26 +1,14 @@
 /**
- * Context pour l'écran Dream : souscription env temps réel.
- * Quand l'écran est ouvert, le contexte s'abonne aux mises à jour env (polling 15 s).
- * Les enfants consomment les données via useDreamDetailScreenContext().
+ * Context pour l'écran Dream.
+ * Wrapper fin autour de useDreamKidooData — partage les données entre les composants enfants.
  */
 
-import React, { createContext, useContext, useCallback, useState, ReactNode } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { useKidooEnv } from '@/hooks';
-import type { KidooEnvResponse } from '@/api';
+import { createContext, useContext, ReactNode } from 'react';
+import { useDreamKidooData, type DreamKidooData } from '@/contexts/kidoo/dream';
 
-const ENV_REFETCH_INTERVAL_MS = 15_000;
+const DreamDetailScreenContext = createContext<DreamKidooData | null>(null);
 
-export interface DreamDetailScreenContextValue {
-  /** Données env (température, humidité) — mises à jour toutes les 15 s quand écran ouvert */
-  envData: KidooEnvResponse | undefined;
-  envIsLoading: boolean;
-  envIsError: boolean;
-}
-
-const DreamDetailScreenContext = createContext<DreamDetailScreenContextValue | null>(null);
-
-export function useDreamDetailScreenContext(): DreamDetailScreenContextValue {
+export function useDreamDetailScreenContext(): DreamKidooData {
   const value = useContext(DreamDetailScreenContext);
   if (!value) {
     throw new Error('useDreamDetailScreenContext must be used within DreamDetailScreenProvider');
@@ -34,28 +22,10 @@ interface DreamDetailScreenProviderProps {
 }
 
 export function DreamDetailScreenProvider({ kidooId, children }: DreamDetailScreenProviderProps) {
-  const [isFocused, setIsFocused] = useState(true);
-
-  useFocusEffect(
-    useCallback(() => {
-      setIsFocused(true);
-      return () => setIsFocused(false);
-    }, [])
-  );
-
-  const { data: envData, isLoading: envIsLoading, isError: envIsError } = useKidooEnv(kidooId, {
-    enabled: true,
-    refetchInterval: isFocused ? ENV_REFETCH_INTERVAL_MS : false,
-  });
-
-  const value: DreamDetailScreenContextValue = {
-    envData,
-    envIsLoading,
-    envIsError,
-  };
+  const data = useDreamKidooData(kidooId);
 
   return (
-    <DreamDetailScreenContext.Provider value={value}>
+    <DreamDetailScreenContext.Provider value={data}>
       {children}
     </DreamDetailScreenContext.Provider>
   );

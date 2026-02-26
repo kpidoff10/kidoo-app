@@ -7,12 +7,11 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Text } from '@/components/ui/Typography/Text';
-import { Title } from '@/components/ui/Typography/Title';
-import { Button } from '@/components/ui/Button/Button';
+import { Text, Title } from '../Typography';
+import { Button } from '../Button';
 import { useTheme } from '@/theme';
 import { BottomSheet } from '../BottomSheet/BottomSheet';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import type { UseBottomSheetReturn } from '@/hooks';
 
 export type InfoBottomSheetType = 'error' | 'warning' | 'info';
 

@@ -10,7 +10,7 @@ import { Button, BottomSheet, Text } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { BLEDevice, useBluetooth } from '@/contexts';
 import { useAuth } from '@/contexts';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import type { UseBottomSheetReturn } from '@/hooks';
 import { useKidoos } from '@/hooks';
 import { convertBleModelToApiModel, isKidooModelId } from '@/config';
 

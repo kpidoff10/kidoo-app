@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { Button, InfoBottomSheet } from '@/components/ui';
 import { useTheme } from '@/theme';
-import { useBottomSheet } from '@/hooks/useBottomSheet';
+import { useBottomSheet } from '@/hooks';
 import { Kidoo } from '@/api';
 import { UseMutationResult } from '@tanstack/react-query';
 

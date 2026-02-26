@@ -11,8 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme';
 import { HomeScreen, KidoosListScreen, ProfileSheet } from '@/screens';
 import { Avatar } from '@/components/ui';
-import { useBottomSheet } from '@/hooks/useBottomSheet';
-import { useProfile } from '@/hooks/useProfile';
+import { useBottomSheet, useProfile } from '@/hooks';
 import { MainTabsParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();

@@ -1,17 +1,18 @@
 /**
  * Carte Kidoo pour le modèle Dream
- * Affiche l'état (veilleuse / réveil) et l'accordéon d'actions (lancer routine, arrêter).
+ * Affiche l'état (veilleuse / réveil), temp/humidité (compact) et l'accordéon d'actions.
  */
 
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Animated, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, Accordion } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { Kidoo } from '@/api';
-import { useKidooContext } from '@/contexts';
-import { useControlDreamBedtime, useStopDreamRoutine } from '@/hooks';
+import { useKidooContext, useKidooEnvRealtime } from '@/contexts';
+import { useControlDreamBedtime, useStopDreamRoutine, useKidooEnv, KIDOOS_KEY } from '@/hooks';
+import { useQueryClient } from '@tanstack/react-query';
 import { BaseKidooCard } from './BaseKidooCard';
 
 interface DreamKidooCardProps {
@@ -27,6 +28,20 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger }: DreamKidooCar
   const modelHandler = getKidooModelHandler(kidoo.id);
   const controlBedtime = useControlDreamBedtime();
   const stopRoutine = useStopDreamRoutine();
+
+  const queryClient = useQueryClient();
+  const realtimeEnv = useKidooEnvRealtime(kidoo.id);
+  const { data: pollingEnv } = useKidooEnv(kidoo.id, {
+    enabled: !!kidoo.id,
+    refetchInterval: false,
+  });
+  const envData = realtimeEnv ?? pollingEnv;
+
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      queryClient.invalidateQueries({ queryKey: [...KIDOOS_KEY, kidoo.id, 'env'] });
+    }
+  }, [refreshTrigger, kidoo.id, queryClient]);
 
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const accordionRotateAnim = useRef(new Animated.Value(0)).current;
@@ -53,14 +68,45 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger }: DreamKidooCar
     outputRange: ['0deg', '180deg'],
   });
 
+  const hasTemp = envData?.available && envData.temperatureC != null;
+  const hasHumidity = envData?.available && envData.humidityPercent != null;
+
   const renderSubtitle = useCallback(() => {
-    if (!kidoo.deviceState || kidoo.deviceState === 'idle') return null;
+    const showDeviceState = kidoo.deviceState && kidoo.deviceState !== 'idle';
+    const showEnv = hasTemp || hasHumidity;
+
+    if (!showDeviceState && !showEnv) return null;
+
     return (
-      <Text variant="caption" color="primary" style={{ marginTop: 2 }}>
-        {t(`kidoos.detail.deviceState.${kidoo.deviceState}`)}
-      </Text>
+      <View style={{ marginTop: 2 }}>
+        {showDeviceState && (
+          <Text variant="caption" color="primary">
+            {t(`kidoos.detail.deviceState.${kidoo.deviceState}`)}
+          </Text>
+        )}
+        {showEnv && (
+          <View style={[styles.envRow, { marginTop: showDeviceState ? 4 : 0 }]}>
+            {hasTemp && (
+              <View style={styles.envItem}>
+                <Ionicons name="thermometer-outline" size={12} color={colors.textTertiary} />
+                <Text variant="caption" color="tertiary" style={styles.envValue}>
+                  {envData!.temperatureC!.toFixed(1)}°C
+                </Text>
+              </View>
+            )}
+            {hasHumidity && (
+              <View style={[styles.envItem, hasTemp && { marginLeft: spacing[2] }]}>
+                <Ionicons name="water-outline" size={12} color={colors.textTertiary} />
+                <Text variant="caption" color="tertiary" style={styles.envValue}>
+                  {envData!.humidityPercent!.toFixed(0)}%
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+      </View>
     );
-  }, [kidoo.deviceState, t]);
+  }, [kidoo.deviceState, t, hasTemp, hasHumidity, envData, colors.textTertiary, spacing]);
 
   const renderHeaderRight = useCallback(() => (
     <TouchableOpacity
@@ -162,6 +208,18 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger }: DreamKidooCar
 }
 
 const styles = StyleSheet.create({
+  envRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  envItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  envValue: {
+    fontSize: 11,
+  },
   accordionButton: {
     padding: 4,
     justifyContent: 'center',

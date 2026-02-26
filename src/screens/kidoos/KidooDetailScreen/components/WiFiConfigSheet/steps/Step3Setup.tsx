@@ -8,7 +8,7 @@ import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Stepper, StepperStep, Text } from '@/components/ui';
-import { Title } from '@/components/ui/Typography/Title';
+import { Title } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { useBluetooth } from '@/contexts';
 import { Kidoo } from '@/api';

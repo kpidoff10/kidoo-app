@@ -32,7 +32,7 @@ export function convertBleModelToApiModel(bleName: string): KidooModelId {
  * Obtenir le nom d'affichage d'un modèle (accepte KidooModelId ou chaîne pour rétrocompat).
  */
 export function getKidooModelDisplayName(model: KidooModelId | string): string {
-  const m = typeof model === 'string' ? getKidooModel(model) : getKidooModel(model);
+  const m = getKidooModel(model);
   return m?.label ?? model;
 }
 
@@ -40,7 +40,7 @@ export function getKidooModelDisplayName(model: KidooModelId | string): string {
  * Obtenir le nom de l'icône Ionicons pour un modèle.
  */
 export function getKidooModelIcon(model: KidooModelId | string): string {
-  const m = typeof model === 'string' ? getKidooModel(model) : getKidooModel(model);
+  const m = getKidooModel(model);
   if (!m) return 'cube-outline';
   return m.id === 'dream' ? 'sparkles-outline' : 'cube-outline';
 }

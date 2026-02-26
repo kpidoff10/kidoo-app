@@ -3,18 +3,12 @@
  */
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { kidoosApi } from '@/api';
-import { showToast } from '@/components/ui/Toast';
+import { kidoosApi, type Kidoo } from '@/api';
+import { showToast } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
 import { KIDOOS_KEY } from './keys';
 import { useKidooCheckOnline } from './useKidooCheckOnline';
-
-function hexToRgb(hex: string) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) }
-    : { r: 255, g: 107, b: 107 };
-}
+import { hexToRgb } from '@/utils/color';
 
 export function useDreamBedtimeConfig(kidooId: string) {
   return useQuery({
@@ -26,6 +20,7 @@ export function useDreamBedtimeConfig(kidooId: string) {
 
 export function useControlDreamBedtime() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const checkOnline = useKidooCheckOnline();
 
   return useMutation({
@@ -35,6 +30,13 @@ export function useControlDreamBedtime() {
       showToast.error({ title: t('toast.error'), message: t('errors.generic') });
     },
     onSuccess: (_data, variables) => {
+      // Mise à jour optimiste du deviceState (évite d'attendre PubNub ou checkOnline)
+      const deviceState = variables.action === 'start' ? 'bedtime' : 'idle';
+      queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) =>
+        old?.map((k) =>
+          k.id === variables.id ? { ...k, deviceState } : k
+        )
+      );
       showToast.success({
         title: t('toast.success'),
         message:
@@ -42,13 +44,21 @@ export function useControlDreamBedtime() {
             ? t('kidoos.dream.bedtime.started', { defaultValue: 'Routine démarrée' })
             : t('kidoos.dream.bedtime.stopped', { defaultValue: 'Routine arrêtée' }),
       });
-      checkOnline.mutate(variables.id);
+      // Au stop : checkOnline confirme immédiatement 'idle'.
+      // Au start : checkOnline avec délai pour que l'appareil ait le temps de passer en bedtime
+      // (l'API peut renvoyer 'idle' si appelée trop tôt).
+      if (variables.action === 'stop') {
+        checkOnline.mutate(variables.id);
+      } else {
+        setTimeout(() => checkOnline.mutate(variables.id), CHECK_ONLINE_AFTER_START_MS);
+      }
     },
   });
 }
 
 export function useStopDreamRoutine() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const checkOnline = useKidooCheckOnline();
 
   return useMutation({
@@ -57,6 +67,12 @@ export function useStopDreamRoutine() {
       showToast.error({ title: t('toast.error'), message: t('errors.generic') });
     },
     onSuccess: (_data, id) => {
+      // Mise à jour optimiste du deviceState
+      queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) =>
+        old?.map((k) =>
+          k.id === id ? { ...k, deviceState: 'idle' as const } : k
+        )
+      );
       showToast.success({
         title: t('toast.success'),
         message: t('kidoos.dream.routine.stopped', { defaultValue: 'Routine arrêtée' }),
@@ -112,7 +128,7 @@ export function useUpdateDreamBedtimeConfig() {
         nightlightAllNight: data.nightlightAllNight,
       };
       if (data.color) {
-        const rgb = hexToRgb(data.color);
+        const rgb = hexToRgb(data.color) ?? { r: 0, g: 0, b: 0 };
         optimisticData.colorR = rgb.r;
         optimisticData.colorG = rgb.g;
         optimisticData.colorB = rgb.b;

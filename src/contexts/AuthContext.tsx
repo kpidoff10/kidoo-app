@@ -15,12 +15,28 @@ import { AppState, AppStateStatus } from 'react-native';
 import { AxiosError } from 'axios';
 import { authApi, User, LoginRequest, RegisterRequest } from '@/api';
 import { tokenStorage, developerStorage } from '@/utils/storage';
-import { showToast } from '@/components/ui/Toast';
+import { showToast } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
 import { queryClient } from '@/lib/queryClient';
 import { setUser as setSentryUser, setTag } from '@/lib/sentry';
+import { PROFILE_KEY } from '@/hooks/profileKeys';
 
-const PROFILE_KEY = ['profile'];
+function getLoginErrorMessage(error: unknown): string | undefined {
+  if (error instanceof AxiosError) {
+    const data = error.response?.data;
+    if (data && typeof data === 'object' && 'error' in data && typeof data.error === 'string') {
+      return data.error;
+    }
+    if (error.code === 'ERR_NETWORK') {
+      return 'Erreur réseau. Vérifiez que le serveur est démarré et que l’appareil est sur le même réseau.';
+    }
+    if (error.code === 'ECONNABORTED') {
+      return 'Délai d’attente dépassé. Le serveur ne répond pas.';
+    }
+    return error.message || undefined;
+  }
+  return undefined;
+}
 
 interface AuthState {
   user: User | null;
@@ -160,9 +176,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isAuthenticated: true,
       }));
     } catch (error) {
+      const message = getLoginErrorMessage(error);
       showToast.error({
         title: t('toast.error'),
-        message: t('auth.errors.invalidCredentials'),
+        message: message || t('auth.errors.invalidCredentials'),
       });
       throw error;
     }

@@ -7,9 +7,8 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { Ionicons } from '@expo/vector-icons';
-import { Text } from '@/components/ui/Typography/Text';
-import { Title } from '@/components/ui/Typography/Title';
-import { Button } from '@/components/ui/Button/Button';
+import { Text, Title } from '../Typography';
+import { Button } from '../Button';
 import { useTheme } from '@/theme';
 import { BottomSheet } from '../BottomSheet/BottomSheet';
 

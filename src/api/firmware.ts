@@ -4,13 +4,8 @@
  */
 
 import { apiClient } from './client';
+import type { ApiResponse } from './types';
 import type { KidooModelId } from '@kidoo/shared';
-
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-}
 
 export interface LatestFirmwareResponse {
   version: string | null;

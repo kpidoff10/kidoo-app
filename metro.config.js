@@ -35,28 +35,39 @@ config.resolver = {
   sourceExts: [...config.resolver.sourceExts, 'svg'],
 };
 
-// Add shared packages to watchFolders
+// Monorepo: watchFolders et nodeModulesPaths uniquement en local (../kidoo-shared existe)
+// Sur EAS, le package est dans node_modules → pas de chemins monorepo pour éviter erreurs de bundle
 const sharedPath = path.resolve(projectRoot, '../kidoo-shared');
-config.watchFolders = [monorepoRoot, sharedPath];
-
-// Ensure Metro resolves packages from the monorepo
-config.resolver.nodeModulesPaths = [
-  path.resolve(projectRoot, 'node_modules'),
-  path.resolve(monorepoRoot, 'node_modules'),
-];
+const isMonorepo = fs.existsSync(sharedPath);
+if (isMonorepo) {
+  config.watchFolders = [monorepoRoot, sharedPath];
+  config.resolver.nodeModulesPaths = [
+    path.resolve(projectRoot, 'node_modules'),
+    path.resolve(monorepoRoot, 'node_modules'),
+  ];
+}
 
 // Point d'entrée shared sans Prisma (évite node:buffer en React Native)
-const sharedClientEntry = path.resolve(__dirname, '../kidoo-shared/client.ts');
+// En local : ../kidoo-shared existe. Sur EAS : le package est dans node_modules/@kidoo/shared
+const sharedClientEntry = path.join(sharedPath, 'client.ts');
 
 // Configurer les alias pour @shared, @kidoo/shared et @/
+// Local (monorepo) : pointer vers ../kidoo-shared/client.ts
+// EAS : @kidoo/shared via node_modules ; @shared/@/shared → rediriger vers @kidoo/shared
 config.resolver.alias = {
   ...config.resolver?.alias,
-  '@shared': sharedClientEntry,
-  '@/shared': sharedClientEntry,
-  '@kidoo/shared': sharedClientEntry,
-  // Alias @/ pour pointer vers kidoo-app/src/
   '@': path.resolve(__dirname, 'src'),
   '@/': path.resolve(__dirname, 'src'),
+  ...(isMonorepo
+    ? {
+        '@shared': sharedClientEntry,
+        '@/shared': sharedClientEntry,
+        '@kidoo/shared': sharedClientEntry,
+      }
+    : {
+        '@shared': '@kidoo/shared',
+        '@/shared': '@kidoo/shared',
+      }),
 };
 
 // Résolution personnalisée pour AppEntry.js qui cherche ../../App
@@ -64,6 +75,14 @@ config.resolver.alias = {
 // et cherche ../../App, mais App.tsx est dans kidoo-app/
 const originalResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
+  // Forcer PubNub à utiliser la build web (standalone, compatible React Native)
+  if (moduleName === 'pubnub') {
+    const webPath = path.resolve(projectRoot, 'node_modules/pubnub/dist/web/pubnub.min.js');
+    if (fs.existsSync(webPath)) {
+      return { filePath: webPath, type: 'sourceFile' };
+    }
+  }
+
   // Si AppEntry.js cherche ../../App depuis node_modules/expo/
   if (
     moduleName === '../../App' &&

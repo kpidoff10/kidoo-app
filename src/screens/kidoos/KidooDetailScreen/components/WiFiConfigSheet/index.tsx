@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Button, BottomSheet, Stepper, StepperStep } from '@/components/ui';
 import { useTheme } from '@/theme';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import type { UseBottomSheetReturn } from '@/hooks';
 import { useBluetooth } from '@/contexts';
 import { Kidoo } from '@/api';
 import { Step1BLE, Step2WiFi, Step3Setup } from './steps/index';

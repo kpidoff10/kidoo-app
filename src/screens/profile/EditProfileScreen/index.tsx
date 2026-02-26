@@ -11,8 +11,7 @@ import { Button, BottomSheetActions, MenuList, ContentScrollView } from '@/compo
 import { useTheme } from '@/theme';
 import { EditNameSheet } from './components/EditNameSheet';
 import { ChangePasswordSheet } from './components/ChangePasswordSheet';
-import { useBottomSheet } from '@/hooks/useBottomSheet';
-import { useProfile } from '@/hooks/useProfile';
+import { useBottomSheet, useProfile } from '@/hooks';
 
 export function EditProfileScreen() {
   const { t } = useTranslation();

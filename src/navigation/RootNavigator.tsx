@@ -8,7 +8,7 @@ import { Platform } from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '@/theme';
-import { useAuth, BluetoothProvider, KidooProvider } from '@/contexts';
+import { useAuth, BluetoothProvider, KidooProvider, KidooRealtimeProvider, KidooModelsRealtimeProvider } from '@/contexts';
 import { BluetoothSheets } from '@/contexts/bluetooth/BluetoothSheets';
 import { ScreenLoader } from '@/components/ui';
 import { LoginScreen, RegisterScreen, EditProfileScreen, KidooDetailScreen, BedtimeConfigScreen, WakeupConfigScreen } from '@/screens';
@@ -46,15 +46,17 @@ export function RootNavigator() {
         // User connecté → App avec providers
         <BluetoothProvider>
           <KidooProvider>
-            <Stack.Navigator
-              screenOptions={{
-                headerShown: false,
-              }}
-            >
-              <Stack.Screen name="MainTabs" component={AppNavigator} />
-              <Stack.Screen
-                name="EditProfile"
-                component={EditProfileScreen}
+            <KidooRealtimeProvider>
+              <KidooModelsRealtimeProvider>
+                <Stack.Navigator
+                screenOptions={{
+                  headerShown: false,
+                }}
+              >
+                <Stack.Screen name="MainTabs" component={AppNavigator} />
+                <Stack.Screen
+                  name="EditProfile"
+                  component={EditProfileScreen}
                 options={({ navigation }) => ({
                   headerShown: true,
                   title: '',
@@ -64,10 +66,10 @@ export function RootNavigator() {
                     backgroundColor: colors.background,
                   },
                 })}
-              />
-              <Stack.Screen
-                name="KidooDetail"
-                component={KidooDetailScreen}
+                />
+                <Stack.Screen
+                  name="KidooDetail"
+                  component={KidooDetailScreen}
                 options={({ route, navigation }) => {
                   // Récupérer le kidooId depuis les params
                   const { kidooId } = (route.params as { kidooId?: string }) || {};
@@ -82,10 +84,10 @@ export function RootNavigator() {
                     },
                   };
                 }}
-              />
-              <Stack.Screen
-                name="BedtimeConfig"
-                component={BedtimeConfigScreen}
+                />
+                <Stack.Screen
+                  name="BedtimeConfig"
+                  component={BedtimeConfigScreen}
                 options={({ navigation }) => ({
                   headerShown: true,
                   title: '',
@@ -95,10 +97,10 @@ export function RootNavigator() {
                     backgroundColor: colors.background,
                   },
                 })}
-              />
-              <Stack.Screen
-                name="WakeupConfig"
-                component={WakeupConfigScreen}
+                />
+                <Stack.Screen
+                    name="WakeupConfig"
+                  component={WakeupConfigScreen}
                 options={({ navigation }) => ({
                   headerShown: true,
                   title: '',
@@ -108,9 +110,11 @@ export function RootNavigator() {
                     backgroundColor: colors.background,
                   },
                 })}
-              />
-            </Stack.Navigator>
-            <BluetoothSheets />
+                />
+                </Stack.Navigator>
+                <BluetoothSheets />
+              </KidooModelsRealtimeProvider>
+            </KidooRealtimeProvider>
           </KidooProvider>
         </BluetoothProvider>
       ) : (

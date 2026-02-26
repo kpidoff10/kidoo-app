@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { TextInput, Button, BottomSheet } from '@/components/ui';
 import { useTheme } from '@/theme';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import type { UseBottomSheetReturn } from '@/hooks';
 import { useUpdateKidooName } from '@/hooks';
 import { Kidoo } from '@/api';
 import { updateKidooNameSchema, UpdateKidooNameInput } from '@shared';

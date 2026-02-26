@@ -10,10 +10,9 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Markdown from 'react-native-markdown-display';
 import { BottomSheet, Button } from '@/components/ui';
-import { Text } from '@/components/ui/Typography/Text';
-import { showToast } from '@/components/ui/Toast';
+import { Text, showToast } from '@/components/ui';
 import { useTheme } from '@/theme';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import type { UseBottomSheetReturn } from '@/hooks';
 import type { Kidoo } from '@/api/kidoos';
 
 export type FirmwareUpdateResult =

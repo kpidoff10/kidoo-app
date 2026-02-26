@@ -1,0 +1,1 @@
+export { BasicModelHandler } from './BasicModelHandler';

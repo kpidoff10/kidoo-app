@@ -13,7 +13,12 @@
     "prebuild": "npx expo prebuild",
     "prebuild:clean": "npx expo prebuild --clean",
     "setup:dark-splash": "node scripts/setup-dark-splash.js",
-    "prebuild:android": "npx expo prebuild --platform android --clean && npm run setup:dark-splash"
+    "prebuild:android": "npx expo prebuild --platform android --clean && npm run setup:dark-splash",
+    "prepare:eas": "node scripts/prepare-eas-build.js prepare",
+    "restore:eas": "node scripts/prepare-eas-build.js restore",
+    "build:apk": "node scripts/prepare-eas-build.js build",
+    "build:apk:preview": "node scripts/prepare-eas-build.js build preview",
+    "eas-build-pre-install": "npm config set legacy-peer-deps true"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -43,6 +48,8 @@
     "expo-system-ui": "~6.0.7",
     "i18next": "^25.8.0",
     "moment": "^2.30.1",
+    "pubnub": "^7.6.3",
+    "pubnub-react": "^3.0.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.71.1",

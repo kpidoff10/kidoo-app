@@ -38,6 +38,12 @@
       ],
       "./plugins/with-dark-mode-icon.js",
       "./plugins/with-dark-mode-splash.js"
-    ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:3000",
+      "eas": {
+        "projectId": "47c38036-e537-4d5b-8849-1573ae0877a2"
+      }
+    }
   }
 }

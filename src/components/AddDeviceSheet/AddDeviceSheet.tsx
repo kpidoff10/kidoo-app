@@ -8,7 +8,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Button, BottomSheet, Stepper, StepperStep } from '@/components/ui';
 import { useTheme } from '@/theme';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import type { UseBottomSheetReturn } from '@/hooks';
 import { BLEDevice } from '@/contexts';
 import { AddDeviceProvider, useAddDevice } from './AddDeviceContext';
 import {

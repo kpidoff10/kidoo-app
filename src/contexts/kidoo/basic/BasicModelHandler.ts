@@ -2,8 +2,8 @@
  * Handler pour le modèle Kidoo Basic
  */
 
-import { ModelHandler } from './types';
-import { MenuListItem } from '@/components/ui/MenuList/MenuList';
+import { ModelHandler } from '../KidooModelHandler';
+import type { MenuListItem } from '@/components/ui';
 import { Kidoo } from '@/api';
 
 export class BasicModelHandler implements ModelHandler {
@@ -19,7 +19,7 @@ export class BasicModelHandler implements ModelHandler {
   }
 
   getMenuItems(
-    kidoo: Kidoo, 
+    kidoo: Kidoo,
     t: (key: string, options?: any) => string,
     callbacks?: {
       onConfigureBedtime?: () => void;
@@ -28,38 +28,28 @@ export class BasicModelHandler implements ModelHandler {
   ): MenuListItem[] {
     const items: MenuListItem[] = [];
 
-    // Item NFC (spécifique au Basic)
     if (this.supportsFeature('nfc')) {
       items.push({
         label: t('kidoos.features.nfc', { defaultValue: 'NFC' }),
         value: t('kidoos.features.available', { defaultValue: 'Disponible' }),
         icon: 'card-outline',
         onPress: () => {
-          // TODO: Naviguer vers la page NFC ou ouvrir un modal
-          console.log('NFC pressed for Basic');
+          if (__DEV__) console.log('NFC pressed for Basic');
         },
       });
     }
 
-    // Item Potentiomètre (spécifique au Basic)
     if (this.supportsFeature('potentiometer')) {
       items.push({
         label: t('kidoos.features.potentiometer', { defaultValue: 'Potentiomètre' }),
         value: t('kidoos.features.available', { defaultValue: 'Disponible' }),
         icon: 'settings-outline',
         onPress: () => {
-          // TODO: Naviguer vers la page de configuration du potentiomètre
-          console.log('Potentiometer pressed for Basic');
+          if (__DEV__) console.log('Potentiometer pressed for Basic');
         },
       });
     }
 
     return items;
   }
-
-  // Fonctions spécifiques au Basic peuvent être ajoutées ici
-  // Exemple :
-  // async handleNFCCommand(kidoo: Kidoo, command: string): Promise<void> {
-  //   // Logique spécifique au Basic pour NFC
-  // }
 }

@@ -4,7 +4,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { kidoosApi, Kidoo } from '@/api';
-import { showToast } from '@/components/ui/Toast';
+import { showToast } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
 import { KIDOOS_KEY } from './keys';
 

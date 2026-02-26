@@ -2,6 +2,15 @@
  * Kidoo App - Entry Point
  */
 
+// Polyfill pour PubNub (build web) sur React Native : window.addEventListener n'existe pas
+if (typeof global !== 'undefined' && typeof global.window === 'undefined') {
+  global.window = global;
+}
+if (typeof window !== 'undefined' && typeof window.addEventListener !== 'function') {
+  window.addEventListener = () => {};
+  window.removeEventListener = () => {};
+}
+
 import * as Sentry from '@sentry/react-native';
 import { registerRootComponent } from 'expo';
 import { App } from './src/App.tsx';

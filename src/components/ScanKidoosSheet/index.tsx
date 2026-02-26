@@ -8,7 +8,7 @@ import { StyleSheet, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { BottomSheet } from '@/components/ui';
 import { BLEDevice, useBluetooth } from '@/contexts';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
+import type { UseBottomSheetReturn } from '@/hooks';
 import { useKidoos } from '@/hooks';
 import { DeviceItem, EmptyState, ScanIndicator, ScanActions } from './components';
 

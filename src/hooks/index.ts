@@ -24,7 +24,7 @@ export {
 } from './kidoo';
 export { useBottomSheet } from './useBottomSheet';
 export type { UseBottomSheetReturn } from './useBottomSheet';
-export { useProfile, useUpdateProfile, useDeleteAccount } from './useProfile';
+export { useProfile, useUpdateProfile, useDeleteAccount, useChangePassword } from './useProfile';
 export type { UpdateProfileRequest } from './useProfile';
 export { useOptimisticUpdate } from './useOptimisticUpdate';
 export type { OptimisticUpdateContext, UseOptimisticUpdateOptions } from './useOptimisticUpdate';

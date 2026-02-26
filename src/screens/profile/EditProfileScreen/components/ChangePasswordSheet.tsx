@@ -10,8 +10,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { PasswordInput, Button, BottomSheet } from '@/components/ui';
 import { useTheme } from '@/theme';
-import { UseBottomSheetReturn } from '@/hooks/useBottomSheet';
-import { useChangePassword } from '@/hooks/useProfile';
+import { useChangePassword } from '@/hooks';
+import type { UseBottomSheetReturn } from '@/hooks';
 import { z } from 'zod';
 
 // Schéma local avec clés i18n pour l'app mobile

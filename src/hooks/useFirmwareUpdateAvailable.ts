@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { firmwareApi, isNewerFirmwareVersion } from '@/api';
 import type { Kidoo } from '@/api';
+import { firmwareQueryKey } from '@/config/timings';
 
 export interface UseFirmwareUpdateAvailableReturn {
   hasFirmwareUpdate: boolean;
@@ -19,7 +20,7 @@ export interface UseFirmwareUpdateAvailableReturn {
 
 export function useFirmwareUpdateAvailable(kidoo: Kidoo | undefined): UseFirmwareUpdateAvailableReturn {
   const { data: latestFirmware, isLoading } = useQuery({
-    queryKey: ['firmware', 'latest', kidoo?.model],
+    queryKey: firmwareQueryKey(kidoo?.model ?? ''),
     queryFn: () => firmwareApi.getLatestVersion(kidoo!.model),
     enabled: !!kidoo?.model,
     staleTime: 0, // Toujours considérer les données périmées pour refetch (ex: après création 1.0.2 côté admin)
