@@ -117,7 +117,77 @@
         "nightlightAllNight": "Veilleuse allumée toute la nuit",
         "test": "Tester",
         "saved": "Configuration enregistrée"
+      },
+      "wakeup": {
+        "title": "Heure de réveil",
+        "configure": "Configurer"
+      },
+      "nighttimeAlert": {
+        "title": "Alerte veilleuse",
+        "configure": "Configurer",
+        "description": "Quand vous activez cette alerte, vous recevrez une notification sur votre téléphone si votre enfant touche la veilleuse pendant la nuit. Cela peut indiquer qu'il s'est réveillé.",
+        "wifiOfflineInfo": "Si le Kidoo n'est pas connecté au WiFi, il ne pourra pas envoyer de message à votre téléphone.",
+        "enable": "Activer l'alerte"
+      },
+      "routine": {
+        "stop": "Arrêter la routine"
+      },
+      "help": {
+        "title": "Aide",
+        "subtitle": "Signification des couleurs",
+        "intro": "La veilleuse Dream utilise des couleurs pour communiquer. Voici ce que signifie chaque indication :",
+        "colors": {
+          "startup": {
+            "title": "Orange/Jaune (démarrage)",
+            "description": "Le Kidoo est en cours de démarrage. Patientez quelques secondes."
+          },
+          "green": {
+            "title": "Vert (pulse rapide)",
+            "description": "Votre enfant a appuyé sur la veilleuse pendant au moins 1 seconde. L'alerte a été envoyée sur votre téléphone — il s'est peut-être réveillé."
+          },
+          "red": {
+            "title": "Rouge continu",
+            "description": "La configuration n'a pas encore été faite."
+          },
+          "configLoaded": {
+            "title": "Vert (rotation)",
+            "description": "La configuration est bien chargée."
+          },
+          "pairing": {
+            "title": "Bleu (pulse)",
+            "description": "Si le Kidoo est bleu avec un effet pulse, l'app est en attente d'association. Ouvrez l'app pour connecter."
+          },
+          "rainbow": {
+            "title": "Arc-en-ciel",
+            "description": "La configuration est validée. Le Kidoo affiche l'arc-en-ciel pour confirmer que tout est en ordre."
+          },
+          "redPulse": {
+            "title": "Rouge (pulse)",
+            "description": "Si vous placez la main sur le Kidoo et qu'il pulse en rouge, la routine du jour n'est pas configurée — le Kidoo ne peut pas la lancer."
+          },
+          "childRequest": {
+            "title": "Vert (pulse)",
+            "description": "Si l'enfant place la main sur le Kidoo pendant plus d'une seconde, une notification est envoyée à l'application pour indiquer que le Kidoo a envoyé une demande de l'enfant."
+          },
+          "parentResponse": {
+            "title": "Arc-en-ciel (rotation)",
+            "description": "Une fois que l'enfant a envoyé la notification, le parent peut répondre. L'enfant reçoit un retour en arc-en-ciel avec effet de rotation."
+          },
+          "bedtime": {
+            "title": "Routine coucher",
+            "description": "Couleur configurée pour l'heure de coucher (par défaut : rouge doux). La veilleuse affiche cette couleur pendant la routine du soir."
+          },
+          "wakeup": {
+            "title": "Routine réveil",
+            "description": "Couleur configurée pour l'heure de réveil (par défaut : orange/jaune). La veilleuse affiche cette couleur au réveil."
+          }
+        }
       }
+    },
+    "brightness": {
+      "title": "Luminosité",
+      "description": "Régler la luminosité générale",
+      "label": "Luminosité générale"
     },
     "wifiConfig": {
       "title": "Configuration WiFi",

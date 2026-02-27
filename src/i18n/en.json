@@ -85,6 +85,82 @@
       "view": "View",
       "settings": "Settings",
       "delete": "Delete"
+    },
+    "dream": {
+      "bedtime": {
+        "title": "Bedtime",
+        "configure": "Configure"
+      },
+      "wakeup": {
+        "title": "Wake-up time",
+        "configure": "Configure"
+      },
+      "nighttimeAlert": {
+        "title": "Night light alert",
+        "configure": "Configure",
+        "description": "When you enable this alert, you will receive a notification on your phone if your child touches the night light during the night. This may indicate they have woken up.",
+        "wifiOfflineInfo": "If the Kidoo is not connected to WiFi, it will not be able to send messages to your phone.",
+        "enable": "Enable alert"
+      },
+      "routine": {
+        "stop": "Stop routine"
+      },
+      "help": {
+        "title": "Help",
+        "subtitle": "Color meanings",
+        "intro": "The Dream night light uses colors to communicate. Here is what each indication means:",
+        "colors": {
+          "startup": {
+            "title": "Orange/Yellow (starting up)",
+            "description": "The Kidoo is starting up. Please wait a few seconds."
+          },
+          "green": {
+            "title": "Green (fast pulse)",
+            "description": "Your child pressed the night light for at least 1 second. The alert was sent to your phone — they may have woken up."
+          },
+          "red": {
+            "title": "Continuous red",
+            "description": "Configuration has not been set up yet."
+          },
+          "configLoaded": {
+            "title": "Green (rotation)",
+            "description": "Configuration is loaded successfully."
+          },
+          "pairing": {
+            "title": "Blue (pulse)",
+            "description": "If the Kidoo is blue with a pulse effect, the app is waiting for association. Open the app to connect."
+          },
+          "rainbow": {
+            "title": "Rainbow",
+            "description": "Configuration is validated. The Kidoo displays the rainbow to confirm everything is set up correctly."
+          },
+          "redPulse": {
+            "title": "Red (pulse)",
+            "description": "If you place your hand on the Kidoo and it pulses red, the day routine is not configured — the Kidoo cannot launch it."
+          },
+          "childRequest": {
+            "title": "Green (pulse)",
+            "description": "If the child places their hand on the Kidoo for more than 1 second, a notification is sent to the app to indicate that the Kidoo received a request from the child."
+          },
+          "parentResponse": {
+            "title": "Rainbow (rotation)",
+            "description": "Once the child has sent the notification, the parent can respond. The child receives feedback with a rainbow rotation effect."
+          },
+          "bedtime": {
+            "title": "Bedtime routine",
+            "description": "Color configured for bedtime (default: soft red). The night light displays this color during the evening routine."
+          },
+          "wakeup": {
+            "title": "Wake-up routine",
+            "description": "Color configured for wake-up time (default: orange/yellow). The night light displays this color in the morning."
+          }
+        }
+      }
+    },
+    "brightness": {
+      "title": "Brightness",
+      "description": "Adjust general brightness",
+      "label": "General brightness"
     }
   },
   "device": {

@@ -1,6 +1,6 @@
 /**
  * Contexte temps réel PubNub pour le modèle Dream.
- * Gère les messages env, info et routine spécifiques au Dream.
+ * Gère env, info, routine. nighttime-alert : ESP32 → PubNub → webhook serveur → Expo → notification native (pas d'app).
  */
 
 import {
@@ -18,6 +18,7 @@ import {
 import { usePubNub } from 'pubnub-react';
 import { useKidooRealtimeBase, type RealtimeConfig } from '../KidooRealtimeContext';
 import { KIDOOS_KEY } from '@/hooks';
+import { DREAM_NIGHTTIME_ALERT_KEY } from '@/hooks/kidoo/useDreamNighttimeAlert';
 import { queryClient } from '@/lib/queryClient';
 import type { KidooEnvResponse, Kidoo } from '@/api';
 
@@ -63,10 +64,11 @@ interface DreamRealtimeSubscriberProps {
   config: RealtimeConfig;
   onData: Dispatch<SetStateAction<DreamRealtimeData>>;
   onRoutineState: (kidooId: string, deviceState: DeviceState) => void;
+  onNighttimeAlertToggled?: (kidooId: string, enabled: boolean) => void;
   children: ReactNode;
 }
 
-function DreamRealtimeSubscriber({ config, onData, onRoutineState, children }: DreamRealtimeSubscriberProps) {
+function DreamRealtimeSubscriber({ config, onData, onRoutineState, onNighttimeAlertToggled, children }: DreamRealtimeSubscriberProps) {
   const pubnub = usePubNub();
   const channelToKidooRef = useRef<Map<string, string>>(new Map());
 
@@ -122,6 +124,22 @@ function DreamRealtimeSubscriber({ config, onData, onRoutineState, children }: D
           };
         } else if (msgType === 'info') {
           next.info[kidooId] = parsed!;
+          // get-info inclut env → extraire pour éviter un get-env séparé à l'init
+          const envObj = parsed!.env as Record<string, unknown> | undefined;
+          if (envObj && envObj.available === true) {
+            const rawPressure = envObj.pressurePa != null ? Number(envObj.pressurePa) : null;
+            const pressurePa =
+              rawPressure != null && rawPressure >= 10000 && rawPressure <= 120000
+                ? rawPressure
+                : null;
+            next.env[kidooId] = {
+              available: true,
+              temperatureC: envObj.temperatureC != null ? Number(envObj.temperatureC) : null,
+              humidityPercent: envObj.humidityPercent != null ? Number(envObj.humidityPercent) : null,
+              pressurePa,
+              error: typeof envObj.error === 'string' ? envObj.error : undefined,
+            };
+          }
         } else if (msgType === 'routine') {
           const routine = parsed!.routine as string | undefined;
           const state = parsed!.state as string | undefined;
@@ -130,6 +148,9 @@ function DreamRealtimeSubscriber({ config, onData, onRoutineState, children }: D
             next.info[kidooId] = { ...(prev.info[kidooId] as object), deviceState };
             onRoutineState(kidooId, deviceState);
           }
+        } else if (msgType === 'nighttime-alert-toggled') {
+          const enabled = parsed!.enabled === true;
+          onNighttimeAlertToggled?.(kidooId, enabled);
         }
 
         return next;
@@ -145,7 +166,7 @@ function DreamRealtimeSubscriber({ config, onData, onRoutineState, children }: D
       pubnub.removeListener(listener);
       pubnub.unsubscribe({ channels });
     };
-  }, [config.subscribeKey, config.subscriptions, pubnub, onData, onRoutineState]);
+  }, [config.subscribeKey, config.subscriptions, pubnub, onData, onRoutineState, onNighttimeAlertToggled]);
 
   return <>{children}</>;
 }
@@ -166,6 +187,12 @@ export function DreamRealtimeProvider({ children }: DreamRealtimeProviderProps) 
     },
     []
   );
+
+  const handleNighttimeAlertToggled = useCallback((kidooId: string, enabled: boolean) => {
+    queryClient.setQueryData([...DREAM_NIGHTTIME_ALERT_KEY, kidooId], {
+      nighttimeAlertEnabled: enabled,
+    });
+  }, []);
 
   const getEnvData = useCallback(
     (kidooId: string) => data.env[kidooId],
@@ -191,6 +218,7 @@ export function DreamRealtimeProvider({ children }: DreamRealtimeProviderProps) 
           config={config!}
           onData={setData}
           onRoutineState={handleRoutineState}
+          onNighttimeAlertToggled={handleNighttimeAlertToggled}
         >
           {children}
         </DreamRealtimeSubscriber>

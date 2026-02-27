@@ -31,7 +31,6 @@ export interface BrightnessConfigSheetProps {
 
 export function BrightnessConfigSheet({ bottomSheet, kidoo, onClose }: BrightnessConfigSheetProps) {
   const { t } = useTranslation();
-  const { spacing } = useTheme();
   const updateBrightness = useUpdateBrightness();
   
   // Valeur de luminosité actuelle (par défaut 50% si non définie)
@@ -102,12 +101,12 @@ export function BrightnessConfigSheet({ bottomSheet, kidoo, onClose }: Brightnes
     [sendBrightness]
   );
 
-  const handleDismiss = useCallback(() => {
+  const handleDismiss = useCallback(async () => {
     // Nettoyer le timer si le sheet est fermé
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
-    // Mettre à jour l'état du hook
+    await bottomSheet.close();
     bottomSheet.handleDidDismiss({} as any);
     onClose?.();
   }, [onClose, bottomSheet]);

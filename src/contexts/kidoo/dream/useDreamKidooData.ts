@@ -36,10 +36,13 @@ export function useDreamKidooData(kidooId: string | undefined): DreamKidooData {
   // Env realtime (PubNub) — prioritaire
   const realtimeEnv = useKidooEnvRealtime(kidooId);
 
-  // Env polling — fallback + chargement initial
+  // Statut connexion PubNub (avant le hook useKidooEnv pour l'utiliser dans les options)
+  const { isConnected } = useDreamRealtimeContext();
+
+  // Env polling — fallback uniquement quand PubNub non connecté ; sinon l'ESP pousse via PubNub
   const { data: pollingEnv, isLoading: envIsLoading, isError: envIsError } = useKidooEnv(kidooId, {
     enabled: !!kidooId,
-    refetchInterval: isFocused ? ENV_POLL_INTERVAL_MS : false,
+    refetchInterval: isFocused && !isConnected ? ENV_POLL_INTERVAL_MS : false,
   });
 
   const envData = realtimeEnv ?? pollingEnv;
@@ -48,9 +51,6 @@ export function useDreamKidooData(kidooId: string | undefined): DreamKidooData {
   const { kidoos } = useKidooContext();
   const kidoo = kidoos?.find((k) => k.id === kidooId);
   const deviceState = kidoo?.deviceState ?? 'idle';
-
-  // Statut connexion PubNub
-  const { isConnected } = useDreamRealtimeContext();
 
   return {
     envData,

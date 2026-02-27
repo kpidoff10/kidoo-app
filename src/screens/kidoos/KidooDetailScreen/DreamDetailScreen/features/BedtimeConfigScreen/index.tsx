@@ -16,7 +16,7 @@ import {
   TimePickerSection,
   BrightnessSection,
   useScheduleConfigScreen,
-} from '../shared';
+} from '../../../../shared';
 import {
   ColorPickerSection,
   ColorOrEffectSection,
@@ -63,8 +63,8 @@ export function BedtimeConfigScreen() {
   // Formulaire simplifié (sans Zod pour éviter les problèmes)
   const { control, reset, watch, getValues } = useForm({
     defaultValues: {
-      color: '#FF6B6B',
-      effect: null as string | null,
+      color: '#0000FF',
+      effect: 'pulse' as string | null,
       brightness: 50,
       nightlightAllNight: false,
     },
@@ -141,7 +141,7 @@ export function BedtimeConfigScreen() {
         nightlightAllNight,
       });
 
-      // Préparer les données : soit color soit effect
+      // Préparer les données : color toujours envoyée (utilisée avec ou sans effet)
       const updateData: {
         weekdaySchedule?: Record<string, { hour: number; minute: number; activated: boolean }>;
         color?: string;
@@ -151,15 +151,10 @@ export function BedtimeConfigScreen() {
       } = {
         brightness,
         nightlightAllNight,
+        color: color || '#0000FF',
       };
 
-      if (effect && effect !== 'none') {
-        // Mode effet
-        updateData.effect = effect;
-      } else {
-        // Mode couleur fixe
-        updateData.color = color;
-      }
+      updateData.effect = effect && effect !== 'none' ? effect : 'none';
 
       if (Object.keys(weekdaySchedule).length > 0) {
         updateData.weekdaySchedule = weekdaySchedule;

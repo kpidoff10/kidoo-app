@@ -25,6 +25,8 @@ export class DreamModelHandler implements ModelHandler {
     callbacks?: {
       onConfigureBedtime?: () => void;
       onConfigureWakeup?: () => void;
+      onConfigureNighttimeAlert?: () => void;
+      onConfigureDreamHelp?: () => void;
       [key: string]: (() => void) | undefined;
     }
   ): MenuListItem[] {
@@ -45,6 +47,24 @@ export class DreamModelHandler implements ModelHandler {
       icon: 'sunny-outline',
       onPress: callbacks?.onConfigureWakeup || (() => {
         if (__DEV__) console.log('Wakeup configuration pressed for Dream');
+      }),
+    });
+
+    items.push({
+      label: t('kidoos.dream.nighttimeAlert.title', { defaultValue: 'Alerte veilleuse' }),
+      value: t('kidoos.dream.nighttimeAlert.configure', { defaultValue: 'Configurer' }),
+      icon: 'notifications-outline',
+      onPress: callbacks?.onConfigureNighttimeAlert || (() => {
+        if (__DEV__) console.log('Nighttime alert configuration pressed for Dream');
+      }),
+    });
+
+    items.push({
+      label: t('kidoos.dream.help.title', { defaultValue: 'Aide' }),
+      value: t('kidoos.dream.help.subtitle', { defaultValue: 'Signification des couleurs' }),
+      icon: 'help-circle-outline',
+      onPress: callbacks?.onConfigureDreamHelp || (() => {
+        if (__DEV__) console.log('Dream help pressed');
       }),
     });
 

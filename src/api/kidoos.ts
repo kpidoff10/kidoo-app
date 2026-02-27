@@ -365,6 +365,41 @@ export const kidoosApi = {
   },
 
   /**
+   * Récupérer l'état de l'alerte réveil nocturne (Dream)
+   */
+  async getDreamNighttimeAlert(id: string): Promise<{ nighttimeAlertEnabled: boolean }> {
+    const response = await apiClient.get<ApiResponse<{ nighttimeAlertEnabled: boolean }>>(
+      `/api/kidoos/${id}/dream-nighttime-alert`
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Envoyer le signal "J'arrive" à la veilleuse (rainbow 5 secondes).
+   * Appelé quand le parent tape le bouton sur la notification d'alerte nocturne.
+   */
+  async sendNighttimeAlertAck(id: string): Promise<{ sent: boolean }> {
+    const response = await apiClient.post<ApiResponse<{ sent: boolean }>>(
+      `/api/kidoos/${id}/nighttime-alert-ack`
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Activer/désactiver l'alerte réveil nocturne (Dream)
+   */
+  async updateDreamNighttimeAlert(
+    id: string,
+    nighttimeAlertEnabled: boolean
+  ): Promise<{ nighttimeAlertEnabled: boolean }> {
+    const response = await apiClient.patch<ApiResponse<{ nighttimeAlertEnabled: boolean }>>(
+      `/api/kidoos/${id}/dream-nighttime-alert`,
+      { nighttimeAlertEnabled }
+    );
+    return response.data.data;
+  },
+
+  /**
    * Mettre à jour la luminosité générale d'un Kidoo
    */
   async updateBrightness(

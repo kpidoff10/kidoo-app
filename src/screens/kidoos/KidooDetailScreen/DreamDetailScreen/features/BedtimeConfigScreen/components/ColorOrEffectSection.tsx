@@ -89,7 +89,7 @@ export function ColorOrEffectSection({ control }: ColorOrEffectSectionProps) {
                     // Passer en mode effet seulement si on n'est pas déjà en mode effet
                     if (isColor) {
                       // Utiliser la valeur actuelle si elle existe et n'est pas 'none', sinon 'pulse'
-                      const currentEffect = effectValue && effectValue !== 'none' ? effectValue : 'pulse';
+                      const currentEffect = effectValue && effectValue !== 'none' ? effectValue : 'rotate';
                       onEffectChange(currentEffect);
                     }
                   }}

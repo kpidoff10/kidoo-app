@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { queryClient } from '@/lib/queryClient';
 import { setUser as setSentryUser, setTag } from '@/lib/sentry';
 import { PROFILE_KEY } from '@/hooks/profileKeys';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 function getLoginErrorMessage(error: unknown): string | undefined {
   if (error instanceof AxiosError) {
@@ -68,6 +69,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAuthenticated: false,
     isDeveloper: false,
   });
+
+  // Enregistrer le token push quand l'utilisateur est connecté
+  const { unregisterToken } = usePushNotifications(state.isAuthenticated);
 
   // Vérifier si l'utilisateur est connecté au démarrage et charger le mode développeur
   useEffect(() => {
@@ -225,6 +229,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = useCallback(async () => {
     try {
+      // Supprimer le token push AVANT de clear les tokens (nécessite auth)
+      await unregisterToken();
+    } catch (error) {
+      console.error('Unregister push token error:', error);
+    }
+    try {
       await authApi.logout();
     } catch (error) {
       // Ignorer les erreurs de logout côté serveur
@@ -246,7 +256,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isAuthenticated: false,
       }));
     }
-  }, []);
+  }, [unregisterToken]);
 
   const updateUser = useCallback(async (data: { name?: string }) => {
     try {

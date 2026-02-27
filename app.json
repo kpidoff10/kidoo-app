@@ -18,7 +18,9 @@
         "monochromeImage": "./assets/adaptive-icon-dark.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kidooapp"
+      "package": "com.kidooapp",
+      "useNextNotificationsApi": true,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +38,7 @@
           }
         }
       ],
+      "expo-notifications",
       "./plugins/with-dark-mode-icon.js",
       "./plugins/with-dark-mode-splash.js"
     ],

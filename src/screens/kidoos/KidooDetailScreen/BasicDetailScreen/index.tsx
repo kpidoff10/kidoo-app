@@ -34,7 +34,6 @@ export function BasicDetailScreen() {
     onEditName: detail.handleEditName,
     onConfigureWiFi: detail.handleConfigureWiFi,
     onConfigureBrightness: detail.handleConfigureBrightness,
-    // Pas de Coucher / Réveil pour Basic
   });
 
   return (
