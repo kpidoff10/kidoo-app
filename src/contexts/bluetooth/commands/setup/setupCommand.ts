@@ -25,6 +25,7 @@ export interface SetupCommandResult {
   brightness?: number; // Brightness en pourcentage (0-100)
   sleepTimeout?: number; // Sleep timeout en millisecondes
   firmwareVersion?: string; // Version du firmware ESP32
+  publicKey?: string; // Clé publique Ed25519 (base64) pour authentification device
 }
 
 /**
@@ -57,6 +58,7 @@ export async function sendSetupCommand(
       brightness: result.data?.brightness, // Brightness en pourcentage (0-100)
       sleepTimeout: result.data?.sleepTimeout, // Sleep timeout en millisecondes
       firmwareVersion: result.data?.firmwareVersion, // Version du firmware ESP32
+      publicKey: result.data?.publicKey, // Clé publique Ed25519 pour authentification device
     };
   }
 
@@ -79,5 +81,6 @@ export async function sendSetupCommand(
     brightness: result.data?.brightness, // Brightness en pourcentage (0-100)
     sleepTimeout: result.data?.sleepTimeout, // Sleep timeout en millisecondes
     firmwareVersion: result.data?.firmwareVersion, // Version du firmware ESP32
+    publicKey: result.data?.publicKey, // Clé publique Ed25519 pour authentification device
   };
 }

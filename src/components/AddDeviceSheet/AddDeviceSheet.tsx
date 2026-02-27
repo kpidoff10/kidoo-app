@@ -55,6 +55,7 @@ export interface AddDeviceSheetProps {
     brightness?: number;
     sleepTimeout?: number;
     firmwareVersion?: string;
+    publicKey?: string; // Clé publique Ed25519 pour authentification device
   }) => void;
 }
 
@@ -154,6 +155,7 @@ function AddDeviceSheetContent({
               brightness: data?.brightness, // Brightness en pourcentage (0-100)
               sleepTimeout: data?.sleepTimeout, // Sleep timeout en millisecondes
               firmwareVersion: data?.firmwareVersion, // Version du firmware ESP32
+              publicKey: data?.publicKey, // Clé publique Ed25519 pour authentification device
             });
             // Ne pas fermer ici - laissez BluetoothContext gérer la fermeture
             // bottomSheet.close(); // Retiré pour éviter la double fermeture

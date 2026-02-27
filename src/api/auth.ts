@@ -93,4 +93,20 @@ export const authApi = {
   async changePassword(data: { currentPassword: string; newPassword: string }): Promise<void> {
     await apiClient.post('/api/auth/mobile/change-password', data);
   },
+
+  /**
+   * Enregistrer le token Expo Push pour les notifications
+   */
+  async registerPushToken(pushToken: string): Promise<void> {
+    await apiClient.post('/api/auth/mobile/push-token', { pushToken });
+  },
+
+  /**
+   * Supprimer le token Expo Push (à l'appel au logout)
+   */
+  async unregisterPushToken(pushToken?: string): Promise<void> {
+    await apiClient.delete('/api/auth/mobile/push-token', {
+      data: pushToken ? { pushToken } : {},
+    });
+  },
 };

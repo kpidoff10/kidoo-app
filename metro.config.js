@@ -40,7 +40,8 @@ config.resolver = {
 const sharedPath = path.resolve(projectRoot, '../kidoo-shared');
 const isMonorepo = fs.existsSync(sharedPath);
 if (isMonorepo) {
-  config.watchFolders = [monorepoRoot, sharedPath];
+  // Watch uniquement kidoo-app et kidoo-shared (pas monorepoRoot → évite kidoo-server/.next et ENOENT)
+  config.watchFolders = [projectRoot, sharedPath];
   config.resolver.nodeModulesPaths = [
     path.resolve(projectRoot, 'node_modules'),
     path.resolve(monorepoRoot, 'node_modules'),

@@ -979,6 +979,7 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
     brightness?: number;
     sleepTimeout?: number;
     firmwareVersion?: string;
+    publicKey?: string; // Clé publique Ed25519 pour authentification device
   }) => {
     if (!pendingDeviceForAddSheet) {
       return;
@@ -1004,6 +1005,7 @@ export function BluetoothProvider({ children }: BluetoothProviderProps) {
         firmwareVersion: formData.firmwareVersion || undefined,
         brightness: formData.brightness !== undefined ? formData.brightness : undefined,
         sleepTimeout: formData.sleepTimeout !== undefined ? formData.sleepTimeout : undefined,
+        publicKey: formData.publicKey || undefined, // Clé publique Ed25519 pour authentification device
       });
 
       // Fermer le sheet et nettoyer l'état de manière sécurisée

@@ -25,3 +25,4 @@ export {
   useUpdateDreamWakeupConfig,
   useTestDreamWakeup,
 } from './useDreamWakeup';
+export { useDreamNighttimeAlert } from './useDreamNighttimeAlert';

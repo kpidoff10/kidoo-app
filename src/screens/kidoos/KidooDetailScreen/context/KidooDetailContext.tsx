@@ -10,8 +10,9 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { UseMutationResult } from '@tanstack/react-query';
 import { showToast } from '@/components/ui';
-import { useKidooContext } from '@/contexts';
+import { useKidooContext, useDreamRealtimeContext } from '@/contexts';
 import { useBottomSheet, useFirmwareUpdateAvailable, KIDOOS_KEY } from '@/hooks';
+import type { CheckOnlineVariables } from '@/hooks/kidoo/useKidooCheckOnline';
 import { firmwareQueryKey } from '@/config/timings';
 import { RootStackParamList } from '@/navigation/types';
 import { kidoosApi, Kidoo } from '@/api';
@@ -25,7 +26,7 @@ export interface KidooDetailContextValue {
   checkOnline: UseMutationResult<
     { isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' },
     Error,
-    string,
+    CheckOnlineVariables,
     unknown
   >;
   editNameSheet: UseBottomSheetReturn;
@@ -64,6 +65,7 @@ export function KidooDetailProvider({ kidoo, kidooId, children }: KidooDetailPro
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { checkOnline } = useKidooContext();
+  const { isConnected: isPubNubConnected } = useDreamRealtimeContext();
   const editNameSheet = useBottomSheet();
   const wifiConfigSheet = useBottomSheet();
   const brightnessConfigSheet = useBottomSheet();
@@ -83,7 +85,7 @@ export function KidooDetailProvider({ kidoo, kidooId, children }: KidooDetailPro
       if (hasCheckedOnlineRef.current !== kidooId) {
         hasCheckedOnlineRef.current = kidooId;
         if (kidoo?.macAddress) {
-          checkOnline.mutateAsync(kidooId)
+          checkOnline.mutateAsync({ id: kidooId, skipDeviceStateUpdate: isPubNubConnected })
             .then((result) => {
               if (!result.isOnline) {
                 showToast.warning({
@@ -97,7 +99,7 @@ export function KidooDetailProvider({ kidoo, kidooId, children }: KidooDetailPro
             .catch(() => {});
         }
       }
-    }, [kidooId, kidoo?.macAddress, checkOnline, t])
+    }, [kidooId, kidoo?.macAddress, checkOnline, isPubNubConnected, t])
   );
 
   useLayoutEffect(() => {

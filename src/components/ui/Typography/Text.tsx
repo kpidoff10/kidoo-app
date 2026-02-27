@@ -41,6 +41,19 @@ export function Text({
     }
   };
 
+  const getLineHeight = (): number => {
+    switch (variant) {
+      case 'bodySmall':
+        return fonts.lineHeight.bodySmall;
+      case 'caption':
+        return fonts.lineHeight.caption;
+      case 'label':
+        return fonts.lineHeight.label;
+      default:
+        return fonts.lineHeight.body;
+    }
+  };
+
   const getColor = (): string => {
     switch (color) {
       case 'secondary':
@@ -63,6 +76,7 @@ export function Text({
       style={[
         {
           fontSize: getFontSize(),
+          lineHeight: getLineHeight(),
           color: getColor(),
           fontWeight: bold ? fonts.weight.semibold : fonts.weight.regular,
           textAlign: center ? 'center' : 'left',

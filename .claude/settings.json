@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Read(//c/Users/kpido/.platformio/penv/Scripts/**)",
+      "Bash(~/.platformio/penv/Scripts/pio.exe run:*)",
+      "Bash(~/.platformio/penv/Scripts/pio.exe clean:*)",
+      "Bash(npx prisma db push)",
+      "Bash(npx prisma db push --accept-data-loss)",
+      "Bash(npx prisma generate)",
+      "Bash(npx prisma migrate status)",
+      "Bash(npx prisma migrate resolve --applied 20260220120000_add_gotchi_to_kidoo_model_enum)",
+      "Bash(npx prisma migrate deploy)",
+      "Bash(npx prisma migrate resolve --rolled-back 20260305174238_refactor_notification_schema)",
+      "Bash(npm run db:migrate)",
+      "Bash(npm run db:push)",
+      "Bash(grep -l \"serial.*command\\\\|Serial.*cmd\" \"e:\\\\Documents\\\\PlatformIO\\\\Projects\\\\kidoo-workspace\\\\kidoo-esp32\\\\src\\\\models\\\\dream\\\\serial\"/*.cpp)"
+    ]
+  }
+}

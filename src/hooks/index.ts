@@ -21,6 +21,7 @@ export {
   useDreamWakeupConfig,
   useUpdateDreamWakeupConfig,
   useTestDreamWakeup,
+  useDreamNighttimeAlert,
 } from './kidoo';
 export { useBottomSheet } from './useBottomSheet';
 export type { UseBottomSheetReturn } from './useBottomSheet';
@@ -31,3 +32,6 @@ export type { OptimisticUpdateContext, UseOptimisticUpdateOptions } from './useO
 export { useCurrentWiFiSSID } from './useCurrentWiFiSSID';
 export { useFirmwareUpdateAvailable } from './useFirmwareUpdateAvailable';
 export type { UseFirmwareUpdateAvailableReturn } from './useFirmwareUpdateAvailable';
+export { usePushNotifications, registerForPushNotificationsAsync } from './usePushNotifications';
+export { useNotifications, useMarkNotificationAsRead, useDeleteNotification, useClearAllNotifications, getNotificationContent, type Notification, type NotificationsResponse } from './useNotifications';
+export { useAutoShowNighttimeAlert } from './useAutoShowNighttimeAlert';

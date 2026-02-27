@@ -16,11 +16,13 @@ import * as SplashScreen from 'expo-splash-screen';
 import { ThemeProvider, useTheme } from '@/theme';
 import { AuthProvider, NetworkProvider } from '@/contexts';
 import { AppReadyProvider } from '@/contexts/AppReadyContext';
+import { NighttimeAlertProvider } from '@/contexts/NighttimeAlertContext';
 import { queryClient, asyncStoragePersister, persistOptions } from '@/lib/queryClient';
 
 // Components
 import { ErrorBoundary, OfflineBanner } from '@/components';
 import { createToastConfig } from '@/components/ui';
+import { NighttimeAlertBottomSheet } from '@/components/NighttimeAlertBottomSheet/NighttimeAlertBottomSheet';
 
 // Navigation
 import { RootNavigator } from '@/navigation';
@@ -42,6 +44,7 @@ function AppContent() {
       />
       <OfflineBanner />
       <RootNavigator />
+      <NighttimeAlertBottomSheet />
       <Toast config={createToastConfig(isDark)} />
     </View>
   );
@@ -60,9 +63,11 @@ export function App() {
               >
                 <AppReadyProvider>
                   <NetworkProvider>
-                    <AuthProvider>
-                      <AppContent />
-                    </AuthProvider>
+                    <NighttimeAlertProvider>
+                      <AuthProvider>
+                        <AppContent />
+                      </AuthProvider>
+                    </NighttimeAlertProvider>
                   </NetworkProvider>
                 </AppReadyProvider>
               </PersistQueryClientProvider>

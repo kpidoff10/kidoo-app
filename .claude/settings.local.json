@@ -7,7 +7,13 @@
       "Bash(npx prisma migrate dev:*)",
       "Bash(find:*)",
       "Bash(npm install:*)",
-      "WebFetch(domain:fr.aliexpress.com)"
+      "WebFetch(domain:fr.aliexpress.com)",
+      "Bash(python -m platformio run:*)",
+      "Bash(git checkout:*)",
+      "Bash(pio run:*)",
+      "Bash(npm run db:generate)",
+      "Bash(grep -n \"export.*apiClient\" e:/Documents/PlatformIO/Projects/kidoo-workspace/kidoo-app/src/api/*.ts)",
+      "Bash(grep -A 20 'if \\(strcmp\\(action, \"\"nighttime-alert-ack\"\"\\)' \"e:\\\\Documents\\\\PlatformIO\\\\Projects\\\\kidoo-workspace\\\\kidoo-esp32\\\\src/models/dream/pubnub/model_pubnub_routes.cpp\")"
     ]
   }
 }

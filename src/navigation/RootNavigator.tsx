@@ -11,7 +11,7 @@ import { useTheme } from '@/theme';
 import { useAuth, BluetoothProvider, KidooProvider, KidooRealtimeProvider, KidooModelsRealtimeProvider } from '@/contexts';
 import { BluetoothSheets } from '@/contexts/bluetooth/BluetoothSheets';
 import { ScreenLoader } from '@/components/ui';
-import { LoginScreen, RegisterScreen, EditProfileScreen, KidooDetailScreen, BedtimeConfigScreen, WakeupConfigScreen } from '@/screens';
+import { LoginScreen, RegisterScreen, EditProfileScreen, KidooDetailScreen, BedtimeConfigScreen, WakeupConfigScreen, DreamHelpScreen, NotificationsScreen } from '@/screens';
 import { AppNavigator } from './AppNavigator';
 import { RootStackParamList } from './types';
 
@@ -54,6 +54,19 @@ export function RootNavigator() {
                 }}
               >
                 <Stack.Screen name="MainTabs" component={AppNavigator} />
+                <Stack.Screen
+                  name="Notifications"
+                  component={NotificationsScreen}
+                  options={{
+                    headerShown: true,
+                    title: '',
+                    headerBackTitle: '',
+                    headerTintColor: colors.text,
+                    headerStyle: {
+                      backgroundColor: colors.background,
+                    },
+                  }}
+                />
                 <Stack.Screen
                   name="EditProfile"
                   component={EditProfileScreen}
@@ -110,6 +123,18 @@ export function RootNavigator() {
                     backgroundColor: colors.background,
                   },
                 })}
+                />
+                <Stack.Screen
+                  name="DreamHelp"
+                  component={DreamHelpScreen}
+                  options={{
+                    headerShown: true,
+                    headerBackTitle: '',
+                    headerTintColor: colors.text,
+                    headerStyle: {
+                      backgroundColor: colors.background,
+                    },
+                  }}
                 />
                 </Stack.Navigator>
                 <BluetoothSheets />

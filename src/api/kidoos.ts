@@ -23,6 +23,8 @@ export interface Kidoo {
   firmwareVersion?: string; // Version du firmware ESP32 (renvoyée par l'API / get-info)
   /** État courant du device (Dream), renvoyé par check-online / get-info */
   deviceState?: 'idle' | 'bedtime' | 'wakeup';
+  /** Clé publique Ed25519 (base64) pour authentification device */
+  publicKey?: string | null;
 }
 
 /** Réponse capteur env — alignée avec kidoo-shared models/common/commands/get-env */
@@ -50,6 +52,8 @@ export interface CreateKidooRequest {
   firmwareVersion?: string;
   brightness?: number; // Brightness en pourcentage (0-100)
   sleepTimeout?: number; // Sleep timeout en millisecondes
+  /** Clé publique Ed25519 (base64) - générée par l'ESP32 au setup */
+  publicKey?: string;
 }
 
 export interface UpdateKidooRequest {
@@ -361,6 +365,41 @@ export const kidoosApi = {
       action,
       ...params,
     });
+    return response.data.data;
+  },
+
+  /**
+   * Récupérer l'état de l'alerte réveil nocturne (Dream)
+   */
+  async getDreamNighttimeAlert(id: string): Promise<{ nighttimeAlertEnabled: boolean }> {
+    const response = await apiClient.get<ApiResponse<{ nighttimeAlertEnabled: boolean }>>(
+      `/api/kidoos/${id}/dream-nighttime-alert`
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Envoyer le signal "J'arrive" à la veilleuse (rainbow 5 secondes).
+   * Appelé quand le parent tape le bouton sur la notification d'alerte nocturne.
+   */
+  async sendNighttimeAlertAck(id: string): Promise<{ sent: boolean }> {
+    const response = await apiClient.post<ApiResponse<{ sent: boolean }>>(
+      `/api/kidoos/${id}/nighttime-alert-ack`
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Activer/désactiver l'alerte réveil nocturne (Dream)
+   */
+  async updateDreamNighttimeAlert(
+    id: string,
+    nighttimeAlertEnabled: boolean
+  ): Promise<{ nighttimeAlertEnabled: boolean }> {
+    const response = await apiClient.patch<ApiResponse<{ nighttimeAlertEnabled: boolean }>>(
+      `/api/kidoos/${id}/dream-nighttime-alert`,
+      { nighttimeAlertEnabled }
+    );
     return response.data.data;
   },
 

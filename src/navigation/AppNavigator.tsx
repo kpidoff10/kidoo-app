@@ -4,13 +4,14 @@
  */
 
 import React, { useCallback } from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme';
 import { HomeScreen, KidoosListScreen, ProfileSheet } from '@/screens';
 import { Avatar } from '@/components/ui';
+import { NotificationsBellButton } from '@/components/NotificationsBellButton/NotificationsBellButton';
 import { useBottomSheet, useProfile } from '@/hooks';
 import { MainTabsParamList } from './types';
 
@@ -30,15 +31,18 @@ export function AppNavigator() {
     profileSheet.close();
   }, [profileSheet]);
 
-  const ProfileButton = useCallback(
+  const HeaderRight = useCallback(
     () => (
-      <TouchableOpacity
-        onPress={openProfileSheet}
-        style={styles.profileButton}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-      >
-        <Avatar name={user?.name || ''} size="sm" />
-      </TouchableOpacity>
+      <View style={styles.headerRight}>
+        <NotificationsBellButton size={24} />
+        <TouchableOpacity
+          onPress={openProfileSheet}
+          style={styles.profileButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Avatar name={user?.name || ''} size="sm" />
+        </TouchableOpacity>
+      </View>
     ),
     [user?.name, openProfileSheet]
   );
@@ -47,7 +51,7 @@ export function AppNavigator() {
     <>
       <Tab.Navigator
         screenOptions={{
-          headerRight: ProfileButton,
+          headerRight: HeaderRight,
           headerStyle: {
             backgroundColor: colors.background,
           },
@@ -89,7 +93,12 @@ export function AppNavigator() {
 }
 
 const styles = StyleSheet.create({
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+  },
   profileButton: {
-    marginRight: 16,
+    marginLeft: 8,
   },
 });

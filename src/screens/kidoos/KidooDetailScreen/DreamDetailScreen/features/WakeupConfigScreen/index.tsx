@@ -16,7 +16,7 @@ import {
   TimePickerSection,
   BrightnessSection,
   useScheduleConfigScreen,
-} from '../shared';
+} from '../../../../shared';
 import { ColorPickerSection } from './components';
 import { rgbToHex } from '@/utils/color';
 

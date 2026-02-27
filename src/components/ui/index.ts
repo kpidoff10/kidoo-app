@@ -19,6 +19,7 @@ export * from './Avatar';
 export * from './BottomSheet';
 export * from './BottomSheetActions';
 export * from './InfoBottomSheet';
+export * from './InfoBox';
 export * from './MenuList';
 export * from './ContentScrollView';
 export * from './Accordion';

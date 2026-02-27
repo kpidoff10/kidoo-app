@@ -12,6 +12,9 @@ import { getKidooModelDisplayName, getKidooModelIcon } from '@/config';
 import { useAuth } from '@/contexts';
 import moment from 'moment';
 
+/** Callbacks optionnels passés au model handler (ex: onConfigureBedtime pour Dream) */
+export type ModelMenuCallbacks = Record<string, (() => void) | undefined>;
+
 interface UseKidooMenuItemsParams {
   kidoo: Kidoo | undefined;
   modelHandler: ModelHandler | undefined;
@@ -26,11 +29,11 @@ interface UseKidooMenuItemsParams {
   onEditName?: () => void;
   onConfigureWiFi?: () => void;
   onConfigureBrightness?: () => void;
-  onConfigureBedtime?: () => void;
-  onConfigureWakeup?: () => void;
+  /** Callbacks spécifiques au modèle, passés au handler (Dream: onConfigureBedtime, onConfigureWakeup, etc.) */
+  modelCallbacks?: ModelMenuCallbacks;
 }
 
-export function useKidooMenuItems({ kidoo, modelHandler, hasFirmwareUpdate, isFirmwareCheckLoading, latestFirmwareVersion, onFirmwareUpdatePress, onEditName, onConfigureWiFi, onConfigureBrightness, onConfigureBedtime, onConfigureWakeup }: UseKidooMenuItemsParams): MenuListItem[] {
+export function useKidooMenuItems({ kidoo, modelHandler, hasFirmwareUpdate, isFirmwareCheckLoading, latestFirmwareVersion, onFirmwareUpdatePress, onEditName, onConfigureWiFi, onConfigureBrightness, modelCallbacks }: UseKidooMenuItemsParams): MenuListItem[] {
   const { t } = useTranslation();
   const { isDeveloper } = useAuth();
 
@@ -100,10 +103,7 @@ export function useKidooMenuItems({ kidoo, modelHandler, hasFirmwareUpdate, isFi
 
     // Items spécifiques au modèle (via le handler)
     const modelSpecificItems = modelHandler
-      ? modelHandler.getMenuItems(kidoo, t, {
-          onConfigureBedtime,
-          onConfigureWakeup,
-        })
+      ? modelHandler.getMenuItems(kidoo, t, modelCallbacks)
       : [];
 
     // Version du firmware (toujours en dernier, après les items communs et custom)
@@ -124,5 +124,5 @@ export function useKidooMenuItems({ kidoo, modelHandler, hasFirmwareUpdate, isFi
     };
 
     return [...commonItems, ...modelSpecificItems, firmwareItem];
-  }, [kidoo, modelHandler, isDeveloper, hasFirmwareUpdate, isFirmwareCheckLoading, latestFirmwareVersion, onFirmwareUpdatePress, onEditName, onConfigureWiFi, onConfigureBrightness, onConfigureBedtime, onConfigureWakeup, t]);
+  }, [kidoo, modelHandler, isDeveloper, hasFirmwareUpdate, isFirmwareCheckLoading, latestFirmwareVersion, onFirmwareUpdatePress, onEditName, onConfigureWiFi, onConfigureBrightness, modelCallbacks, t]);
 }

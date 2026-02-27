@@ -6,15 +6,17 @@ export type RootStackParamList = {
   // Auth screens
   Login: undefined;
   Register: undefined;
-  
+
   // Main app
   MainTabs: undefined;
-  
+
   // Modals
+  Notifications: undefined;
   KidooDetail: { kidooId: string };
   EditProfile: undefined;
   BedtimeConfig: { kidooId: string };
   WakeupConfig: { kidooId: string };
+  DreamHelp: { kidooId?: string };
 };
 
 export type MainTabsParamList = {

@@ -17,6 +17,7 @@ import { DeleteKidooButton } from '../components/DeleteKidooButton';
 import { useKidooMenuItems } from '../hooks/useKidooMenuItems';
 import { DreamDetailScreenProvider } from './context';
 import { DreamStickyHeader, DreamDetailSheets } from './components';
+import { useBottomSheet } from '@/hooks';
 
 export function DreamDetailScreen() {
   const { colors } = useTheme();
@@ -25,6 +26,8 @@ export function DreamDetailScreen() {
   const detail = useKidooDetailContext();
   const { kidooId } = detail;
   const modelHandler = getKidooModelHandler(kidooId);
+  const nighttimeAlertSheet = useBottomSheet();
+  
 
   const handleConfigureBedtime = useCallback(() => {
     navigation.navigate('BedtimeConfig', { kidooId });
@@ -32,6 +35,14 @@ export function DreamDetailScreen() {
 
   const handleConfigureWakeup = useCallback(() => {
     navigation.navigate('WakeupConfig', { kidooId });
+  }, [navigation, kidooId]);
+
+  const handleConfigureNighttimeAlert = useCallback(() => {
+    nighttimeAlertSheet.open();
+  }, [nighttimeAlertSheet]);
+
+  const handleConfigureDreamHelp = useCallback(() => {
+    navigation.navigate('DreamHelp', { kidooId });
   }, [navigation, kidooId]);
 
   const menuItems = useKidooMenuItems({
@@ -44,8 +55,12 @@ export function DreamDetailScreen() {
     onEditName: detail.handleEditName,
     onConfigureWiFi: detail.handleConfigureWiFi,
     onConfigureBrightness: detail.handleConfigureBrightness,
-    onConfigureBedtime: handleConfigureBedtime,
-    onConfigureWakeup: handleConfigureWakeup,
+    modelCallbacks: {
+      onConfigureBedtime: handleConfigureBedtime,
+      onConfigureWakeup: handleConfigureWakeup,
+      onConfigureNighttimeAlert: handleConfigureNighttimeAlert,
+      onConfigureDreamHelp: handleConfigureDreamHelp,
+    },
   });
 
   const deviceState = (detail.kidoo.deviceState ?? 'idle') as 'idle' | 'bedtime' | 'wakeup';
@@ -60,7 +75,7 @@ export function DreamDetailScreen() {
           <DeleteKidooButton kidoo={detail.kidoo} deleteKidoo={deleteKidoo} />
         </ContentScrollView>
 
-        <DreamDetailSheets />
+        <DreamDetailSheets nighttimeAlertSheet={nighttimeAlertSheet} />
       </View>
     </DreamDetailScreenProvider>
   );

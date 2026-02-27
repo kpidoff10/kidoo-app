@@ -44,6 +44,11 @@ export const lineHeight = {
   tight: 1.25,
   normal: 1.5,
   relaxed: 1.75,
+  /** Valeurs absolues (px) pour les variants Text */
+  body: 22,
+  bodySmall: 20,
+  caption: 16,
+  label: 20,
 };
 
 export const fonts = {

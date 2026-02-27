@@ -31,6 +31,7 @@ interface Step3FinalizationProps {
     brightness?: number;
     sleepTimeout?: number;
     firmwareVersion?: string;
+    publicKey?: string; // Clé publique Ed25519 pour authentification device
   }) => void; // Callback appelé quand tout est réussi, avec les données du device
 }
 
@@ -54,6 +55,7 @@ export function Step3Finalization({ device, onSuccess }: Step3FinalizationProps)
   const [brightness, setBrightness] = useState<number | undefined>();
   const [sleepTimeout, setSleepTimeout] = useState<number | undefined>();
   const [firmwareVersion, setFirmwareVersion] = useState<string | undefined>();
+  const [publicKey, setPublicKey] = useState<string | undefined>();
 
   // Écouter les changements de connexion BLE
   useEffect(() => {
@@ -220,6 +222,9 @@ export function Step3Finalization({ device, onSuccess }: Step3FinalizationProps)
             }
             if (result.firmwareVersion) {
               setFirmwareVersion(result.firmwareVersion);
+            }
+            if (result.publicKey) {
+              setPublicKey(result.publicKey);
             }
             
             setWifiValidation({
@@ -422,6 +427,7 @@ export function Step3Finalization({ device, onSuccess }: Step3FinalizationProps)
                   brightness,
                   sleepTimeout,
                   firmwareVersion,
+                  publicKey,
                 });
               } catch (error) {
                 // Capturer les erreurs lors de l'appel à onSuccess
