@@ -26,6 +26,7 @@ export class DreamModelHandler implements ModelHandler {
       onConfigureBedtime?: () => void;
       onConfigureWakeup?: () => void;
       onConfigureNighttimeAlert?: () => void;
+      onConfigureDefaultColor?: () => void;
       onConfigureDreamHelp?: () => void;
       [key: string]: (() => void) | undefined;
     }
@@ -34,7 +35,7 @@ export class DreamModelHandler implements ModelHandler {
 
     items.push({
       label: t('kidoos.dream.bedtime.title', { defaultValue: 'Heure de coucher' }),
-      value: t('kidoos.dream.bedtime.configure', { defaultValue: 'Configurer' }),
+      value: t('kidoos.dream.bedtime.subtitle', { defaultValue: 'Horaires et couleurs par jour' }),
       icon: 'moon-outline',
       onPress: callbacks?.onConfigureBedtime || (() => {
         if (__DEV__) console.log('Bedtime configuration pressed for Dream');
@@ -43,7 +44,7 @@ export class DreamModelHandler implements ModelHandler {
 
     items.push({
       label: t('kidoos.dream.wakeup.title', { defaultValue: 'Heure de réveil' }),
-      value: t('kidoos.dream.wakeup.configure', { defaultValue: 'Configurer' }),
+      value: t('kidoos.dream.wakeup.subtitle', { defaultValue: 'Horaires et couleurs par jour' }),
       icon: 'sunny-outline',
       onPress: callbacks?.onConfigureWakeup || (() => {
         if (__DEV__) console.log('Wakeup configuration pressed for Dream');
@@ -52,7 +53,7 @@ export class DreamModelHandler implements ModelHandler {
 
     items.push({
       label: t('kidoos.dream.nighttimeAlert.title', { defaultValue: 'Alerte veilleuse' }),
-      value: t('kidoos.dream.nighttimeAlert.configure', { defaultValue: 'Configurer' }),
+      value: t('kidoos.dream.nighttimeAlert.subtitle', { defaultValue: 'Alerte si l\'enfant se lève' }),
       icon: 'notifications-outline',
       onPress: callbacks?.onConfigureNighttimeAlert || (() => {
         if (__DEV__) console.log('Nighttime alert configuration pressed for Dream');

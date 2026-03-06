@@ -17,25 +17,6 @@ export function useDreamWakeupConfig(kidooId: string) {
   });
 }
 
-export function useTestDreamWakeup() {
-  const { t } = useTranslation();
-
-  return useMutation({
-    mutationFn: ({
-      id,
-      action,
-      params,
-    }: {
-      id: string;
-      action: 'start' | 'stop';
-      params?: { hour?: number; minute?: number; color?: string; brightness?: number };
-    }) => kidoosApi.testDreamWakeup(id, action, params),
-    onError: () => {
-      showToast.error({ title: t('toast.error'), message: t('errors.generic') });
-    },
-  });
-}
-
 export function useUpdateDreamWakeupConfig() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();

@@ -11,7 +11,7 @@ import { Text } from '@/components/ui';
 import { CurrentModeCard } from './CurrentModeCard';
 import { EnvBlock } from './EnvBlock';
 
-type DeviceState = 'idle' | 'bedtime' | 'wakeup';
+type DeviceState = 'idle' | 'bedtime' | 'wakeup' | 'manual';
 
 interface DreamStickyHeaderProps {
   deviceState: DeviceState;
@@ -19,7 +19,7 @@ interface DreamStickyHeaderProps {
 
 const MODE_CONFIG: Record<
   DeviceState,
-  { icon: 'moon' | 'sunny' | 'sparkles'; labelKey: string; getBg: (c: { primary: string; warning: string; backgroundSecondary: string; border: string }) => string; getBorder: (c: { primary: string; warning: string; border: string }) => string }
+  { icon: 'moon' | 'sunny' | 'sparkles' | 'hand-left'; labelKey: string; getBg: (c: { primary: string; warning: string; backgroundSecondary: string; border: string }) => string; getBorder: (c: { primary: string; warning: string; border: string }) => string }
 > = {
   bedtime: {
     icon: 'moon',
@@ -32,6 +32,12 @@ const MODE_CONFIG: Record<
     labelKey: 'kidoos.detail.deviceState.wakeup',
     getBg: (c) => c.warning + '25',
     getBorder: (c) => c.warning,
+  },
+  manual: {
+    icon: 'hand-left',
+    labelKey: 'kidoos.detail.deviceState.manual',
+    getBg: (c) => c.primary + '18',
+    getBorder: (c) => c.primary,
   },
   idle: {
     icon: 'sparkles',

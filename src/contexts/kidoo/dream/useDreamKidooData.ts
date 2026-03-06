@@ -17,8 +17,8 @@ export interface DreamKidooData {
   envData: KidooEnvResponse | undefined;
   envIsLoading: boolean;
   envIsError: boolean;
-  /** État courant du device : idle | bedtime | wakeup */
-  deviceState: 'idle' | 'bedtime' | 'wakeup';
+  /** État courant du device : idle | bedtime | wakeup | manual */
+  deviceState: 'idle' | 'bedtime' | 'wakeup' | 'manual';
   /** PubNub connecté et abonné */
   isConnected: boolean;
 }

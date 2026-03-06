@@ -8,8 +8,10 @@ import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 // Options pour que les tokens persistent après fermeture de l'app (iOS keychain / Android keystore)
+// ALWAYS_THIS_DEVICE_ONLY: Accessible même quand l'appareil est verrouillé, mais limité à ce device
+// (Plus sûr que WHEN_UNLOCKED_THIS_DEVICE_ONLY qui empêche la lecture si l'appareil est bloqué)
 const TOKEN_STORE_OPTIONS = Platform.OS === 'web' ? undefined : {
-  keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+  keychainAccessible: SecureStore.ALWAYS_THIS_DEVICE_ONLY,
 };
 
 const KEYS = {

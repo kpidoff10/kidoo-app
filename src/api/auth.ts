@@ -14,6 +14,7 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
+  timezoneId: string;
 }
 
 export interface AuthResponse {
@@ -30,6 +31,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  avatar?: string;
+  timezoneId?: string;
 }
 
 export const authApi = {
@@ -69,6 +72,14 @@ export const authApi = {
    */
   async updateProfile(data: { name?: string }): Promise<User> {
     const response = await apiClient.patch<User>('/api/auth/mobile/me', data);
+    return response.data;
+  },
+
+  /**
+   * Mettre à jour la timezone
+   */
+  async updateTimezone(timezoneId: string): Promise<User> {
+    const response = await apiClient.patch<User>('/api/users/me', { timezoneId });
     return response.data;
   },
 

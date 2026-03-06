@@ -11,6 +11,7 @@ import { Button, BottomSheetActions, MenuList, ContentScrollView } from '@/compo
 import { useTheme } from '@/theme';
 import { EditNameSheet } from './components/EditNameSheet';
 import { ChangePasswordSheet } from './components/ChangePasswordSheet';
+import { EditTimezoneSheet } from './components/EditTimezoneSheet';
 import { useBottomSheet, useProfile } from '@/hooks';
 
 export function EditProfileScreen() {
@@ -20,6 +21,7 @@ export function EditProfileScreen() {
   const deleteAccountSheetRef = useRef<TrueSheet>(null);
   const editNameSheet = useBottomSheet();
   const changePasswordSheet = useBottomSheet();
+  const editTimezoneSheet = useBottomSheet();
 
   const handleNamePress = useCallback(() => {
     editNameSheet.open();
@@ -28,6 +30,10 @@ export function EditProfileScreen() {
   const handleChangePasswordPress = useCallback(() => {
     changePasswordSheet.open();
   }, [changePasswordSheet]);
+
+  const handleTimezonePress = useCallback(() => {
+    editTimezoneSheet.open();
+  }, [editTimezoneSheet]);
 
   // Configuration des items du menu
   const menuItems = useMemo(
@@ -45,13 +51,19 @@ export function EditProfileScreen() {
         disabled: true, // Email non modifiable
       },
       {
+        label: t('profile.timezone', { defaultValue: 'Fuseau horaire' }),
+        value: (user as any)?.timezoneId || 'UTC',
+        icon: 'globe-outline' as const,
+        onPress: handleTimezonePress,
+      },
+      {
         label: t('profile.changePassword', { defaultValue: 'Modifier le mot de passe' }),
         value: '••••••••',
         icon: 'lock-closed-outline' as const,
         onPress: handleChangePasswordPress,
       },
     ],
-    [user?.name, user?.email, handleNamePress, handleChangePasswordPress, t]
+    [user?.name, user?.email, (user as any)?.timezoneId, handleNamePress, handleChangePasswordPress, handleTimezonePress, t]
   );
 
   const handleDeleteAccountPress = useCallback(() => {
@@ -108,6 +120,12 @@ export function EditProfileScreen() {
 
       {/* Bottom Sheet pour modifier le nom */}
       <EditNameSheet bottomSheet={editNameSheet} />
+
+      {/* Bottom Sheet pour modifier le fuseau horaire */}
+      <EditTimezoneSheet
+        bottomSheet={editTimezoneSheet}
+        currentTimezone={(user as any)?.timezoneId || 'UTC'}
+      />
 
       {/* Bottom Sheet pour modifier le mot de passe */}
       <ChangePasswordSheet bottomSheet={changePasswordSheet} />

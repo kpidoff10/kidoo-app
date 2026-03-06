@@ -18,11 +18,10 @@ export {
   useUpdateDreamBedtimeConfig,
   useControlDreamBedtime,
   useStopDreamRoutine,
-  useTestDreamBedtime,
 } from './useDreamBedtime';
 export {
   useDreamWakeupConfig,
   useUpdateDreamWakeupConfig,
-  useTestDreamWakeup,
 } from './useDreamWakeup';
 export { useDreamNighttimeAlert } from './useDreamNighttimeAlert';
+export { useDreamDefaultColor } from './useDreamDefaultColor';

@@ -17,8 +17,8 @@ export function NighttimeAlertBottomSheet() {
   const bottomSheet = useBottomSheet();
   const { spacing, colors } = useTheme();
   const markAsRead = useMarkNotificationAsRead();
-  const [loading, setLoading] = useState(false);
-  const isProcessingRef = useRef(false);
+  const [respondingLoading, setRespondingLoading] = useState(false);
+  const [dismissingLoading, setDismissingLoading] = useState(false);
 
   // Ouvrir le sheet automatiquement quand une alerte est reçue
   useEffect(() => {
@@ -36,20 +36,15 @@ export function NighttimeAlertBottomSheet() {
     }
   }, [pendingAlert, bottomSheet]);
 
-  // Réinitialiser le loading quand une nouvelle alerte arrive
+  // Réinitialiser les loadings quand une nouvelle alerte arrive
   useEffect(() => {
-    setLoading(false);
+    setRespondingLoading(false);
+    setDismissingLoading(false);
   }, [pendingAlert?.kidooId]);
 
   const handleRespond = async () => {
-    // Eviter les appels multiples
-    if (isProcessingRef.current || loading) {
-      console.log('[NighttimeAlertBottomSheet] Opération déjà en cours, appel ignoré');
-      return;
-    }
-
-    isProcessingRef.current = true;
-    setLoading(true);
+    if (!pendingAlert) return;
+    setRespondingLoading(true);
     try {
       console.log('[NighttimeAlertBottomSheet] Envoi réponse pour:', pendingAlert.kidooId);
       await kidoosApi.sendNighttimeAlertAck(pendingAlert.kidooId);
@@ -61,29 +56,22 @@ export function NighttimeAlertBottomSheet() {
       }
 
       // Dismisser la notification du centre de notifications du téléphone
-      if (pendingAlert.notificationId) {
+      if (pendingAlert?.notificationId) {
         await Notifications.dismissNotificationAsync(pendingAlert.notificationId);
       }
 
+      // Juste nettoyer le contexte - l'effet gère la fermeture du sheet
       clearPendingAlert();
-      await bottomSheet.close();
     } catch (error) {
       console.error('[NighttimeAlert] Erreur envoi réponse:', error);
     } finally {
-      setLoading(false);
-      isProcessingRef.current = false;
+      setRespondingLoading(false);
     }
   };
 
   const handleDismiss = async () => {
-    // Eviter les appels multiples
-    if (isProcessingRef.current || loading) {
-      console.log('[NighttimeAlertBottomSheet] Opération déjà en cours, appel ignoré');
-      return;
-    }
-
-    isProcessingRef.current = true;
-    setLoading(true);
+    if (!pendingAlert) return;
+    setDismissingLoading(true);
     try {
       // Marquer la notification comme lue en base de données
       if (pendingAlert?.dbNotificationId) {
@@ -93,10 +81,9 @@ export function NighttimeAlertBottomSheet() {
     } catch (error) {
       console.error('[NighttimeAlertBottomSheet] Erreur marquage notification:', error);
     } finally {
+      // Juste nettoyer le contexte - l'effet gère la fermeture du sheet
       clearPendingAlert();
-      await bottomSheet.close();
-      setLoading(false);
-      isProcessingRef.current = false;
+      setDismissingLoading(false);
     }
   };
 
@@ -106,7 +93,7 @@ export function NighttimeAlertBottomSheet() {
       ref={bottomSheet.ref}
       name={bottomSheet.id}
       detents={['auto']}
-      onDismiss={bottomSheet.handleDidDismiss}
+      onDismiss={() => bottomSheet.handleDidDismiss({} as any)}
     >
       {pendingAlert && !isAlertExpired(pendingAlert) && (
         <>
@@ -136,24 +123,28 @@ export function NighttimeAlertBottomSheet() {
               style={({ pressed }) => [
                 styles.buttonIgnorer,
                 pressed && styles.buttonPressed,
-                loading && styles.buttonDisabled,
+                (respondingLoading || dismissingLoading) && styles.buttonDisabled,
               ]}
               onPress={handleDismiss}
-              disabled={loading}
+              disabled={respondingLoading || dismissingLoading}
             >
-              <Text style={styles.buttonIgnorerText}>Ignorer</Text>
+              {dismissingLoading ? (
+                <ActivityIndicator size="small" color={colors.text} />
+              ) : (
+                <Text style={styles.buttonIgnorerText}>Ignorer</Text>
+              )}
             </Pressable>
 
             <Pressable
               style={({ pressed }) => [
                 styles.buttonArrive,
                 pressed && styles.buttonArrivePressedState,
-                loading && styles.buttonDisabled,
+                (respondingLoading || dismissingLoading) && styles.buttonDisabled,
               ]}
               onPress={handleRespond}
-              disabled={loading}
+              disabled={respondingLoading || dismissingLoading}
             >
-              {loading ? (
+              {respondingLoading ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
                 <Text style={styles.buttonArriveText}>J'arrive</Text>

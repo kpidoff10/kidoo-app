@@ -17,11 +17,10 @@ export {
   useUpdateDreamBedtimeConfig,
   useControlDreamBedtime,
   useStopDreamRoutine,
-  useTestDreamBedtime,
   useDreamWakeupConfig,
   useUpdateDreamWakeupConfig,
-  useTestDreamWakeup,
   useDreamNighttimeAlert,
+  useDreamDefaultColor,
 } from './kidoo';
 export { useBottomSheet } from './useBottomSheet';
 export type { UseBottomSheetReturn } from './useBottomSheet';

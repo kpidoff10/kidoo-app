@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { KIDOOS_KEY } from './keys';
 import { useKidooCheckOnline } from './useKidooCheckOnline';
 import { hexToRgb } from '@/utils/color';
+import { CHECK_ONLINE_AFTER_START_MS } from '@/config/timings';
 
 export function useDreamBedtimeConfig(kidooId: string) {
   return useQuery({
@@ -31,7 +32,9 @@ export function useControlDreamBedtime() {
     },
     onSuccess: (_data, variables) => {
       // Mise à jour optimiste du deviceState (évite d'attendre PubNub ou checkOnline)
-      const deviceState = variables.action === 'start' ? 'bedtime' : 'idle';
+      // 'manual' = routine démarrée manuellement → affichage "Manuel" dans l'app
+      const deviceState = variables.action === 'start' ? 'manual' : 'idle';
+      if (__DEV__) console.log('[useDreamBedtime] setQueryData deviceState:', deviceState, 'kidooId:', variables.id);
       queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) =>
         old?.map((k) =>
           k.id === variables.id ? { ...k, deviceState } : k
@@ -78,25 +81,6 @@ export function useStopDreamRoutine() {
         message: t('kidoos.dream.routine.stopped', { defaultValue: 'Routine arrêtée' }),
       });
       checkOnline.mutate(id);
-    },
-  });
-}
-
-export function useTestDreamBedtime() {
-  const { t } = useTranslation();
-
-  return useMutation({
-    mutationFn: ({
-      id,
-      action,
-      params,
-    }: {
-      id: string;
-      action: 'start' | 'stop';
-      params?: { hour?: number; minute?: number; color?: string; brightness?: number };
-    }) => kidoosApi.testDreamBedtime(id, action, params),
-    onError: () => {
-      showToast.error({ title: t('toast.error'), message: t('errors.generic') });
     },
   });
 }

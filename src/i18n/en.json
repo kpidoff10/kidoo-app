@@ -78,7 +78,8 @@
       "deviceState": {
         "idle": "Ready",
         "bedtime": "Night",
-        "wakeup": "Wake-up in progress"
+        "wakeup": "Wake-up in progress",
+        "manual": "Manual"
       }
     },
     "actions": {
@@ -198,6 +199,10 @@
     "logout": "Logout",
     "logoutConfirm": "Are you sure you want to logout?",
     "deleteAccount": "Delete my account",
+    "editName": "Edit name",
+    "name": "Name",
+    "email": "Email",
+    "timezone": "Timezone",
     "changePassword": "Change password",
     "currentPassword": "Current password",
     "currentPasswordPlaceholder": "Enter your current password",

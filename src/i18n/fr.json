@@ -104,7 +104,8 @@
       "deviceState": {
         "idle": "Prêt",
         "bedtime": "Nuit",
-        "wakeup": "Réveil en cours"
+        "wakeup": "Réveil en cours",
+        "manual": "Manuel"
       }
     },
     "dream": {
@@ -256,6 +257,7 @@
     "editName": "Modifier le nom",
     "name": "Nom",
     "email": "Email",
+    "timezone": "Fuseau horaire",
     "changePassword": "Modifier le mot de passe",
     "currentPassword": "Mot de passe actuel",
     "currentPasswordPlaceholder": "Entrez votre mot de passe actuel",

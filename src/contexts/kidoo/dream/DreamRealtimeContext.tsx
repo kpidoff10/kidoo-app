@@ -22,7 +22,7 @@ import { DREAM_NIGHTTIME_ALERT_KEY } from '@/hooks/kidoo/useDreamNighttimeAlert'
 import { queryClient } from '@/lib/queryClient';
 import type { KidooEnvResponse, Kidoo } from '@/api';
 
-type DeviceState = 'idle' | 'bedtime' | 'wakeup';
+type DeviceState = 'idle' | 'bedtime' | 'wakeup' | 'manual';
 
 interface DreamRealtimeData {
   env: Record<string, KidooEnvResponse>;
@@ -56,6 +56,7 @@ function routineStateToDeviceState(routine: string, state: string): DeviceState 
     if (routine === 'bedtime') return 'bedtime';
     if (routine === 'wakeup') return 'wakeup';
   }
+  if (state === 'manual' && routine === 'bedtime') return 'manual';
   return 'idle';
 }
 
@@ -124,6 +125,11 @@ function DreamRealtimeSubscriber({ config, onData, onRoutineState, onNighttimeAl
           };
         } else if (msgType === 'info') {
           next.info[kidooId] = parsed!;
+          // get-info inclut deviceState → mettre à jour le cache (idle, bedtime, wakeup, manual)
+          const infoDeviceState = parsed!.deviceState as string | undefined;
+          if (infoDeviceState && ['idle', 'bedtime', 'wakeup', 'manual'].includes(infoDeviceState)) {
+            onRoutineState(kidooId, infoDeviceState as DeviceState);
+          }
           // get-info inclut env → extraire pour éviter un get-env séparé à l'init
           const envObj = parsed!.env as Record<string, unknown> | undefined;
           if (envObj && envObj.available === true) {
@@ -181,6 +187,7 @@ export function DreamRealtimeProvider({ children }: DreamRealtimeProviderProps) 
 
   const handleRoutineState = useCallback(
     (kidooId: string, deviceState: DeviceState) => {
+      if (__DEV__) console.log('[DreamRealtimeContext] handleRoutineState deviceState:', deviceState, 'kidooId:', kidooId);
       queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) => {
         if (!old) return old;
         return old.map((k) => (k.id === kidooId ? { ...k, deviceState } : k));

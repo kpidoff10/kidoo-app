@@ -27,7 +27,6 @@ export function DreamDetailScreen() {
   const { kidooId } = detail;
   const modelHandler = getKidooModelHandler(kidooId);
   const nighttimeAlertSheet = useBottomSheet();
-  
 
   const handleConfigureBedtime = useCallback(() => {
     navigation.navigate('BedtimeConfig', { kidooId });
@@ -40,6 +39,10 @@ export function DreamDetailScreen() {
   const handleConfigureNighttimeAlert = useCallback(() => {
     nighttimeAlertSheet.open();
   }, [nighttimeAlertSheet]);
+
+  const handleConfigureDefaultColor = useCallback(() => {
+    navigation.navigate('DefaultColorConfig', { kidooId });
+  }, [navigation, kidooId]);
 
   const handleConfigureDreamHelp = useCallback(() => {
     navigation.navigate('DreamHelp', { kidooId });
@@ -59,11 +62,15 @@ export function DreamDetailScreen() {
       onConfigureBedtime: handleConfigureBedtime,
       onConfigureWakeup: handleConfigureWakeup,
       onConfigureNighttimeAlert: handleConfigureNighttimeAlert,
+      onConfigureDefaultColor: handleConfigureDefaultColor,
       onConfigureDreamHelp: handleConfigureDreamHelp,
     },
   });
 
-  const deviceState = (detail.kidoo.deviceState ?? 'idle') as 'idle' | 'bedtime' | 'wakeup';
+  const deviceState = (detail.kidoo.deviceState ?? 'idle') as 'idle' | 'bedtime' | 'wakeup' | 'manual';
+  if (__DEV__) {
+    console.log('[DreamDetail] deviceState:', deviceState, '| kidoo.deviceState:', detail.kidoo.deviceState, '| kidooId:', kidooId);
+  }
 
   return (
     <DreamDetailScreenProvider kidooId={kidooId}>

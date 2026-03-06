@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { WeekdaySelector, Weekday, Text } from '@/components/ui';
 import { useTheme } from '@/theme';
 
-export type ScheduleI18nPrefix = 'kidoos.dream.bedtime' | 'kidoos.dream.wakeup';
+export type ScheduleI18nPrefix = 'kidoos.dream.bedtime' | 'kidoos.dream.wakeup' | 'kidoos.dream.defaultColor';
 
 interface WeekdaySelectorSectionProps {
   i18nPrefix: ScheduleI18nPrefix;

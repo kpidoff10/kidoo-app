@@ -24,7 +24,7 @@ export interface KidooDetailContextValue {
   kidoo: Kidoo;
   kidooId: string;
   checkOnline: UseMutationResult<
-    { isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' },
+    { isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual' },
     Error,
     CheckOnlineVariables,
     unknown

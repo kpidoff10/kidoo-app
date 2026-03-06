@@ -2,7 +2,7 @@
  * Register Form Component
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { TextInput, PasswordInput, Button, Text } from '@/components/ui';
 import { useTheme } from '@/theme';
+import { detectDeviceTimezone } from '@/utils/timezone';
 
 const registerSchema = z
   .object({
@@ -26,7 +27,7 @@ const registerSchema = z
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 interface RegisterFormProps {
-  onSubmit: (data: { name: string; email: string; password: string }) => Promise<void>;
+  onSubmit: (data: { name: string; email: string; password: string; timezoneId: string }) => Promise<void>;
   onLoginPress: () => void;
   isLoading: boolean;
 }
@@ -34,6 +35,7 @@ interface RegisterFormProps {
 export function RegisterForm({ onSubmit, onLoginPress, isLoading }: RegisterFormProps) {
   const { t } = useTranslation();
   const { spacing } = useTheme();
+  const detectedTimezone = useMemo(() => detectDeviceTimezone(), []);
 
   const {
     control,
@@ -51,7 +53,10 @@ export function RegisterForm({ onSubmit, onLoginPress, isLoading }: RegisterForm
 
   const handleFormSubmit = (data: RegisterFormData) => {
     const { confirmPassword, ...submitData } = data;
-    return onSubmit(submitData);
+    return onSubmit({
+      ...submitData,
+      timezoneId: detectedTimezone,
+    });
   };
 
   return (

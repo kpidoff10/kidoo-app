@@ -22,7 +22,7 @@ export interface Kidoo {
   brightness?: number; // Luminosité générale (0-100%)
   firmwareVersion?: string; // Version du firmware ESP32 (renvoyée par l'API / get-info)
   /** État courant du device (Dream), renvoyé par check-online / get-info */
-  deviceState?: 'idle' | 'bedtime' | 'wakeup';
+  deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual';
   /** Clé publique Ed25519 (base64) pour authentification device */
   publicKey?: string | null;
 }
@@ -224,13 +224,13 @@ export const kidoosApi = {
 
   /**
    * Vérifier si un Kidoo est en ligne (envoie get-info à l'ESP).
-   * Pour les Dream, retourne aussi deviceState (idle, bedtime, wakeup) quand disponible.
+   * Pour les Dream, retourne aussi deviceState (idle, bedtime, wakeup, manual) quand disponible.
    */
   async checkOnline(
     id: string
-  ): Promise<{ isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' }> {
+  ): Promise<{ isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual' }> {
     const response = await apiClient.get<
-      ApiResponse<{ isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' }>
+      ApiResponse<{ isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual' }>
     >(`/api/kidoos/${id}/check-online`);
     return response.data.data;
   },
@@ -307,68 +307,6 @@ export const kidoosApi = {
   },
 
   /**
-   * Tester la configuration de l'heure de coucher (Dream)
-   * Teste uniquement la couleur et la luminosité
-   */
-  async testDreamBedtime(
-    id: string,
-    action: 'start' | 'stop',
-    params?: {
-      color?: string; // Hex color
-      brightness?: number;
-    }
-  ): Promise<{
-    action: 'start' | 'stop';
-    colorR?: number;
-    colorG?: number;
-    colorB?: number;
-    brightness?: number;
-  }> {
-    const response = await apiClient.post<ApiResponse<{
-      action: 'start' | 'stop';
-      colorR?: number;
-      colorG?: number;
-      colorB?: number;
-      brightness?: number;
-    }>>(`/api/kidoos/${id}/dream-bedtime-test`, {
-      action,
-      ...params,
-    });
-    return response.data.data;
-  },
-
-  /**
-   * Tester la configuration de l'heure de réveil (Dream)
-   * Teste uniquement la couleur et la luminosité
-   */
-  async testDreamWakeup(
-    id: string,
-    action: 'start' | 'stop',
-    params?: {
-      color?: string; // Hex color
-      brightness?: number;
-    }
-  ): Promise<{
-    action: 'start' | 'stop';
-    colorR?: number;
-    colorG?: number;
-    colorB?: number;
-    brightness?: number;
-  }> {
-    const response = await apiClient.post<ApiResponse<{
-      action: 'start' | 'stop';
-      colorR?: number;
-      colorG?: number;
-      colorB?: number;
-      brightness?: number;
-    }>>(`/api/kidoos/${id}/dream-wakeup-test`, {
-      action,
-      ...params,
-    });
-    return response.data.data;
-  },
-
-  /**
    * Récupérer l'état de l'alerte réveil nocturne (Dream)
    */
   async getDreamNighttimeAlert(id: string): Promise<{ nighttimeAlertEnabled: boolean }> {
@@ -400,6 +338,59 @@ export const kidoosApi = {
       `/api/kidoos/${id}/dream-nighttime-alert`,
       { nighttimeAlertEnabled }
     );
+    return response.data.data;
+  },
+
+  /**
+   * Récupérer la configuration de couleur/effet par défaut (Dream)
+   */
+  async getDreamDefaultColor(id: string): Promise<{
+    colorR: number;
+    colorG: number;
+    colorB: number;
+    brightness: number;
+    effect: string | null;
+  }> {
+    const response = await apiClient.get<
+      ApiResponse<{
+        colorR: number;
+        colorG: number;
+        colorB: number;
+        brightness: number;
+        effect: string | null;
+      }>
+    >(`/api/kidoos/${id}/dream-default-color`);
+    return response.data.data;
+  },
+
+  /**
+   * Mettre à jour la configuration de couleur/effet par défaut (Dream)
+   */
+  async updateDreamDefaultColor(
+    id: string,
+    data: {
+      colorR?: number;
+      colorG?: number;
+      colorB?: number;
+      brightness?: number;
+      effect?: string | null;
+    }
+  ): Promise<{
+    colorR: number;
+    colorG: number;
+    colorB: number;
+    brightness: number;
+    effect: string | null;
+  }> {
+    const response = await apiClient.patch<
+      ApiResponse<{
+        colorR: number;
+        colorG: number;
+        colorB: number;
+        brightness: number;
+        effect: string | null;
+      }>
+    >(`/api/kidoos/${id}/dream-default-color`, data);
     return response.data.data;
   },
 

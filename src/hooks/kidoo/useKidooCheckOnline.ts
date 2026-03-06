@@ -32,17 +32,23 @@ export function useKidooCheckOnline() {
     onSuccess: (data, variables) => {
       const { id, skipDeviceStateUpdate } = resolveVariables(variables);
       queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) =>
-        old?.map((k) =>
-          k.id === id
-            ? {
-                ...k,
-                isConnected: data.isOnline,
-                lastConnected: data.isOnline ? new Date().toISOString() : k.lastConnected,
-                ...(!skipDeviceStateUpdate &&
-                  data.deviceState !== undefined && { deviceState: data.deviceState }),
-              }
-            : k
-        )
+        old?.map((k) => {
+          if (k.id !== id) return k;
+          // Ne pas écraser "manual" par "idle" : course critique possible (get-info reçu avant start-bedtime)
+          const shouldUpdateDeviceState =
+            !skipDeviceStateUpdate &&
+            data.deviceState !== undefined &&
+            !(k.deviceState === 'manual' && data.deviceState === 'idle');
+          if (__DEV__ && shouldUpdateDeviceState) {
+            console.log('[useKidooCheckOnline] setQueryData deviceState:', data.deviceState, 'kidooId:', id, 'skipDeviceStateUpdate:', skipDeviceStateUpdate);
+          }
+          return {
+            ...k,
+            isConnected: data.isOnline,
+            lastConnected: data.isOnline ? new Date().toISOString() : k.lastConnected,
+            ...(shouldUpdateDeviceState && { deviceState: data.deviceState }),
+          };
+        })
       );
     },
     onError: (_err, _id, context) => {

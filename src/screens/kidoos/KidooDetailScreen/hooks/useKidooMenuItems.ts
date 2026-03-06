@@ -81,6 +81,16 @@ export function useKidooMenuItems({ kidoo, modelHandler, hasFirmwareUpdate, isFi
       },
     ];
 
+    // Couleur par défaut (Dream uniquement) — juste après Luminosité
+    if (kidoo.model === 'dream' && modelCallbacks?.onConfigureDefaultColor) {
+      commonItems.push({
+        label: t('kidoos.dream.defaultColor.title', { defaultValue: 'Couleur par défaut' }),
+        value: t('kidoos.dream.defaultColor.subtitle', { defaultValue: 'Couleur au tap sans routine' }),
+        icon: 'eyedrop-outline',
+        onPress: modelCallbacks.onConfigureDefaultColor,
+      });
+    }
+
     // Ajouter l'adresse MAC si disponible et en mode développeur
     if (isDeveloper && kidoo.macAddress) {
       commonItems.push({

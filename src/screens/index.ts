@@ -14,6 +14,7 @@ export { KidoosListScreen } from './kidoos/KidoosListScreen';
 export { KidooDetailScreen } from './kidoos/KidooDetailScreen';
 export { BedtimeConfigScreen } from './kidoos/KidooDetailScreen/DreamDetailScreen/features/BedtimeConfigScreen';
 export { WakeupConfigScreen } from './kidoos/KidooDetailScreen/DreamDetailScreen/features/WakeupConfigScreen';
+export { DefaultColorConfigScreen } from './kidoos/KidooDetailScreen/DreamDetailScreen/features/DefaultColorConfig/DefaultColorConfigScreen';
 export { DreamHelpScreen } from './kidoos/KidooDetailScreen/DreamDetailScreen/features/DreamHelpScreen';
 
 // Notifications
