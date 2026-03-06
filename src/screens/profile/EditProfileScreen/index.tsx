@@ -27,13 +27,13 @@ export function EditProfileScreen() {
     editNameSheet.open();
   }, [editNameSheet]);
 
-  const handleChangePasswordPress = useCallback(() => {
-    changePasswordSheet.open();
-  }, [changePasswordSheet]);
-
   const handleTimezonePress = useCallback(() => {
     editTimezoneSheet.open();
   }, [editTimezoneSheet]);
+
+  const handleChangePasswordPress = useCallback(() => {
+    changePasswordSheet.open();
+  }, [changePasswordSheet]);
 
   // Configuration des items du menu
   const menuItems = useMemo(
@@ -63,7 +63,7 @@ export function EditProfileScreen() {
         onPress: handleChangePasswordPress,
       },
     ],
-    [user?.name, user?.email, (user as any)?.timezoneId, handleNamePress, handleChangePasswordPress, handleTimezonePress, t]
+    [user?.name, user?.email, (user as any)?.timezoneId, handleNamePress, handleTimezonePress, handleChangePasswordPress, t]
   );
 
   const handleDeleteAccountPress = useCallback(() => {
@@ -81,7 +81,7 @@ export function EditProfileScreen() {
   }, []);
 
   return (
-
+    <View style={{ flex: 1 }}>
       <ContentScrollView>
         {/* Liste des informations */}
         <MenuList items={menuItems} />
@@ -97,6 +97,8 @@ export function EditProfileScreen() {
           textStyle={{ color: colors.error }}
         />
       </View>
+
+      </ContentScrollView>
 
       {/* Bottom Sheet de confirmation de suppression */}
       <BottomSheetActions
@@ -129,7 +131,8 @@ export function EditProfileScreen() {
 
       {/* Bottom Sheet pour modifier le mot de passe */}
       <ChangePasswordSheet bottomSheet={changePasswordSheet} />
-      </ContentScrollView>
- 
+    </View>
   );
 }
+
+const styles = StyleSheet.create({});

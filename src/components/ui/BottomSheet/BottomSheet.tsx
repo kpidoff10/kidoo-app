@@ -4,8 +4,12 @@
  * TrueSheet gère automatiquement les safe area insets
  */
 
-import React, { forwardRef } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import React, { forwardRef, useMemo } from 'react';
+import { StyleSheet, View, ViewStyle, Platform } from 'react-native';
+import {
+  useSafeAreaInsets,
+  initialWindowMetrics,
+} from 'react-native-safe-area-context';
 import { TrueSheet, TrueSheetProps } from '@lodev09/react-native-true-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import { spacing, useTheme } from '@/theme';
@@ -71,8 +75,25 @@ export interface BottomSheetProps extends Omit<TrueSheetProps, 'style' | 'onDidD
  * ```
  */
 export const BottomSheet = forwardRef<TrueSheet, BottomSheetProps>(
-  ({ style, detents = ['auto'], onDismiss, children, headerName, headerEmail, headerTitle, headerIcon, ...props }, ref) => {
+  ({ style, detents = ['auto'], onDismiss, children, headerName, headerEmail, headerTitle, headerIcon, scrollable, ...props }, ref) => {
     const { colors, borderRadius, spacing: themeSpacing } = useTheme();
+    const insets = useSafeAreaInsets();
+
+    // Quand scrollable : footer vide avec hauteur = zone sûre (TrueSheet recommande le footer pour ça)
+    const safeBottom =
+      insets.bottom || initialWindowMetrics?.insets?.bottom || 0;
+    const footerHeight =
+      Platform.OS === 'android' ? Math.max(safeBottom, 48) : safeBottom;
+    const scrollableFooter = useMemo(
+      () =>
+        scrollable ? (
+          <View style={{ height: footerHeight + themeSpacing[6] }} />
+        ) : undefined,
+      [scrollable, footerHeight, themeSpacing[6]]
+    );
+
+    const contentPaddingBottom = scrollable ? 0 : themeSpacing[6];
+    const contentFlexStyle = scrollable ? { flex: 1, minHeight: 0 } : null;
 
     const defaultStyle: ViewStyle = {
       backgroundColor: colors.surface,
@@ -93,9 +114,11 @@ export const BottomSheet = forwardRef<TrueSheet, BottomSheetProps>(
         style={defaultStyle}
         backgroundColor={colors.surface}
         onDidDismiss={onDismiss ? () => onDismiss() : undefined}
+        scrollable={scrollable}
+        footer={scrollableFooter}
         {...props}
       >
-        <View style={styles.content}>
+        <View style={[styles.content, contentFlexStyle, { paddingBottom: contentPaddingBottom }]}>
           {hasHeader && (
             <View style={styles.header}>
               {hasIcon && (

@@ -9,15 +9,30 @@ export function useUpdateTimezone() {
     mutationFn: async (timezoneId: string) => {
       return authApi.updateTimezone(timezoneId);
     },
-    onSuccess: (data) => {
-      // Invalider le cache du profil
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-      showToast.success({
-        title: 'Succès',
-        message: 'Fuseau horaire mis à jour',
+    onMutate: async (timezoneId: string) => {
+      // Mettre en cache les données précédentes
+      await queryClient.cancelQueries({ queryKey: ['profile'] });
+      const previousProfile = queryClient.getQueryData(['profile']);
+
+      // Optimistic update
+      queryClient.setQueryData(['profile'], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          timezoneId,
+        };
       });
+
+      return { previousProfile };
     },
-    onError: (error) => {
+    onSuccess: () => {
+      // Toast de succès non nécessaire avec optimistic update
+    },
+    onError: (error, variables, context: any) => {
+      // Restaurer les données précédentes en cas d'erreur
+      if (context?.previousProfile) {
+        queryClient.setQueryData(['profile'], context.previousProfile);
+      }
       console.error('Erreur mise à jour timezone:', error);
       showToast.error({
         title: 'Erreur',

@@ -14,7 +14,6 @@ import { spacing, useTheme } from '@/theme';
 import { useAuth } from '@/contexts';
 import { useBottomSheet, useProfile } from '@/hooks';
 import type { UseBottomSheetReturn } from '@/hooks';
-import { ChangePasswordSheet } from '../EditProfileScreen/components/ChangePasswordSheet';
 
 interface ProfileSheetProps {
   bottomSheet: UseBottomSheetReturn;
@@ -27,8 +26,7 @@ export function ProfileSheet({ bottomSheet, onClose }: ProfileSheetProps) {
     const { logout, setDeveloperMode, isDeveloper } = useAuth();
     const { data: user } = useProfile();
     const navigation = useNavigation();
-    const changePasswordSheet = useBottomSheet();
-    
+
     // Compteur d'appuis pour activer le mode développeur
     const tapCountRef = useRef(0);
     const tapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -104,21 +102,6 @@ export function ProfileSheet({ bottomSheet, onClose }: ProfileSheetProps) {
               </Text>
               <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionItem, { borderBottomColor: colors.border }]}
-              onPress={async () => {
-                await bottomSheet.close();
-                onClose?.();
-                changePasswordSheet.open();
-              }}
-            >
-              <Ionicons name="lock-closed-outline" size={22} color={colors.text} />
-              <Text style={{ marginLeft: spacing[3], flex: 1 }}>
-                {t('profile.changePassword', { defaultValue: 'Modifier le mot de passe' })}
-              </Text>
-              <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
-            </TouchableOpacity>
           </View>
 
           {/* Logout */}
@@ -151,9 +134,6 @@ export function ProfileSheet({ bottomSheet, onClose }: ProfileSheetProps) {
             </Text>
           </TouchableOpacity>
       </BottomSheet>
-
-      {/* Bottom Sheet pour modifier le mot de passe */}
-      <ChangePasswordSheet bottomSheet={changePasswordSheet} onClose={onClose} />
     </>
     );
 }
