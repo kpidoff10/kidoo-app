@@ -20,11 +20,37 @@ export function useDreamNighttimeAlert(kidooId: string | undefined) {
   const mutation = useMutation({
     mutationFn: ({ id, enabled }: { id: string; enabled: boolean }) =>
       kidoosApi.updateDreamNighttimeAlert(id, enabled),
+    // Update optimistic: mettre à jour immédiatement avant l'appel API
+    onMutate: (variables) => {
+      // Sauvegarder l'ancienne valeur pour rollback en cas d'erreur
+      const previousData = queryClient.getQueryData([
+        ...DREAM_NIGHTTIME_ALERT_KEY,
+        variables.id,
+      ]);
+
+      // Mettre à jour le cache immédiatement
+      queryClient.setQueryData(
+        [...DREAM_NIGHTTIME_ALERT_KEY, variables.id],
+        { nighttimeAlertEnabled: variables.enabled }
+      );
+
+      return { previousData };
+    },
+    // Si succès, les données sont déjà à jour (de onMutate)
     onSuccess: (_, variables) => {
       queryClient.setQueryData(
         [...DREAM_NIGHTTIME_ALERT_KEY, variables.id],
         { nighttimeAlertEnabled: variables.enabled }
       );
+    },
+    // Si erreur, restaurer l'ancienne valeur
+    onError: (_, variables, context: any) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          [...DREAM_NIGHTTIME_ALERT_KEY, variables.id],
+          context.previousData
+        );
+      }
     },
   });
 
