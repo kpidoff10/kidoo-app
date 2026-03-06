@@ -79,8 +79,8 @@ export const authApi = {
    * Mettre à jour la timezone
    */
   async updateTimezone(timezoneId: string): Promise<User> {
-    const response = await apiClient.patch<User>('/api/users/me', { timezoneId });
-    return response.data;
+    const response = await apiClient.patch<{ success: true; data: User }>('/api/users/me', { timezoneId });
+    return response.data.data;
   },
 
   /**

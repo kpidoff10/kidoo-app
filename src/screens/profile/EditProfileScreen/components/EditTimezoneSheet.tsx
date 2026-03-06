@@ -90,7 +90,7 @@ export function EditTimezoneSheet({ bottomSheet, currentTimezone = 'UTC' }: Edit
             <Text
               variant="body"
               style={{
-                color: isSelected ? colors.primary : colors.text,
+                color: isSelected ? colors.surface : colors.text,
                 fontWeight: isSelected ? '600' : '400',
               }}
             >
@@ -98,7 +98,7 @@ export function EditTimezoneSheet({ bottomSheet, currentTimezone = 'UTC' }: Edit
             </Text>
           </View>
           {isSelected && (
-            <Text style={{ color: colors.primary, fontSize: 18 }}>✓</Text>
+            <Text style={{ color: colors.surface, fontSize: 18 }}>✓</Text>
           )}
         </Pressable>
       );
