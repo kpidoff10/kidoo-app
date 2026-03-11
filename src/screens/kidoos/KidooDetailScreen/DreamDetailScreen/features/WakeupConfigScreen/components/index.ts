@@ -1,3 +1,3 @@
 export * from './ColorPickerSection';
 export * from './AutoShutdownSection';
-export * from './AccordionSection';
+export * from './CardSection';

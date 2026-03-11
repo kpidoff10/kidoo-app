@@ -17,7 +17,7 @@ import {
   BrightnessSection,
   useScheduleConfigScreen,
 } from '../../../../shared';
-import { ColorPickerSection, AutoShutdownSection, AccordionSection } from './components';
+import { ColorPickerSection, AutoShutdownSection, CardSection } from './components';
 import { rgbToHex } from '@/utils/color';
 
 type RouteParams = {
@@ -190,9 +190,8 @@ export function WakeupConfigScreen() {
       <ContentScrollView>
         <View style={styles.content}>
           {/* Horaire */}
-          <AccordionSection
+          <CardSection
             title={t('kidoos.dream.wakeup.schedule', { defaultValue: 'Horaire' })}
-            defaultOpen={true}
           >
             <WeekdaySelectorSection
               i18nPrefix="kidoos.dream.wakeup"
@@ -213,27 +212,25 @@ export function WakeupConfigScreen() {
                 onTimeChange={(hour, minute) => handleTimeChange(selectedDayForTime, hour, minute)}
               />
             )}
-          </AccordionSection>
+          </CardSection>
 
           {/* Apparence */}
-          <AccordionSection
+          <CardSection
             title={t('kidoos.dream.wakeup.appearance', { defaultValue: 'Apparence' })}
-            defaultOpen={false}
           >
             <ColorPickerSection control={control} />
 
             <View style={{ marginTop: 16 }}>
               <BrightnessSection control={control} i18nPrefix="kidoos.dream.wakeup" />
             </View>
-          </AccordionSection>
+          </CardSection>
 
           {/* Comportement */}
-          <AccordionSection
+          <CardSection
             title={t('kidoos.dream.wakeup.behavior', { defaultValue: 'Comportement' })}
-            defaultOpen={false}
           >
             <AutoShutdownSection control={control} />
-          </AccordionSection>
+          </CardSection>
         </View>
       </ContentScrollView>
     </View>
