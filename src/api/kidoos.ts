@@ -238,9 +238,19 @@ export const kidoosApi = {
    */
   async checkOnline(
     id: string
-  ): Promise<{ isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual' }> {
+  ): Promise<{
+    isOnline: boolean;
+    reason?: string;
+    deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual';
+    env?: KidooEnvResponse;
+  }> {
     const response = await apiClient.get<
-      ApiResponse<{ isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual' }>
+      ApiResponse<{
+        isOnline: boolean;
+        reason?: string;
+        deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual';
+        env?: KidooEnvResponse;
+      }>
     >(`/api/kidoos/${id}/check-online`);
     return response.data.data;
   },

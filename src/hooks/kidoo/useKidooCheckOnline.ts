@@ -1,12 +1,15 @@
 /**
- * Hook pour vérifier si un Kidoo est en ligne (mise à jour cache isConnected, deviceState).
+ * Hook pour vérifier si un Kidoo est en ligne (mise à jour cache isConnected, deviceState, env).
  * Quand PubNub est connecté, deviceState n'est pas mis à jour (évite d'écraser le temps réel).
+ * Les données env retournées par check-online sont mises à jour dans le contexte Dream.
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { kidoosApi, Kidoo } from '@/api';
 import { showToast } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
+import { queryClient } from '@/lib/queryClient';
+import type { DreamRealtimeData } from '@/contexts/kidoo/dream/DreamRealtimeContext';
 import { KIDOOS_KEY } from './keys';
 
 export type CheckOnlineVariables =
@@ -50,6 +53,16 @@ export function useKidooCheckOnline() {
           };
         })
       );
+
+      // Mettre à jour le contexte Dream avec les données env si présentes
+      if (data.env) {
+        // Mettre à jour via queryClient (le DreamRealtimeProvider utilise aussi queryClient)
+        const DREAM_ENV_KEY = ['dream', 'env', id] as const;
+        queryClient.setQueryData(DREAM_ENV_KEY, data.env);
+        if (__DEV__) {
+          console.log('[useKidooCheckOnline] Updated env data for kidooId:', id, data.env);
+        }
+      }
     },
     onError: (_err, _id, context) => {
       if (context?.previousKidoos) {
