@@ -177,6 +177,8 @@ export const kidoosApi = {
     colorG: number;
     colorB: number;
     brightness: number;
+    autoShutdown: boolean;
+    autoShutdownMinutes: number;
   }> {
     const response = await apiClient.get<ApiResponse<{
       weekdaySchedule?: Record<string, { hour: number; minute: number; activated: boolean }>;
@@ -184,6 +186,8 @@ export const kidoosApi = {
       colorG: number;
       colorB: number;
       brightness: number;
+      autoShutdown: boolean;
+      autoShutdownMinutes: number;
     }>>(`/api/kidoos/${id}/dream-wakeup`);
     return response.data.data;
   },
@@ -197,6 +201,8 @@ export const kidoosApi = {
       weekdaySchedule?: Record<string, { hour: number; minute: number; activated?: boolean }>;
       color: string; // Hex color
       brightness: number;
+      autoShutdown?: boolean;
+      autoShutdownMinutes?: number;
     }
   ): Promise<{
     weekdaySchedule?: Record<string, { hour: number; minute: number; activated: boolean }>;
@@ -204,6 +210,8 @@ export const kidoosApi = {
     colorG: number;
     colorB: number;
     brightness: number;
+    autoShutdown: boolean;
+    autoShutdownMinutes: number;
   }> {
     const response = await apiClient.patch<ApiResponse<{
       weekdaySchedule?: Record<string, { hour: number; minute: number; activated: boolean }>;
@@ -211,6 +219,8 @@ export const kidoosApi = {
       colorG: number;
       colorB: number;
       brightness: number;
+      autoShutdown: boolean;
+      autoShutdownMinutes: number;
     }>>(`/api/kidoos/${id}/dream-wakeup`, data);
     return response.data.data;
   },

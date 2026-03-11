@@ -17,7 +17,7 @@ import {
   BrightnessSection,
   useScheduleConfigScreen,
 } from '../../../../shared';
-import { ColorPickerSection } from './components';
+import { ColorPickerSection, AutoShutdownSection } from './components';
 import { rgbToHex } from '@/utils/color';
 
 type RouteParams = {
@@ -61,6 +61,8 @@ export function WakeupConfigScreen() {
     defaultValues: {
       color: '#FFC864',
       brightness: 50,
+      autoShutdown: true,
+      autoShutdownMinutes: 30,
     },
   });
 
@@ -73,6 +75,8 @@ export function WakeupConfigScreen() {
         reset({
           color: colorHex,
           brightness: config.brightness,
+          autoShutdown: config.autoShutdown ?? true,
+          autoShutdownMinutes: config.autoShutdownMinutes ?? 30,
         });
         initializeFromConfig(config);
       } else {
@@ -108,6 +112,8 @@ export function WakeupConfigScreen() {
       const formValues = getValues();
       const color = formValues.color || '#FFC864';
       const brightness = formValues.brightness ?? 50;
+      const autoShutdown = formValues.autoShutdown ?? true;
+      const autoShutdownMinutes = formValues.autoShutdownMinutes ?? 30;
 
       // Construire weekdaySchedule avec seulement les jours activés
       const weekdaySchedule: Record<string, { hour: number; minute: number; activated: boolean }> = {};
@@ -126,6 +132,8 @@ export function WakeupConfigScreen() {
         weekdaySchedule,
         color,
         brightness,
+        autoShutdown,
+        autoShutdownMinutes,
       });
 
       updateConfig.mutate(
@@ -135,6 +143,8 @@ export function WakeupConfigScreen() {
             weekdaySchedule: Object.keys(weekdaySchedule).length > 0 ? weekdaySchedule : undefined,
             color,
             brightness,
+            autoShutdown,
+            autoShutdownMinutes,
           },
         },
         {
@@ -160,14 +170,16 @@ export function WakeupConfigScreen() {
 
   const color = watch('color');
   const brightness = watch('brightness');
-  
+  const autoShutdown = watch('autoShutdown');
+  const autoShutdownMinutes = watch('autoShutdownMinutes');
+
   useEffect(() => {
     if (!isInitializingRef.current && configLoadedRef.current) {
-      if (__DEV__) console.log('[WAKEUP-CONFIG] Changement de formulaire détecté:', { color, brightness });
+      if (__DEV__) console.log('[WAKEUP-CONFIG] Changement de formulaire détecté:', { color, brightness, autoShutdown, autoShutdownMinutes });
       saveConfig();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, brightness]);
+  }, [color, brightness, autoShutdown, autoShutdownMinutes]);
 
   if (isLoading) {
     return <ScreenLoader />;
@@ -200,6 +212,8 @@ export function WakeupConfigScreen() {
           <ColorPickerSection control={control} />
 
           <BrightnessSection control={control} i18nPrefix="kidoos.dream.wakeup" />
+
+          <AutoShutdownSection control={control} />
         </View>
       </ContentScrollView>
     </View>

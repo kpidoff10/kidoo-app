@@ -13,6 +13,8 @@ interface ColorPickerSectionProps {
   control: Control<{
     color: string;
     brightness: number;
+    autoShutdown: boolean;
+    autoShutdownMinutes: number;
   }>;
 }
 

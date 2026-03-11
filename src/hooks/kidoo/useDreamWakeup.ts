@@ -31,6 +31,8 @@ export function useUpdateDreamWakeupConfig() {
         weekdaySchedule?: Record<string, { hour: number; minute: number }>;
         color: string;
         brightness: number;
+        autoShutdown?: boolean;
+        autoShutdownMinutes?: number;
       };
     }) => kidoosApi.updateDreamWakeupConfig(id, data),
     onMutate: async ({ id, data }) => {
@@ -45,6 +47,8 @@ export function useUpdateDreamWakeupConfig() {
         brightness: data.brightness,
       };
       if (data.weekdaySchedule) optimisticData.weekdaySchedule = data.weekdaySchedule;
+      if (data.autoShutdown !== undefined) optimisticData.autoShutdown = data.autoShutdown;
+      if (data.autoShutdownMinutes !== undefined) optimisticData.autoShutdownMinutes = data.autoShutdownMinutes;
       queryClient.setQueryData(queryKey, optimisticData);
       return { previousData };
     },

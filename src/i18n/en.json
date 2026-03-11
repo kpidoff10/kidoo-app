@@ -94,7 +94,9 @@
       },
       "wakeup": {
         "title": "Wake-up time",
-        "configure": "Configure"
+        "configure": "Configure",
+        "autoShutdown": "Auto shutdown",
+        "autoShutdownDuration": "Duration"
       },
       "nighttimeAlert": {
         "title": "Night light alert",

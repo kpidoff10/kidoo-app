@@ -121,7 +121,9 @@
       },
       "wakeup": {
         "title": "Heure de réveil",
-        "configure": "Configurer"
+        "configure": "Configurer",
+        "autoShutdown": "Extinction automatique",
+        "autoShutdownDuration": "Durée"
       },
       "nighttimeAlert": {
         "title": "Alerte veilleuse",
