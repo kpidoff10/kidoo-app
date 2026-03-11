@@ -8,6 +8,7 @@ import {
   createContext,
   useContext,
   useMemo,
+  useRef,
   ReactNode,
 } from 'react';
 import PubNub from 'pubnub';
@@ -15,6 +16,11 @@ import { PubNubProvider } from 'pubnub-react';
 import { useQuery } from '@tanstack/react-query';
 import { kidoosApi } from '@/api';
 import { useKidooContext } from './KidooContext';
+
+// Generate stable UUID once per app lifecycle
+function generateAppUUID(): string {
+  return `kidoo-app-${Math.random().toString(36).substring(2, 11)}`;
+}
 
 const REALTIME_CONFIG_KEY = ['kidoos', 'realtime-config'];
 
@@ -45,6 +51,9 @@ export function KidooRealtimeProvider({ children }: KidooRealtimeProviderProps) 
   const { kidoos } = useKidooContext();
   const hasKidoosWithMac = kidoos?.some((k) => k.macAddress) ?? false;
 
+  // Generate UUID once and reuse throughout app lifetime
+  const appUUIDRef = useRef<string>(generateAppUUID());
+
   const { data: config, isLoading } = useQuery({
     queryKey: REALTIME_CONFIG_KEY,
     queryFn: kidoosApi.getRealtimeConfig,
@@ -55,7 +64,7 @@ export function KidooRealtimeProvider({ children }: KidooRealtimeProviderProps) 
   const pubnub = useMemo(
     () =>
       config?.subscribeKey
-        ? new PubNub({ subscribeKey: config.subscribeKey, uuid: `kidoo-app-${Date.now()}` })
+        ? new PubNub({ subscribeKey: config.subscribeKey, uuid: appUUIDRef.current })
         : null,
     [config?.subscribeKey]
   );

@@ -8,3 +8,4 @@ export { TimePickerSection } from './TimePickerSection';
 export { BrightnessSection } from './BrightnessSection';
 export { useScheduleConfigScreen } from './useScheduleConfigScreen';
 export type { WeekdaySchedule } from './useScheduleConfigScreen';
+export { useConfigScreenBase } from './useConfigScreenBase';

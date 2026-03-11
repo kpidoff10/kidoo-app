@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
-import { ContentScrollView, Weekday, ScreenLoader } from '@/components/ui';
+import { ContentScrollView, ScreenLoader } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { useDreamWakeupConfig, useUpdateDreamWakeupConfig } from '@/hooks';
 import {
@@ -66,9 +66,9 @@ export function WakeupConfigScreen() {
     },
   });
 
+  // Load config on mount
   useEffect(() => {
     if (!isLoading && !configLoadedRef.current) {
-      if (__DEV__) console.log('[WAKEUP-CONFIG] Initialisation:', { config, isLoading });
       isInitializingRef.current = true;
       if (config) {
         const colorHex = rgbToHex(config.colorR, config.colorG, config.colorB);
@@ -85,55 +85,24 @@ export function WakeupConfigScreen() {
       requestAnimationFrame(() => {
         configLoadedRef.current = true;
         isInitializingRef.current = false;
-        if (__DEV__) console.log('[WAKEUP-CONFIG] Données chargées, sauvegarde activée');
       });
     }
   }, [config, isLoading, reset, initializeFromConfig]);
 
-  // Fonction pour sauvegarder la configuration
+  // Save config with debounce
   const saveConfig = useCallback(() => {
-    // Vérifications de base
-    if (!kidooId) {
-      if (__DEV__) console.log('[WAKEUP-CONFIG] Sauvegarde ignorée: pas de kidooId');
-      return;
-    }
-
-    if (isInitializingRef.current) {
-      if (__DEV__) console.log('[WAKEUP-CONFIG] Sauvegarde ignorée: initialisation en cours');
-      return;
-    }
-
-    if (!configLoadedRef.current) {
-      if (__DEV__) console.log('[WAKEUP-CONFIG] Sauvegarde ignorée: config pas encore chargée');
-      return;
-    }
+    if (!kidooId || isInitializingRef.current || !configLoadedRef.current) return;
 
     debouncedSave(() => {
-      const formValues = getValues();
-      const color = formValues.color || '#FFC864';
-      const brightness = formValues.brightness ?? 50;
-      const autoShutdown = formValues.autoShutdown ?? true;
-      const autoShutdownMinutes = formValues.autoShutdownMinutes ?? 30;
+      const { color: formColor, brightness, autoShutdown, autoShutdownMinutes } = getValues();
+      const color = formColor || '#FFC864';
 
-      // Construire weekdaySchedule avec seulement les jours activés
+      // Build weekday schedule with only activated days
       const weekdaySchedule: Record<string, { hour: number; minute: number; activated: boolean }> = {};
       Object.entries(weekdayTimesRef.current).forEach(([day, time]) => {
-        if (time && time.activated) {
-          weekdaySchedule[day] = {
-            hour: time.hour,
-            minute: time.minute,
-            activated: true,
-          };
+        if (time?.activated) {
+          weekdaySchedule[day] = { hour: time.hour, minute: time.minute, activated: true };
         }
-      });
-
-      if (__DEV__) console.log('[WAKEUP-CONFIG] Sauvegarde en cours:', {
-        kidooId,
-        weekdaySchedule,
-        color,
-        brightness,
-        autoShutdown,
-        autoShutdownMinutes,
       });
 
       updateConfig.mutate(
@@ -159,10 +128,9 @@ export function WakeupConfigScreen() {
     });
   }, [kidooId, getValues, updateConfig, debouncedSave]);
 
-  // Sauvegarder automatiquement lors des changements de weekdayTimes
+  // Auto-save on weekday changes
   useEffect(() => {
     if (!isInitializingRef.current && configLoadedRef.current) {
-      if (__DEV__) console.log('[WAKEUP-CONFIG] Changement de weekdayTimes détecté:', weekdayTimes);
       saveConfig();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -173,9 +141,9 @@ export function WakeupConfigScreen() {
   const autoShutdown = watch('autoShutdown');
   const autoShutdownMinutes = watch('autoShutdownMinutes');
 
+  // Auto-save on form changes
   useEffect(() => {
     if (!isInitializingRef.current && configLoadedRef.current) {
-      if (__DEV__) console.log('[WAKEUP-CONFIG] Changement de formulaire détecté:', { color, brightness, autoShutdown, autoShutdownMinutes });
       saveConfig();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

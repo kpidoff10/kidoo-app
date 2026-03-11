@@ -3,10 +3,9 @@
  * Gère env, info, routine. nighttime-alert : ESP32 → PubNub → webhook serveur → Expo → notification native (pas d'app).
  */
 
-import {
+import React, {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -15,16 +14,16 @@ import {
   type SetStateAction,
   type ReactNode,
 } from 'react';
-import { usePubNub } from 'pubnub-react';
 import { useKidooRealtimeBase, type RealtimeConfig } from '../KidooRealtimeContext';
 import { KIDOOS_KEY } from '@/hooks';
 import { DREAM_NIGHTTIME_ALERT_KEY } from '@/hooks/kidoo/useDreamNighttimeAlert';
 import { queryClient } from '@/lib/queryClient';
+import { useDreamRealtimeSubscriber } from './useDreamRealtimeSubscriber';
 import type { KidooEnvResponse, Kidoo } from '@/api';
 
 type DeviceState = 'idle' | 'bedtime' | 'wakeup' | 'manual';
 
-interface DreamRealtimeData {
+export interface DreamRealtimeData {
   env: Record<string, KidooEnvResponse>;
   info: Record<string, Record<string, unknown>>;
 }
@@ -51,15 +50,6 @@ export function useKidooEnvRealtime(kidooId: string | undefined): KidooEnvRespon
   return kidooId ? getEnvData(kidooId) : undefined;
 }
 
-function routineStateToDeviceState(routine: string, state: string): DeviceState {
-  if (state === 'started') {
-    if (routine === 'bedtime') return 'bedtime';
-    if (routine === 'wakeup') return 'wakeup';
-  }
-  if (state === 'manual' && routine === 'bedtime') return 'manual';
-  return 'idle';
-}
-
 // Composant interne — doit être rendu à l'intérieur du PubNubProvider
 interface DreamRealtimeSubscriberProps {
   config: RealtimeConfig;
@@ -70,112 +60,19 @@ interface DreamRealtimeSubscriberProps {
 }
 
 function DreamRealtimeSubscriber({ config, onData, onRoutineState, onNighttimeAlertToggled, children }: DreamRealtimeSubscriberProps) {
-  const pubnub = usePubNub();
-  const channelToKidooRef = useRef<Map<string, string>>(new Map());
-
-  useEffect(() => {
-    channelToKidooRef.current = new Map(
-      config.subscriptions.map((s) => [s.channel, s.kidooId])
-    );
-  }, [config.subscriptions]);
-
-  useEffect(() => {
-    if (!config.subscribeKey || config.subscriptions.length === 0) return;
-
-    const channels = config.subscriptions.map((s) => s.channel);
-
-    const handleMessage = (event: { channel?: string; message?: unknown }) => {
-      const channel = event.channel;
-      const msg = event.message;
-      if (!channel || msg === undefined) return;
-
-      const kidooId = channelToKidooRef.current.get(channel);
-      if (!kidooId) return;
-
-      let parsed: Record<string, unknown> | null = null;
-      if (typeof msg === 'string') {
-        try {
-          const normalized = msg.replace(/:nan\b/g, ':null');
-          parsed = JSON.parse(normalized) as Record<string, unknown>;
-        } catch {
-          return;
-        }
-      } else if (msg && typeof msg === 'object') {
-        parsed = msg as Record<string, unknown>;
-      }
-      if (!parsed) return;
-
-      const msgType = parsed.type as string | undefined;
-
-      onData((prev) => {
-        const next = { ...prev, env: { ...prev.env }, info: { ...prev.info } };
-
-        if (msgType === 'env') {
-          const rawPressure = parsed!.pressurePa != null ? Number(parsed!.pressurePa) : null;
-          const pressurePa =
-            rawPressure != null && rawPressure >= 10000 && rawPressure <= 120000
-              ? rawPressure
-              : null;
-          next.env[kidooId] = {
-            available: parsed!.available === true,
-            temperatureC: parsed!.temperatureC != null ? Number(parsed!.temperatureC) : null,
-            humidityPercent: parsed!.humidityPercent != null ? Number(parsed!.humidityPercent) : null,
-            pressurePa,
-            error: typeof parsed!.error === 'string' ? parsed!.error : undefined,
-          };
-        } else if (msgType === 'info') {
-          next.info[kidooId] = parsed!;
-          // get-info inclut deviceState → mettre à jour le cache (idle, bedtime, wakeup, manual)
-          const infoDeviceState = parsed!.deviceState as string | undefined;
-          if (infoDeviceState && ['idle', 'bedtime', 'wakeup', 'manual'].includes(infoDeviceState)) {
-            onRoutineState(kidooId, infoDeviceState as DeviceState);
-          }
-          // get-info inclut env → extraire pour éviter un get-env séparé à l'init
-          const envObj = parsed!.env as Record<string, unknown> | undefined;
-          if (envObj && envObj.available === true) {
-            const rawPressure = envObj.pressurePa != null ? Number(envObj.pressurePa) : null;
-            const pressurePa =
-              rawPressure != null && rawPressure >= 10000 && rawPressure <= 120000
-                ? rawPressure
-                : null;
-            next.env[kidooId] = {
-              available: true,
-              temperatureC: envObj.temperatureC != null ? Number(envObj.temperatureC) : null,
-              humidityPercent: envObj.humidityPercent != null ? Number(envObj.humidityPercent) : null,
-              pressurePa,
-              error: typeof envObj.error === 'string' ? envObj.error : undefined,
-            };
-          }
-        } else if (msgType === 'routine') {
-          const routine = parsed!.routine as string | undefined;
-          const state = parsed!.state as string | undefined;
-          if (routine && state) {
-            const deviceState = routineStateToDeviceState(routine, state);
-            next.info[kidooId] = { ...(prev.info[kidooId] as object), deviceState };
-            onRoutineState(kidooId, deviceState);
-          }
-        } else if (msgType === 'nighttime-alert-toggled') {
-          const enabled = parsed!.enabled === true;
-          onNighttimeAlertToggled?.(kidooId, enabled);
-        }
-
-        return next;
-      });
-    };
-
-    const listener = { message: handleMessage };
-
-    pubnub.addListener(listener);
-    pubnub.subscribe({ channels });
-
-    return () => {
-      pubnub.removeListener(listener);
-      pubnub.unsubscribe({ channels });
-    };
-  }, [config.subscribeKey, config.subscriptions, pubnub, onData, onRoutineState, onNighttimeAlertToggled]);
+  // Use custom hook to handle all PubNub subscription logic
+  useDreamRealtimeSubscriber({
+    config,
+    onData,
+    onRoutineState,
+    onNighttimeAlertToggled,
+  });
 
   return <>{children}</>;
 }
+
+// Memoize subscriber to prevent unnecessary rerenders and double subscriptions
+const MemoizedDreamRealtimeSubscriber = React.memo(DreamRealtimeSubscriber);
 
 interface DreamRealtimeProviderProps {
   children: ReactNode;
@@ -183,7 +80,10 @@ interface DreamRealtimeProviderProps {
 
 export function DreamRealtimeProvider({ children }: DreamRealtimeProviderProps) {
   const { config } = useKidooRealtimeBase();
-  const [data, setData] = useState<DreamRealtimeData>({ env: {}, info: {} });
+  // Use ref for data to prevent provider rerenders when messages arrive
+  // Only state changes trigger Context updates (config/connection status)
+  const dataRef = useRef<DreamRealtimeData>({ env: {}, info: {} });
+  const [, forceUpdateToken] = useState({});
 
   const handleRoutineState = useCallback(
     (kidooId: string, deviceState: DeviceState) => {
@@ -202,36 +102,46 @@ export function DreamRealtimeProvider({ children }: DreamRealtimeProviderProps) 
     });
   }, []);
 
+  // Update ref when data changes (via debounced accumulator)
+  const setData = useCallback((updater: DreamRealtimeData | ((prev: DreamRealtimeData) => DreamRealtimeData)) => {
+    dataRef.current = typeof updater === 'function' ? updater(dataRef.current) : updater;
+    // Minimal update to trigger context refresh without cascading rerenders
+    forceUpdateToken({});
+  }, []);
+
   const getEnvData = useCallback(
-    (kidooId: string) => data.env[kidooId],
-    [data.env]
+    (kidooId: string) => dataRef.current.env[kidooId],
+    []
   );
 
   const value = useMemo<DreamRealtimeContextValue>(
     () => ({
-      envData: data.env,
-      infoData: data.info,
+      envData: dataRef.current.env,
+      infoData: dataRef.current.info,
       getEnvData,
       isConnected: !!config?.subscribeKey && config.subscriptions.length > 0,
     }),
-    [data, getEnvData, config]
+    [config, getEnvData]
   );
+
+  // Memoize children to prevent unnecessary rerenders of consumers
+  const memoizedChildren = useMemo(() => children, [children]);
 
   const isReady = !!config?.subscribeKey && config.subscriptions.length > 0;
 
   return (
     <DreamRealtimeContext.Provider value={value}>
       {isReady ? (
-        <DreamRealtimeSubscriber
+        <MemoizedDreamRealtimeSubscriber
           config={config!}
           onData={setData}
           onRoutineState={handleRoutineState}
           onNighttimeAlertToggled={handleNighttimeAlertToggled}
         >
-          {children}
-        </DreamRealtimeSubscriber>
+          {memoizedChildren}
+        </MemoizedDreamRealtimeSubscriber>
       ) : (
-        children
+        memoizedChildren
       )}
     </DreamRealtimeContext.Provider>
   );

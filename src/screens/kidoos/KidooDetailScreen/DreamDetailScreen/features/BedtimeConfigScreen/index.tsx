@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
-import { ContentScrollView, Weekday, ScreenLoader } from '@/components/ui';
+import { ContentScrollView, ScreenLoader } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { useDreamBedtimeConfig, useUpdateDreamBedtimeConfig } from '@/hooks';
 import {
@@ -18,7 +18,6 @@ import {
   useScheduleConfigScreen,
 } from '../../../../shared';
 import {
-  ColorPickerSection,
   ColorOrEffectSection,
   NightlightSwitch,
   CardSection,
@@ -71,10 +70,9 @@ export function BedtimeConfigScreen() {
     },
   });
 
-  // Charger les données existantes depuis la config
+  // Load config on mount
   useEffect(() => {
     if (!isLoading && !configLoadedRef.current) {
-      if (__DEV__) console.log('[BEDTIME-CONFIG] Initialisation:', { config, isLoading });
       isInitializingRef.current = true;
       if (config) {
         const colorHex = rgbToHex(config.colorR, config.colorG, config.colorB);
@@ -91,55 +89,24 @@ export function BedtimeConfigScreen() {
       requestAnimationFrame(() => {
         configLoadedRef.current = true;
         isInitializingRef.current = false;
-        if (__DEV__) console.log('[BEDTIME-CONFIG] Données chargées, sauvegarde activée');
       });
     }
   }, [config, isLoading, reset, initializeFromConfig]);
 
-  // Fonction pour sauvegarder la configuration
+  // Save config with debounce
   const saveConfig = useCallback(() => {
-    // Vérifications de base
-    if (!kidooId) {
-      if (__DEV__) console.log('[BEDTIME-CONFIG] Sauvegarde ignorée: pas de kidooId');
-      return;
-    }
-
-    if (isInitializingRef.current) {
-      if (__DEV__) console.log('[BEDTIME-CONFIG] Sauvegarde ignorée: initialisation en cours');
-      return;
-    }
-
-    if (!configLoadedRef.current) {
-      if (__DEV__) console.log('[BEDTIME-CONFIG] Sauvegarde ignorée: config pas encore chargée');
-      return;
-    }
+    if (!kidooId || isInitializingRef.current || !configLoadedRef.current) return;
 
     debouncedSave(() => {
-      const formValues = getValues();
-      const color = formValues.color || '#FF6B6B';
-      const effect = formValues.effect;
-      const brightness = formValues.brightness ?? 50;
-      const nightlightAllNight = formValues.nightlightAllNight ?? false;
+      const { color: formColor, effect, brightness, nightlightAllNight } = getValues();
+      const color = formColor || '#FF6B6B';
 
-      // Construire weekdaySchedule avec seulement les jours activés
+      // Build weekday schedule with only activated days
       const weekdaySchedule: Record<string, { hour: number; minute: number; activated: boolean }> = {};
       Object.entries(weekdayTimesRef.current).forEach(([day, time]) => {
-        if (time && time.activated) {
-          weekdaySchedule[day] = {
-            hour: time.hour,
-            minute: time.minute,
-            activated: true,
-          };
+        if (time?.activated) {
+          weekdaySchedule[day] = { hour: time.hour, minute: time.minute, activated: true };
         }
-      });
-
-      if (__DEV__) console.log('[BEDTIME-CONFIG] Sauvegarde en cours:', {
-        kidooId,
-        weekdaySchedule,
-        color,
-        effect,
-        brightness,
-        nightlightAllNight,
       });
 
       // Préparer les données : color toujours envoyée (utilisée avec ou sans effet)
