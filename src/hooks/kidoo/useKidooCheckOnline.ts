@@ -62,7 +62,16 @@ export function useKidooCheckOnline() {
           if (__DEV__) {
             console.log('[useKidooCheckOnline] Returning cached data for:', id);
           }
-          return cachedData;
+          // Merger avec les données env fraîches du contexte Dream (via PubNub temps réel)
+          const DREAM_ENV_KEY = ['dream', 'env', id] as const;
+          const freshEnvFromContext = queryClient.getQueryData<KidooEnvResponse>(DREAM_ENV_KEY);
+          const mergedData = freshEnvFromContext
+            ? { ...cachedData, env: freshEnvFromContext }
+            : cachedData;
+          if (__DEV__ && freshEnvFromContext) {
+            console.log('[useKidooCheckOnline] Merged cache with fresh env from PubNub for:', id);
+          }
+          return mergedData;
         }
       }
 
