@@ -19,16 +19,20 @@ const CACHE_DURATION_MS = 60 * 1000; // 60 secondes
 
 export type CheckOnlineVariables =
   | string
-  | { id: string; skipDeviceStateUpdate?: boolean };
+  | { id: string; skipDeviceStateUpdate?: boolean; forceRefresh?: boolean };
 
 interface CacheEntry {
   timestamp: number;
   data: { isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual'; env?: KidooEnvResponse };
 }
 
-function resolveVariables(v: CheckOnlineVariables): { id: string; skipDeviceStateUpdate: boolean } {
-  if (typeof v === 'string') return { id: v, skipDeviceStateUpdate: false };
-  return { id: v.id, skipDeviceStateUpdate: v.skipDeviceStateUpdate ?? false };
+function resolveVariables(v: CheckOnlineVariables): { id: string; skipDeviceStateUpdate: boolean; forceRefresh: boolean } {
+  if (typeof v === 'string') return { id: v, skipDeviceStateUpdate: false, forceRefresh: false };
+  return {
+    id: v.id,
+    skipDeviceStateUpdate: v.skipDeviceStateUpdate ?? false,
+    forceRefresh: v.forceRefresh ?? false
+  };
 }
 
 export function useKidooCheckOnline() {
@@ -53,10 +57,10 @@ export function useKidooCheckOnline() {
 
   return useMutation({
     mutationFn: async (variables: CheckOnlineVariables) => {
-      const { id } = resolveVariables(variables);
+      const { id, forceRefresh } = resolveVariables(variables);
 
-      // Vérifier le cache avant de faire la requête
-      if (isCacheFresh(id)) {
+      // Vérifier le cache avant de faire la requête (sauf si forceRefresh)
+      if (!forceRefresh && isCacheFresh(id)) {
         const cachedData = getCachedData(id);
         if (cachedData) {
           if (__DEV__) {
@@ -73,6 +77,10 @@ export function useKidooCheckOnline() {
           }
           return mergedData;
         }
+      }
+
+      if (__DEV__ && forceRefresh) {
+        console.log('[useKidooCheckOnline] Force refresh requested for:', id);
       }
 
       // Cache miss ou expiré → faire la requête
