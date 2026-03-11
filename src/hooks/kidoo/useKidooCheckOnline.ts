@@ -120,13 +120,25 @@ export function useKidooCheckOnline() {
         })
       );
 
-      // Mettre à jour le contexte Dream avec les données env si présentes
-      if (data.env) {
+      // Mettre à jour le contexte Dream avec les données env
+      // Si check-online retourne env, utilise ça. Sinon, utilise les données fraîches du contexte (PubNub)
+      let envToUpdate = data.env;
+      if (!envToUpdate) {
+        // Si pas d'env dans la réponse (timeout), merger avec les données fraîches du contexte
+        const DREAM_ENV_KEY = ['dream', 'env', id] as const;
+        const freshEnvFromContext = queryClient.getQueryData<KidooEnvResponse>(DREAM_ENV_KEY);
+        envToUpdate = freshEnvFromContext;
+        if (__DEV__ && freshEnvFromContext) {
+          console.log('[useKidooCheckOnline] check-online timeout: using fresh env from PubNub for kidooId:', id);
+        }
+      }
+
+      if (envToUpdate) {
         // Mettre à jour via queryClient (le DreamRealtimeProvider utilise aussi queryClient)
         const DREAM_ENV_KEY = ['dream', 'env', id] as const;
-        queryClient.setQueryData(DREAM_ENV_KEY, data.env);
+        queryClient.setQueryData(DREAM_ENV_KEY, envToUpdate);
         if (__DEV__) {
-          console.log('[useKidooCheckOnline] Updated env data for kidooId:', id, data.env);
+          console.log('[useKidooCheckOnline] Updated env data for kidooId:', id, envToUpdate);
         }
       }
     },
