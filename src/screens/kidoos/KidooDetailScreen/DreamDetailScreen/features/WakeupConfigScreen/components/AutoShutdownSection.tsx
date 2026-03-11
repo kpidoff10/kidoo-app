@@ -7,7 +7,7 @@ import React from 'react';
 import { View, StyleSheet, Pressable, Switch } from 'react-native';
 import { Controller, Control } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Text, Title } from '@/components/ui';
+import { Text } from '@/components/ui';
 import { useTheme } from '@/theme';
 
 interface AutoShutdownSectionProps {
@@ -38,8 +38,15 @@ export function AutoShutdownSection({ control }: AutoShutdownSectionProps) {
       render={({ field: { value: autoShutdown, onChange: setAutoShutdown } }) => (
         <View style={styles.container}>
           <View style={styles.header}>
-            <Title>{t('kidoos.dream.wakeup.autoShutdown', { defaultValue: 'Extinction automatique' })}</Title>
-            <Switch value={autoShutdown ?? true} onValueChange={setAutoShutdown} />
+            <Text style={[styles.headerLabel, { color: colors.text }]}>
+              {t('kidoos.dream.wakeup.autoShutdown', { defaultValue: 'Extinction automatique' })}
+            </Text>
+            <Switch
+              value={autoShutdown ?? true}
+              onValueChange={setAutoShutdown}
+              trackColor={{ false: colors.border, true: colors.primary + '80' }}
+              thumbColor={(autoShutdown ?? true) ? colors.primary : colors.textTertiary}
+            />
           </View>
 
           {autoShutdown && (
@@ -48,13 +55,13 @@ export function AutoShutdownSection({ control }: AutoShutdownSectionProps) {
               name="autoShutdownMinutes"
               render={({ field: { value: minutes, onChange: setMinutes } }) => (
                 <View style={styles.durationContainer}>
-                  <Text style={styles.label}>
+                  <Text style={[styles.label, { color: colors.text }]}>
                     {t('kidoos.dream.wakeup.autoShutdownDuration', { defaultValue: 'Durée' })}
                   </Text>
 
                   <View style={styles.stepperContainer}>
                     <Pressable
-                      style={[styles.stepButton, styles.minusButton]}
+                      style={[styles.stepButton, { backgroundColor: colors.backgroundSecondary }]}
                       onPress={() => {
                         const current = minutes ?? 30;
                         if (current > 5) {
@@ -62,15 +69,15 @@ export function AutoShutdownSection({ control }: AutoShutdownSectionProps) {
                         }
                       }}
                     >
-                      <Text style={styles.stepButtonText}>−</Text>
+                      <Text style={[styles.stepButtonText, { color: colors.text }]}>−</Text>
                     </Pressable>
 
-                    <View style={styles.valueDisplay}>
-                      <Text style={styles.valueText}>{formatDuration(minutes)}</Text>
+                    <View style={[styles.valueDisplay, { backgroundColor: colors.background }]}>
+                      <Text style={[styles.valueText, { color: colors.text }]}>{formatDuration(minutes)}</Text>
                     </View>
 
                     <Pressable
-                      style={[styles.stepButton, styles.plusButton]}
+                      style={[styles.stepButton, { backgroundColor: colors.backgroundSecondary }]}
                       onPress={() => {
                         const current = minutes ?? 30;
                         if (current < 120) {
@@ -78,7 +85,7 @@ export function AutoShutdownSection({ control }: AutoShutdownSectionProps) {
                         }
                       }}
                     >
-                      <Text style={styles.stepButtonText}>+</Text>
+                      <Text style={[styles.stepButtonText, { color: colors.text }]}>+</Text>
                     </Pressable>
                   </View>
                 </View>
@@ -101,6 +108,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
+  headerLabel: {
+    fontSize: 16,
+    flex: 1,
+  },
   durationContainer: {
     paddingLeft: 8,
   },
@@ -120,30 +131,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-  },
-  minusButton: {
-    backgroundColor: '#E8E8E8',
-  },
-  plusButton: {
-    backgroundColor: '#E8E8E8',
   },
   stepButtonText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
   },
   valueDisplay: {
     flex: 1,
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: '#f9f9f9',
     borderRadius: 8,
     alignItems: 'center',
   },
   valueText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
   },
 });
