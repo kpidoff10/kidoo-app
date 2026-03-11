@@ -2,19 +2,29 @@
  * Hook pour vérifier si un Kidoo est en ligne (mise à jour cache isConnected, deviceState, env).
  * Quand PubNub est connecté, deviceState n'est pas mis à jour (évite d'écraser le temps réel).
  * Les données env retournées par check-online sont mises à jour dans le contexte Dream.
+ *
+ * Cache: Les résultats sont cachés pendant 60s - pas de nouvel appel API si dernière requête < 60s.
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { kidoosApi, Kidoo } from '@/api';
+import { useRef, useCallback } from 'react';
+import { kidoosApi, Kidoo, type KidooEnvResponse } from '@/api';
 import { showToast } from '@/components/ui';
 import { useTranslation } from 'react-i18next';
 import { queryClient } from '@/lib/queryClient';
 import type { DreamRealtimeData } from '@/contexts/kidoo/dream/DreamRealtimeContext';
 import { KIDOOS_KEY } from './keys';
 
+const CACHE_DURATION_MS = 60 * 1000; // 60 secondes
+
 export type CheckOnlineVariables =
   | string
   | { id: string; skipDeviceStateUpdate?: boolean };
+
+interface CacheEntry {
+  timestamp: number;
+  data: { isOnline: boolean; reason?: string; deviceState?: 'idle' | 'bedtime' | 'wakeup' | 'manual'; env?: KidooEnvResponse };
+}
 
 function resolveVariables(v: CheckOnlineVariables): { id: string; skipDeviceStateUpdate: boolean } {
   if (typeof v === 'string') return { id: v, skipDeviceStateUpdate: false };
@@ -24,10 +34,49 @@ function resolveVariables(v: CheckOnlineVariables): { id: string; skipDeviceStat
 export function useKidooCheckOnline() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const cacheRef = useRef<Map<string, CacheEntry>>(new Map());
+
+  const isCacheFresh = useCallback((kidooId: string): boolean => {
+    const entry = cacheRef.current.get(kidooId);
+    if (!entry) return false;
+    const elapsed = Date.now() - entry.timestamp;
+    const isFresh = elapsed < CACHE_DURATION_MS;
+    if (__DEV__ && isFresh) {
+      console.log('[useKidooCheckOnline] Cache hit:', kidooId, `(${elapsed}ms ago)`);
+    }
+    return isFresh;
+  }, []);
+
+  const getCachedData = useCallback((kidooId: string) => {
+    return cacheRef.current.get(kidooId)?.data;
+  }, []);
 
   return useMutation({
-    mutationFn: (variables: CheckOnlineVariables) =>
-      kidoosApi.checkOnline(resolveVariables(variables).id),
+    mutationFn: async (variables: CheckOnlineVariables) => {
+      const { id } = resolveVariables(variables);
+
+      // Vérifier le cache avant de faire la requête
+      if (isCacheFresh(id)) {
+        const cachedData = getCachedData(id);
+        if (cachedData) {
+          if (__DEV__) {
+            console.log('[useKidooCheckOnline] Returning cached data for:', id);
+          }
+          return cachedData;
+        }
+      }
+
+      // Cache miss ou expiré → faire la requête
+      const data = await kidoosApi.checkOnline(id);
+
+      // Enregistrer en cache
+      cacheRef.current.set(id, { timestamp: Date.now(), data });
+      if (__DEV__) {
+        console.log('[useKidooCheckOnline] Cached response for:', id);
+      }
+
+      return data;
+    },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: KIDOOS_KEY });
       return { previousKidoos: queryClient.getQueryData<Kidoo[]>(KIDOOS_KEY) };
