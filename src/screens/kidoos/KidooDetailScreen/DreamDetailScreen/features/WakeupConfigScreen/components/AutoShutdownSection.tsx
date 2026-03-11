@@ -72,7 +72,7 @@ export function AutoShutdownSection({ control }: AutoShutdownSectionProps) {
                       <Text style={[styles.stepButtonText, { color: colors.text }]}>−</Text>
                     </Pressable>
 
-                    <View style={[styles.valueDisplay, { backgroundColor: colors.background }]}>
+                    <View style={[styles.valueDisplay, { backgroundColor: colors.backgroundSecondary }]}>
                       <Text style={[styles.valueText, { color: colors.text }]}>{formatDuration(minutes)}</Text>
                     </View>
 
