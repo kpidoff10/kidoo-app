@@ -13,7 +13,7 @@ import { ContentScrollView, Text, InfoBox, ScreenLoader } from '@/components/ui'
 import { useTheme } from '@/theme';
 import { useDreamDefaultColor } from '@/hooks';
 import { BrightnessSection } from '../../../../shared';
-import { ColorOrEffectSection } from './components/ColorOrEffectSection';
+import { ColorOrEffectSection, CardSection } from './components';
 import { rgbToHex } from '@/utils/color';
 import { SAVE_DEBOUNCE_MS } from '@/config/timings';
 
@@ -144,10 +144,14 @@ export function DefaultColorConfigScreen() {
           />
 
           {!isLoading && (
-            <>
+            <CardSection
+              title={t('kidoos.dream.defaultColor.appearance', { defaultValue: 'Apparence' })}
+            >
               <ColorOrEffectSection control={control} />
-              <BrightnessSection control={control} i18nPrefix="kidoos.dream.defaultColor" />
-            </>
+              <View style={{ marginTop: 12 }}>
+                <BrightnessSection control={control} i18nPrefix="kidoos.dream.defaultColor" />
+              </View>
+            </CardSection>
           )}
         </View>
       </ContentScrollView>
@@ -160,7 +164,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
 });

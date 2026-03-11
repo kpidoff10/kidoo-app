@@ -21,6 +21,7 @@ import {
   ColorPickerSection,
   ColorOrEffectSection,
   NightlightSwitch,
+  CardSection,
 } from './components';
 import { rgbToHex } from '@/utils/color';
 
@@ -208,31 +209,48 @@ export function BedtimeConfigScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ContentScrollView>
         <View style={styles.content}>
-          <WeekdaySelectorSection
-            i18nPrefix="kidoos.dream.bedtime"
-            selectedDay={selectedDayForTime}
-            activeDays={activeDays}
-            configuredDays={savedConfiguredDays}
-            weekdayTimes={weekdayTimes}
-            onDaySelect={setSelectedDayForTime}
-            onSwitchChange={handleSwitchChange}
-          />
-
-          {weekdayTimes[selectedDayForTime]?.activated && (
-            <TimePickerSection
+          {/* Horaire */}
+          <CardSection
+            title={t('kidoos.dream.bedtime.schedule', { defaultValue: 'Horaire' })}
+          >
+            <WeekdaySelectorSection
               i18nPrefix="kidoos.dream.bedtime"
               selectedDay={selectedDayForTime}
-              hour={weekdayTimes[selectedDayForTime]?.hour ?? 22}
-              minute={weekdayTimes[selectedDayForTime]?.minute ?? 0}
-              onTimeChange={(hour, minute) => handleTimeChange(selectedDayForTime, hour, minute)}
+              activeDays={activeDays}
+              configuredDays={savedConfiguredDays}
+              weekdayTimes={weekdayTimes}
+              onDaySelect={setSelectedDayForTime}
+              onSwitchChange={handleSwitchChange}
             />
-          )}
 
-          <ColorOrEffectSection control={control} />
+            {weekdayTimes[selectedDayForTime]?.activated && (
+              <TimePickerSection
+                i18nPrefix="kidoos.dream.bedtime"
+                selectedDay={selectedDayForTime}
+                hour={weekdayTimes[selectedDayForTime]?.hour ?? 22}
+                minute={weekdayTimes[selectedDayForTime]?.minute ?? 0}
+                onTimeChange={(hour, minute) => handleTimeChange(selectedDayForTime, hour, minute)}
+              />
+            )}
+          </CardSection>
 
-          <BrightnessSection control={control} i18nPrefix="kidoos.dream.bedtime" />
+          {/* Apparence */}
+          <CardSection
+            title={t('kidoos.dream.bedtime.appearance', { defaultValue: 'Apparence' })}
+          >
+            <ColorOrEffectSection control={control} />
 
-          <NightlightSwitch control={control} />
+            <View style={{ marginTop: 12 }}>
+              <BrightnessSection control={control} i18nPrefix="kidoos.dream.bedtime" />
+            </View>
+          </CardSection>
+
+          {/* Comportement */}
+          <CardSection
+            title={t('kidoos.dream.bedtime.behavior', { defaultValue: 'Comportement' })}
+          >
+            <NightlightSwitch control={control} />
+          </CardSection>
         </View>
       </ContentScrollView>
     </View>
@@ -244,7 +262,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
 });

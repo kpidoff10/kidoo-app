@@ -149,7 +149,6 @@ export function ColorOrEffectSection({ control }: ColorOrEffectSectionProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 32,
   },
   label: {
     fontSize: 16,

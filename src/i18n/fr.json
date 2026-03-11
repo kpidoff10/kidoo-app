@@ -114,19 +114,35 @@
         "configure": "Configurer",
         "selectTime": "Sélectionnez l'heure de coucher",
         "selectColor": "Sélectionnez la couleur",
+        "selectEffect": "Sélectionnez un effet",
+        "mode": "Mode d'affichage",
         "brightness": "Luminosité",
         "nightlightAllNight": "Veilleuse allumée toute la nuit",
         "test": "Tester",
-        "saved": "Configuration enregistrée"
+        "saved": "Configuration enregistrée",
+        "schedule": "Horaire",
+        "appearance": "Apparence",
+        "behavior": "Comportement"
       },
       "wakeup": {
         "title": "Heure de réveil",
         "configure": "Configurer",
+        "selectColor": "Sélectionnez la couleur",
         "schedule": "Horaire",
         "appearance": "Apparence",
         "behavior": "Comportement",
         "autoShutdown": "Extinction automatique",
         "autoShutdownDuration": "Durée"
+      },
+      "defaultColor": {
+        "title": "Couleur par défaut",
+        "appearance": "Apparence",
+        "selectColor": "Sélectionnez la couleur",
+        "selectEffect": "Sélectionnez un effet",
+        "mode": "Mode d'affichage",
+        "brightness": "Luminosité",
+        "description": "Configurez la couleur et la luminosité affichées par défaut quand vous appuyez sur la veilleuse sans routine programmée.",
+        "info": "Cette couleur s'affichera en appuyant sur le bouton tactile si aucune routine n'est prévue."
       },
       "nighttimeAlert": {
         "title": "Alerte veilleuse",

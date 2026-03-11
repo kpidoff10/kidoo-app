@@ -220,7 +220,7 @@ export function WakeupConfigScreen() {
           >
             <ColorPickerSection control={control} />
 
-            <View style={{ marginTop: 16 }}>
+            <View style={{ marginTop: 12 }}>
               <BrightnessSection control={control} i18nPrefix="kidoos.dream.wakeup" />
             </View>
           </CardSection>

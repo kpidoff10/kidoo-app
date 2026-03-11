@@ -90,16 +90,33 @@
     "dream": {
       "bedtime": {
         "title": "Bedtime",
-        "configure": "Configure"
+        "configure": "Configure",
+        "selectColor": "Select color",
+        "selectEffect": "Select an effect",
+        "mode": "Display mode",
+        "schedule": "Schedule",
+        "appearance": "Appearance",
+        "behavior": "Behavior"
       },
       "wakeup": {
         "title": "Wake-up time",
         "configure": "Configure",
+        "selectColor": "Select color",
         "schedule": "Schedule",
         "appearance": "Appearance",
         "behavior": "Behavior",
         "autoShutdown": "Auto shutdown",
         "autoShutdownDuration": "Duration"
+      },
+      "defaultColor": {
+        "title": "Default color",
+        "appearance": "Appearance",
+        "selectColor": "Select color",
+        "selectEffect": "Select an effect",
+        "mode": "Display mode",
+        "brightness": "Brightness",
+        "description": "Configure the color and brightness displayed by default when you tap the nightlight without a scheduled routine.",
+        "info": "This color will be displayed when tapping the touch button if no routine is scheduled."
       },
       "nighttimeAlert": {
         "title": "Night light alert",

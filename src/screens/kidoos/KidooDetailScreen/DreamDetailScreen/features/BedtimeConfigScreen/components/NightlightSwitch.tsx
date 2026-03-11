@@ -50,7 +50,6 @@ export function NightlightSwitch({ control }: NightlightSwitchProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 32,
     width: '100%',
   },
   switchRow: {

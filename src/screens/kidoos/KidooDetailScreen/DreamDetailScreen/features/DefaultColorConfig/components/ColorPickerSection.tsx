@@ -50,6 +50,5 @@ export function ColorPickerSection({
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 24,
   },
 });
