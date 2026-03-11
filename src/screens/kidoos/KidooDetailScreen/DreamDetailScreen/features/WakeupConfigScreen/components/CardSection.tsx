@@ -40,7 +40,8 @@ export function CardSection({ title, children }: CardSectionProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 12,
+    marginVertical: 8,
+    marginHorizontal: 0,
     borderRadius: 14,
     overflow: 'hidden',
     ...Platform.select({
@@ -56,17 +57,17 @@ const styles = StyleSheet.create({
     }),
   },
   header: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
   },
   title: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
     color: '#FFFFFF',
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   content: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
   },
 });
