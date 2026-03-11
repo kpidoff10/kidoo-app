@@ -17,7 +17,7 @@ import {
   BrightnessSection,
   useScheduleConfigScreen,
 } from '../../../../shared';
-import { ColorPickerSection, AutoShutdownSection } from './components';
+import { ColorPickerSection, AutoShutdownSection, AccordionSection } from './components';
 import { rgbToHex } from '@/utils/color';
 
 type RouteParams = {
@@ -189,31 +189,51 @@ export function WakeupConfigScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ContentScrollView>
         <View style={styles.content}>
-          <WeekdaySelectorSection
-            i18nPrefix="kidoos.dream.wakeup"
-            selectedDay={selectedDayForTime}
-            activeDays={activeDays}
-            configuredDays={savedConfiguredDays}
-            weekdayTimes={weekdayTimes}
-            onDaySelect={setSelectedDayForTime}
-            onSwitchChange={handleSwitchChange}
-          />
-
-          {weekdayTimes[selectedDayForTime]?.activated && (
-            <TimePickerSection
+          {/* Horaire */}
+          <AccordionSection
+            title={t('kidoos.dream.wakeup.schedule', { defaultValue: 'Horaire' })}
+            defaultOpen={true}
+          >
+            <WeekdaySelectorSection
               i18nPrefix="kidoos.dream.wakeup"
               selectedDay={selectedDayForTime}
-              hour={weekdayTimes[selectedDayForTime]?.hour ?? 7}
-              minute={weekdayTimes[selectedDayForTime]?.minute ?? 0}
-              onTimeChange={(hour, minute) => handleTimeChange(selectedDayForTime, hour, minute)}
+              activeDays={activeDays}
+              configuredDays={savedConfiguredDays}
+              weekdayTimes={weekdayTimes}
+              onDaySelect={setSelectedDayForTime}
+              onSwitchChange={handleSwitchChange}
             />
-          )}
 
-          <ColorPickerSection control={control} />
+            {weekdayTimes[selectedDayForTime]?.activated && (
+              <TimePickerSection
+                i18nPrefix="kidoos.dream.wakeup"
+                selectedDay={selectedDayForTime}
+                hour={weekdayTimes[selectedDayForTime]?.hour ?? 7}
+                minute={weekdayTimes[selectedDayForTime]?.minute ?? 0}
+                onTimeChange={(hour, minute) => handleTimeChange(selectedDayForTime, hour, minute)}
+              />
+            )}
+          </AccordionSection>
 
-          <BrightnessSection control={control} i18nPrefix="kidoos.dream.wakeup" />
+          {/* Apparence */}
+          <AccordionSection
+            title={t('kidoos.dream.wakeup.appearance', { defaultValue: 'Apparence' })}
+            defaultOpen={false}
+          >
+            <ColorPickerSection control={control} />
 
-          <AutoShutdownSection control={control} />
+            <View style={{ marginTop: 16 }}>
+              <BrightnessSection control={control} i18nPrefix="kidoos.dream.wakeup" />
+            </View>
+          </AccordionSection>
+
+          {/* Comportement */}
+          <AccordionSection
+            title={t('kidoos.dream.wakeup.behavior', { defaultValue: 'Comportement' })}
+            defaultOpen={false}
+          >
+            <AutoShutdownSection control={control} />
+          </AccordionSection>
         </View>
       </ContentScrollView>
     </View>

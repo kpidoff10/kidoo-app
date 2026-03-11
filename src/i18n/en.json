@@ -95,6 +95,9 @@
       "wakeup": {
         "title": "Wake-up time",
         "configure": "Configure",
+        "schedule": "Schedule",
+        "appearance": "Appearance",
+        "behavior": "Behavior",
         "autoShutdown": "Auto shutdown",
         "autoShutdownDuration": "Duration"
       },

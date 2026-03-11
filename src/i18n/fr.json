@@ -122,6 +122,9 @@
       "wakeup": {
         "title": "Heure de réveil",
         "configure": "Configurer",
+        "schedule": "Horaire",
+        "appearance": "Apparence",
+        "behavior": "Comportement",
         "autoShutdown": "Extinction automatique",
         "autoShutdownDuration": "Durée"
       },
