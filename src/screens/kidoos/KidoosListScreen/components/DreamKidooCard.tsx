@@ -21,7 +21,7 @@ interface DreamKidooCardProps {
   refreshTrigger?: number;
 }
 
-export function DreamKidooCard({ kidoo, onPress, refreshTrigger }: DreamKidooCardProps) {
+export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKidooCardProps) {
   const { t } = useTranslation();
   const { colors, spacing } = useTheme();
   const { getKidooModelHandler } = useKidooContext();

@@ -41,7 +41,12 @@ export function BaseKidooCard({
 
   useEffect(() => {
     if (kidoo.macAddress) {
-      checkOnline.mutate(kidoo.id);
+      // Si refreshTrigger change, c'est un pull-to-refresh → forceRefresh
+      const shouldForceRefresh = refreshTrigger > 0;
+      checkOnline.mutate({
+        id: kidoo.id,
+        forceRefresh: shouldForceRefresh,
+      });
     }
   }, [kidoo.id, kidoo.macAddress, refreshTrigger]);
 
