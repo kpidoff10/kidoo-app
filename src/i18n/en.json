@@ -126,6 +126,7 @@
         "enable": "Enable alert"
       },
       "activate": "Activate",
+      "deactivate": "Deactivate",
       "activated": "Dream activated",
       "help": {
         "title": "Help",

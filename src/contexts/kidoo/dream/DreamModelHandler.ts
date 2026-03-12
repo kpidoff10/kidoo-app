@@ -82,10 +82,19 @@ export class DreamModelHandler implements ModelHandler {
   ): CustomAction[] {
     const actions: CustomAction[] = [];
 
+    // Déterminer si une routine est active
+    const isRoutineActive = kidoo.deviceState === 'bedtime' ||
+                           kidoo.deviceState === 'wakeup' ||
+                           kidoo.deviceState === 'manual';
+
+    const label = isRoutineActive
+      ? t('kidoos.dream.deactivate', { defaultValue: 'Désactiver' })
+      : t('kidoos.dream.activate', { defaultValue: 'Activer' });
+
     actions.push({
       id: 'dream-activate',
-      label: t('kidoos.dream.activate', { defaultValue: 'Activer' }),
-      icon: 'play',
+      label,
+      icon: isRoutineActive ? 'stop' : 'play',
       variant: 'primary',
       onPress: callbacks?.onDreamActivate || (() => {
         if (__DEV__) console.log('Dream activate pressed');

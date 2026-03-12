@@ -152,6 +152,7 @@
         "enable": "Activer l'alerte"
       },
       "activate": "Activer",
+      "deactivate": "Désactiver",
       "activated": "Dream activé",
       "help": {
         "title": "Aide",
