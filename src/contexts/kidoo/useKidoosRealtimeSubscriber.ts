@@ -15,57 +15,57 @@ export function useKidoosRealtimeSubscriber() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log('[REALTIME] Hook iniciado', { pubnub: !!pubnub, kidoosCount: kidoos?.length });
+    console.log('[REALTIME] Hook lancé', { pubnub: !!pubnub, kidoosCount: kidoos?.length });
 
     if (!pubnub || !kidoos?.length) {
-      console.log('[REALTIME] Pulando subscription - PubNub ou kidoos vazios');
+      console.log('[REALTIME] Abonnement ignoré - PubNub ou kidoos vides');
       return;
     }
 
-    // Subscribe a todos os channels dos devices
+    // S'abonner à tous les canals des devices
     const channels = kidoos.map((k) => `kidoo-${k.id}`);
-    console.log('[REALTIME] Subscrevendo aos canais:', channels);
+    console.log('[REALTIME] Abonnement aux canals:', channels);
 
     if (channels.length === 0) {
-      console.log('[REALTIME] Nenhum canal para subscrever');
+      console.log('[REALTIME] Aucun canal à abonner');
       return;
     }
 
     pubnub.subscribe({
       channels,
     });
-    console.log('[REALTIME] ✓ Subscrito aos canais');
+    console.log('[REALTIME] ✓ Abonné aux canals');
 
-    // Handler para mensagens de status
+    // Handler pour les messages de statut
     const messageListener = {
       message: (msg: any) => {
-        console.log('[REALTIME] Mensagem recebida:', { channel: msg.channel, message: msg.message });
+        console.log('[REALTIME] Message reçu:', { channel: msg.channel, message: msg.message });
 
         const { channel, message } = msg;
 
-        // Extrair kidooId do channel (format: kidoo-{id})
+        // Extraire kidooId du canal (format: kidoo-{id})
         const kidooIdMatch = channel.match(/^kidoo-(.+)$/);
         if (!kidooIdMatch) {
-          console.log('[REALTIME] Formato de canal inválido:', channel);
+          console.log('[REALTIME] Format de canal invalide:', channel);
           return;
         }
 
         const kidooId = kidooIdMatch[1];
-        console.log('[REALTIME] Processando mensagem para Kidoo:', kidooId);
+        console.log('[REALTIME] Traitement message pour Kidoo:', kidooId);
 
-        // Processar mensagens de status (ESP32 envia {"status":"online"})
+        // Traiter les messages de statut (ESP32 envoie {"status":"online"})
         if (message?.status) {
-          console.log(`[REALTIME] Mensagem de status recebida: ${message.status}`);
+          console.log(`[REALTIME] Message de statut reçu: ${message.status}`);
 
           if (message.status === 'online') {
-            console.log(`[REALTIME] ✓ Kidoo ${kidooId} ONLINE - atualizando cache`);
+            console.log(`[REALTIME] ✓ Kidoo ${kidooId} CONNECTÉ - mise à jour cache`);
 
-            // Atualizar o cache React Query com status online
+            // Mettre à jour le cache React Query avec statut en ligne
             queryClient.setQueryData(
               KIDOOS_KEY,
               (oldData: any[] | undefined) => {
                 if (!Array.isArray(oldData)) {
-                  console.log('[REALTIME] Cache vazio, ignorando');
+                  console.log('[REALTIME] Cache vide, ignoré');
                   return oldData;
                 }
                 const updated = oldData.map((kidoo) =>
@@ -77,19 +77,19 @@ export function useKidoosRealtimeSubscriber() {
                       }
                     : kidoo
                 );
-                console.log('[REALTIME] ✓ Cache atualizado com online');
+                console.log('[REALTIME] ✓ Cache mis à jour (en ligne)');
                 return updated;
               }
             );
           } else if (message.status === 'offline') {
-            console.log(`[REALTIME] ✓ Kidoo ${kidooId} OFFLINE - atualizando cache`);
+            console.log(`[REALTIME] ✓ Kidoo ${kidooId} DÉCONNECTÉ - mise à jour cache`);
 
-            // Atualizar o cache com status offline
+            // Mettre à jour le cache avec statut hors ligne
             queryClient.setQueryData(
               KIDOOS_KEY,
               (oldData: any[] | undefined) => {
                 if (!Array.isArray(oldData)) {
-                  console.log('[REALTIME] Cache vazio, ignorando');
+                  console.log('[REALTIME] Cache vide, ignoré');
                   return oldData;
                 }
                 const updated = oldData.map((kidoo) =>
@@ -97,23 +97,23 @@ export function useKidoosRealtimeSubscriber() {
                     ? { ...kidoo, isConnected: false }
                     : kidoo
                 );
-                console.log('[REALTIME] ✓ Cache atualizado com offline');
+                console.log('[REALTIME] ✓ Cache mis à jour (hors ligne)');
                 return updated;
               }
             );
           }
         } else {
-          console.log('[REALTIME] Mensagem sem campo status:', JSON.stringify(message));
+          console.log('[REALTIME] Message sans champ statut:', JSON.stringify(message));
         }
       },
     };
 
-    console.log('[REALTIME] Adicionando listener');
+    console.log('[REALTIME] Ajout listener');
     pubnub.addListener(messageListener);
 
-    // Cleanup
+    // Nettoyage
     return () => {
-      console.log('[REALTIME] Limpando subscription');
+      console.log('[REALTIME] Suppression abonnement');
       pubnub.removeListener(messageListener);
       pubnub.unsubscribe({ channels });
     };
