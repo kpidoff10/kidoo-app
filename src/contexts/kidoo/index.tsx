@@ -7,6 +7,7 @@ import { DreamRealtimeProvider } from './dream';
 
 export { KidooProvider, useKidooContext } from './KidooContext';
 export { KidooRealtimeProvider, useKidooRealtimeBase } from './KidooRealtimeContext';
+export { useKidoosRealtimeSubscriber } from './useKidoosRealtimeSubscriber';
 export { getModelHandler, ModelHandler, MODEL_FEATURES } from './KidooModelHandler';
 export type { CustomAction, ModelFeatureKey } from './KidooModelHandler';
 export { useDreamRealtimeContext, useKidooEnvRealtime } from './dream';

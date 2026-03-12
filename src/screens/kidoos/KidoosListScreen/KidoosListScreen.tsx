@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, ScreenLoader } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { useKidoos } from '@/hooks';
-import { useBluetooth } from '@/contexts';
+import { useBluetooth, useKidooRealtimeSubscriber } from '@/contexts';
 import { useBottomSheet } from '@/hooks';
 import { Kidoo } from '@/api';
 import { RootStackParamList } from '@/navigation/types';
@@ -26,6 +26,9 @@ export function KidoosListScreen() {
   const { data: kidoos, isLoading, refetch, isRefetching } = useKidoos();
   const { openScanSheet } = useBluetooth();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Subscribe a eventos de tempo real de todos os devices
+  useKidoosRealtimeSubscriber();
 
   const handleRefresh = useCallback(async () => {
     await refetch();
