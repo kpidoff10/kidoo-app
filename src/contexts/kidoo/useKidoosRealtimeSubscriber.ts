@@ -61,11 +61,17 @@ export function useKidoosRealtimeSubscriber() {
             console.log(`[REALTIME] ✓ Kidoo ${kidooId} CONNECTÉ - mise à jour cache`);
 
             // Mettre à jour le cache React Query avec statut en ligne
+            console.log('[REALTIME] Clé cache utilisée:', KIDOOS_KEY);
             queryClient.setQueryData(
               KIDOOS_KEY,
               (oldData: any[] | undefined) => {
+                console.log('[REALTIME] oldData reçue:', {
+                  isArray: Array.isArray(oldData),
+                  length: oldData?.length,
+                  kidoos: oldData?.map((k: any) => ({ id: k.id, isConnected: k.isConnected }))
+                });
                 if (!Array.isArray(oldData)) {
-                  console.log('[REALTIME] Cache vide, ignoré');
+                  console.log('[REALTIME] ⚠️ oldData pas un array, ignoré');
                   return oldData;
                 }
                 const updated = oldData.map((kidoo) =>
@@ -77,7 +83,7 @@ export function useKidoosRealtimeSubscriber() {
                       }
                     : kidoo
                 );
-                console.log('[REALTIME] ✓ Cache mis à jour (en ligne)');
+                console.log('[REALTIME] ✓ Cache mis à jour (en ligne):', JSON.stringify(updated));
                 return updated;
               }
             );
@@ -88,8 +94,13 @@ export function useKidoosRealtimeSubscriber() {
             queryClient.setQueryData(
               KIDOOS_KEY,
               (oldData: any[] | undefined) => {
+                console.log('[REALTIME] oldData reçue (offline):', {
+                  isArray: Array.isArray(oldData),
+                  length: oldData?.length,
+                  kidoos: oldData?.map((k: any) => ({ id: k.id, isConnected: k.isConnected }))
+                });
                 if (!Array.isArray(oldData)) {
-                  console.log('[REALTIME] Cache vide, ignoré');
+                  console.log('[REALTIME] ⚠️ oldData pas un array, ignoré');
                   return oldData;
                 }
                 const updated = oldData.map((kidoo) =>
@@ -97,7 +108,7 @@ export function useKidoosRealtimeSubscriber() {
                     ? { ...kidoo, isConnected: false }
                     : kidoo
                 );
-                console.log('[REALTIME] ✓ Cache mis à jour (hors ligne)');
+                console.log('[REALTIME] ✓ Cache mis à jour (hors ligne):', JSON.stringify(updated));
                 return updated;
               }
             );
