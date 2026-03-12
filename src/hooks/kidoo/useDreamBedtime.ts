@@ -38,10 +38,6 @@ export function useDreamActivate() {
           k.id === id ? { ...k, deviceState: 'manual' } : k
         )
       );
-      showToast.success({
-        title: t('toast.success'),
-        message: t('kidoos.dream.activated', { defaultValue: 'Dream activé' }),
-      });
       // Délai pour que l'appareil ait le temps de traiter le tap
       setTimeout(() => checkOnline.mutate(id), CHECK_ONLINE_AFTER_START_MS);
     },
