@@ -11,7 +11,7 @@ import { Text, Accordion } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { Kidoo } from '@/api';
 import { useKidooContext, useKidooEnvRealtime } from '@/contexts';
-import { useControlDreamBedtime, useStopDreamRoutine, useKidooEnv, KIDOOS_KEY } from '@/hooks';
+import { useDreamActivate, useKidooEnv, KIDOOS_KEY } from '@/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import { BaseKidooCard } from './BaseKidooCard';
 
@@ -26,8 +26,7 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKido
   const { colors, spacing } = useTheme();
   const { getKidooModelHandler } = useKidooContext();
   const modelHandler = getKidooModelHandler(kidoo.id);
-  const controlBedtime = useControlDreamBedtime();
-  const stopRoutine = useStopDreamRoutine();
+  const dreamActivate = useDreamActivate();
 
   const queryClient = useQueryClient();
   const realtimeEnv = useKidooEnvRealtime(kidoo.id);
@@ -57,9 +56,7 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKido
   }, [accordionRotateAnim]);
 
   const customActions = modelHandler?.getCustomActions?.(kidoo, t, {
-    onStartBedtime: () => controlBedtime.mutate({ id: kidoo.id, action: 'start' }),
-    onStopBedtime: () => controlBedtime.mutate({ id: kidoo.id, action: 'stop' }),
-    onStopRoutine: () => stopRoutine.mutate(kidoo.id),
+    onDreamActivate: () => dreamActivate.mutate(kidoo.id),
   }) ?? [];
   const hasModelActions = customActions.length > 0;
 
@@ -141,12 +138,10 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKido
         >
           {customActions.map((action) => {
             const actionColor =
-              action.id === 'start-bedtime' || action.icon === 'play'
+              action.id === 'dream-activate' || action.icon === 'play'
                 ? '#10B981'
-                : action.icon === 'stop' || action.icon === 'pause'
-                  ? '#EF4444'
-                  : colors.primary;
-            const isPending = controlBedtime.isPending || stopRoutine.isPending;
+                : colors.primary;
+            const isPending = dreamActivate.isPending;
             const isDisabled = action.disabled || isPending;
             return (
               <View key={action.id} style={styles.customActionRow}>
@@ -190,8 +185,7 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKido
     isAccordionOpen,
     spacing,
     colors,
-    controlBedtime.isPending,
-    stopRoutine.isPending,
+    dreamActivate.isPending,
     handleAccordionToggle,
   ]);
 

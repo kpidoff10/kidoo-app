@@ -16,8 +16,7 @@ export { useKidooEnv } from './useKidooEnv';
 export {
   useDreamBedtimeConfig,
   useUpdateDreamBedtimeConfig,
-  useControlDreamBedtime,
-  useStopDreamRoutine,
+  useDreamActivate,
 } from './useDreamBedtime';
 export {
   useDreamWakeupConfig,

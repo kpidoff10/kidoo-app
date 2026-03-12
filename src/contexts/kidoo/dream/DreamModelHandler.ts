@@ -76,31 +76,19 @@ export class DreamModelHandler implements ModelHandler {
     kidoo: Kidoo,
     t: (key: string, options?: any) => string,
     callbacks?: {
-      onStartBedtime?: () => void;
-      onStopBedtime?: () => void;
-      onStopRoutine?: () => void;
+      onDreamActivate?: () => void;
       [key: string]: (() => void) | undefined;
     }
   ): CustomAction[] {
     const actions: CustomAction[] = [];
 
     actions.push({
-      id: 'start-bedtime',
-      label: t('kidoos.dream.bedtime.startRoutine', { defaultValue: 'Lancer la routine' }),
+      id: 'dream-activate',
+      label: t('kidoos.dream.activate', { defaultValue: 'Activer' }),
       icon: 'play',
       variant: 'primary',
-      onPress: callbacks?.onStartBedtime || (() => {
-        if (__DEV__) console.log('Start bedtime routine pressed for Dream');
-      }),
-    });
-
-    actions.push({
-      id: 'stop-routine',
-      label: t('kidoos.dream.routine.stop', { defaultValue: 'Arrêter la routine' }),
-      icon: 'stop',
-      variant: 'secondary',
-      onPress: callbacks?.onStopRoutine || (() => {
-        if (__DEV__) console.log('Stop routine pressed for Dream');
+      onPress: callbacks?.onDreamActivate || (() => {
+        if (__DEV__) console.log('Dream activate pressed');
       }),
     });
 

@@ -19,68 +19,31 @@ export function useDreamBedtimeConfig(kidooId: string) {
   });
 }
 
-export function useControlDreamBedtime() {
+export function useDreamActivate() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const checkOnline = useKidooCheckOnline();
 
   return useMutation({
-    mutationFn: ({ id, action }: { id: string; action: 'start' | 'stop' }) =>
-      kidoosApi.controlDreamBedtime(id, action),
-    onError: () => {
-      showToast.error({ title: t('toast.error'), message: t('errors.generic') });
-    },
-    onSuccess: (_data, variables) => {
-      // Mise à jour optimiste du deviceState (évite d'attendre PubNub ou checkOnline)
-      // 'manual' = routine démarrée manuellement → affichage "Manuel" dans l'app
-      const deviceState = variables.action === 'start' ? 'manual' : 'idle';
-      if (__DEV__) console.log('[useDreamBedtime] setQueryData deviceState:', deviceState, 'kidooId:', variables.id);
-      queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) =>
-        old?.map((k) =>
-          k.id === variables.id ? { ...k, deviceState } : k
-        )
-      );
-      showToast.success({
-        title: t('toast.success'),
-        message:
-          variables.action === 'start'
-            ? t('kidoos.dream.bedtime.started', { defaultValue: 'Routine démarrée' })
-            : t('kidoos.dream.bedtime.stopped', { defaultValue: 'Routine arrêtée' }),
-      });
-      // Au stop : checkOnline confirme immédiatement 'idle'.
-      // Au start : checkOnline avec délai pour que l'appareil ait le temps de passer en bedtime
-      // (l'API peut renvoyer 'idle' si appelée trop tôt).
-      if (variables.action === 'stop') {
-        checkOnline.mutate(variables.id);
-      } else {
-        setTimeout(() => checkOnline.mutate(variables.id), CHECK_ONLINE_AFTER_START_MS);
-      }
-    },
-  });
-}
-
-export function useStopDreamRoutine() {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  const checkOnline = useKidooCheckOnline();
-
-  return useMutation({
-    mutationFn: (id: string) => kidoosApi.stopDreamRoutine(id),
+    mutationFn: (id: string) => kidoosApi.dreamActivate(id),
     onError: () => {
       showToast.error({ title: t('toast.error'), message: t('errors.generic') });
     },
     onSuccess: (_data, id) => {
-      // Mise à jour optimiste du deviceState
+      // Mise à jour optimiste du deviceState en 'manual'
+      // (le device décidera de la vraie logique : routine ou couleur par défaut)
+      if (__DEV__) console.log('[useDreamActivate] setQueryData deviceState: manual, kidooId:', id);
       queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) =>
         old?.map((k) =>
-          k.id === id ? { ...k, deviceState: 'idle' as const } : k
+          k.id === id ? { ...k, deviceState: 'manual' } : k
         )
       );
       showToast.success({
         title: t('toast.success'),
-        message: t('kidoos.dream.routine.stopped', { defaultValue: 'Routine arrêtée' }),
+        message: t('kidoos.dream.activated', { defaultValue: 'Dream activé' }),
       });
-      checkOnline.mutate(id);
+      // Délai pour que l'appareil ait le temps de traiter le tap
+      setTimeout(() => checkOnline.mutate(id), CHECK_ONLINE_AFTER_START_MS);
     },
   });
 }

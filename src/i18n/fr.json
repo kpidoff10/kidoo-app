@@ -151,9 +151,8 @@
         "wifiOfflineInfo": "Si le Kidoo n'est pas connecté au WiFi, il ne pourra pas envoyer de message à votre téléphone.",
         "enable": "Activer l'alerte"
       },
-      "routine": {
-        "stop": "Arrêter la routine"
-      },
+      "activate": "Activer",
+      "activated": "Dream activé",
       "help": {
         "title": "Aide",
         "subtitle": "Signification des couleurs",

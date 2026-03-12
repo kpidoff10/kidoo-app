@@ -296,33 +296,13 @@ export const kidoosApi = {
   },
 
   /**
-   * Démarrer/arrêter manuellement la routine de coucher (Dream)
+   * Activer le Dream (simule un tap sur le capteur)
+   * Le device décide de la logique : lancer routine ou afficher couleur par défaut
    */
-  async controlDreamBedtime(
-    id: string,
-    action: 'start' | 'stop'
-  ): Promise<{
-    action: 'start' | 'stop';
-  }> {
-    const response = await apiClient.post<ApiResponse<{
-      action: 'start' | 'stop';
-    }>>(`/api/kidoos/${id}/dream-bedtime`, {
-      action,
-    });
-    return response.data.data;
-  },
-
-  /**
-   * Arrêter la routine active (bedtime ou wakeup) (Dream)
-   */
-  async stopDreamRoutine(
-    id: string
-  ): Promise<{
-    stopped: boolean;
-  }> {
-    const response = await apiClient.post<ApiResponse<{
-      stopped: boolean;
-    }>>(`/api/kidoos/${id}/dream-routine-stop`);
+  async dreamActivate(id: string): Promise<{ activated: boolean }> {
+    const response = await apiClient.post<ApiResponse<{ activated: boolean }>>(
+      `/api/kidoos/${id}/dream-active`
+    );
     return response.data.data;
   },
 
