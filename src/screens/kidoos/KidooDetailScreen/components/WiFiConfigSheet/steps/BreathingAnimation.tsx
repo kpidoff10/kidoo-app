@@ -1,19 +1,27 @@
 /**
- * Animation de respiration bleue
- * Pour indiquer que le Kidoo doit être en mode appairage
+ * Animation de respiration bleue avec icône Dream
+ * Pour indiquer que le Kidoo doit être en mode appairage/configuration (bleu pulse)
  */
 
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import { useTheme } from '@/theme';
+import DreamIconSvg from '@/assets/dream/dream.svg';
+
+const DreamIcon = DreamIconSvg as React.FC<
+  React.ComponentProps<typeof DreamIconSvg> & {
+    ledColor?: string;
+    baseColor?: string;
+  }
+>;
 
 export function BreathingAnimation() {
   const { colors } = useTheme();
-  const opacity = useRef(new Animated.Value(0.3)).current;
+  const opacity = useRef(new Animated.Value(0.5)).current;
   const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // Animation de respiration continue
+    // Animation de respiration continue (bleu pulse)
     const breathingAnimation = Animated.loop(
       Animated.parallel([
         Animated.sequence([
@@ -23,14 +31,14 @@ export function BreathingAnimation() {
             useNativeDriver: true,
           }),
           Animated.timing(opacity, {
-            toValue: 0.3,
+            toValue: 0.5,
             duration: 1500,
             useNativeDriver: true,
           }),
         ]),
         Animated.sequence([
           Animated.timing(scale, {
-            toValue: 1.2,
+            toValue: 1.05,
             duration: 1500,
             useNativeDriver: true,
           }),
@@ -54,14 +62,15 @@ export function BreathingAnimation() {
     <View style={styles.container}>
       <Animated.View
         style={[
-          styles.dot,
+          styles.iconContainer,
           {
-            backgroundColor: colors.primary,
             opacity,
             transform: [{ scale }],
           },
         ]}
-      />
+      >
+        <DreamIcon width={120} height={120} ledColor={colors.primary} />
+      </Animated.View>
     </View>
   );
 }
@@ -70,7 +79,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 80,
+    height: 120,
   },
   dot: {
     width: 40,

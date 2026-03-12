@@ -81,11 +81,11 @@ export function WiFiConfigSheet({ bottomSheet, kidoo, onClose, onComplete }: WiF
   // Définir les étapes du stepper (pour l'affichage visuel uniquement)
   const steps: StepperStep[] = useMemo(() => [
     {
-      title: t('kidoos.wifiConfig.step1.title', { defaultValue: 'Connexion BLE' }),
+      title: t('kidoos.wifiConfig.step1.title', { defaultValue: 'Connexion' }),
       icon: 'bluetooth-outline',
     },
     {
-      title: t('kidoos.wifiConfig.step2.title', { defaultValue: 'Identifiants WiFi' }),
+      title: t('kidoos.wifiConfig.step2.title', { defaultValue: 'Wi-Fi' }),
       icon: 'wifi-outline',
     },
     {

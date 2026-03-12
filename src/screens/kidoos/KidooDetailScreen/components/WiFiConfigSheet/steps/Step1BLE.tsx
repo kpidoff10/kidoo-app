@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, Button } from '@/components/ui';
@@ -176,7 +176,7 @@ export function Step1BLE({ kidoo, onSuccess }: Step1BLEProps) {
     <View style={styles.container}>
       {status === 'loading' && (
         <View style={styles.content}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <BreathingAnimation />
           <Text style={[styles.message, { marginTop: spacing[4], textAlign: 'center' }]}>
             {t('kidoos.wifiConfig.step1.loading', {
               defaultValue: 'Pour modifier le WiFi, mettez le Kidoo en mode appairage en appuyant 3 secondes sur le bouton reset. Il doit s\'allumer en mode respiration bleu.'
@@ -229,7 +229,6 @@ const styles = StyleSheet.create({
   content: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 24,
   },
   icon: {
     marginBottom: 16,

@@ -73,12 +73,6 @@ export function useKidooMenuItems({ kidoo, modelHandler, hasFirmwareUpdate, isFi
         icon: 'wifi-outline',
         onPress: onConfigureWiFi,
       },
-      {
-        label: t('kidoos.brightness.title', { defaultValue: 'Luminosité' }),
-        value: t('kidoos.brightness.description', { defaultValue: 'Régler la luminosité générale' }),
-        icon: 'sunny-outline',
-        onPress: onConfigureBrightness,
-      },
     ];
 
     // Couleur par défaut (Dream uniquement) — juste après Luminosité

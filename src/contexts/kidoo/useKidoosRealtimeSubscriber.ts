@@ -22,8 +22,10 @@ export function useKidoosRealtimeSubscriber() {
       return;
     }
 
-    // S'abonner à tous les canals des devices
-    const channels = kidoos.map((k) => `kidoo-${k.id}`);
+    // S'abonner à tous les canals des devices (basé sur l'adresse MAC, pas l'UUID)
+    const channels = kidoos
+      .filter((k) => k.macAddress)
+      .map((k) => `kidoo-${k.macAddress?.replace(/:/g, '')}`);
     console.log('[REALTIME] Abonnement aux canals:', channels);
 
     if (channels.length === 0) {
@@ -75,7 +77,7 @@ export function useKidoosRealtimeSubscriber() {
                   return oldData;
                 }
                 const updated = oldData.map((kidoo) =>
-                  kidoo.id === kidooId
+                  kidoo.macAddress?.replace(/:/g, '') === kidooId
                     ? {
                         ...kidoo,
                         isConnected: true,
@@ -104,7 +106,7 @@ export function useKidoosRealtimeSubscriber() {
                   return oldData;
                 }
                 const updated = oldData.map((kidoo) =>
-                  kidoo.id === kidooId
+                  kidoo.macAddress?.replace(/:/g, '') === kidooId
                     ? { ...kidoo, isConnected: false }
                     : kidoo
                 );

@@ -133,6 +133,10 @@
         "subtitle": "Color meanings",
         "intro": "The Dream night light uses colors to communicate. Here is what each indication means:",
         "colors": {
+          "noDeviceKey": {
+            "title": "Red (breathing)",
+            "description": "The Kidoo's initial setup has not been completed yet. Press the button to enable Bluetooth and configure the device."
+          },
           "startup": {
             "title": "Orange/Yellow (starting up)",
             "description": "The Kidoo is starting up. Please wait a few seconds."
@@ -184,6 +188,32 @@
       "title": "Brightness",
       "description": "Adjust general brightness",
       "label": "General brightness"
+    },
+    "wifiConfig": {
+      "title": "WiFi Configuration",
+      "requiresDirectConnection": "Direct connection required",
+      "step1": {
+        "title": "Connection",
+        "loading": "To change WiFi, put the Kidoo in pairing mode by pressing the reset button for 3 seconds. It should light up with a blue breathing effect.",
+        "success": "BLE connection established",
+        "error": {
+          "title": "Kidoo not available via BLE",
+          "message": "To change WiFi configuration, the Kidoo must be in pairing mode. Press the reset button for 3 seconds. The Kidoo should breathe in blue.",
+          "notFound": "Kidoo not found via BLE",
+          "connectionFailed": "BLE connection failed"
+        }
+      },
+      "step2": {
+        "title": "Wi-Fi"
+      },
+      "step3": {
+        "title": "Configuration",
+        "loading": "WiFi configuration in progress...",
+        "success": "WiFi configuration successful",
+        "successMessage": "The Kidoo is now connected to the WiFi network",
+        "error": "Configuration error",
+        "errorMessage": "Unable to configure WiFi. Check your credentials and try again."
+      }
     }
   },
   "device": {

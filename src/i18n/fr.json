@@ -159,6 +159,10 @@
         "subtitle": "Signification des couleurs",
         "intro": "La veilleuse Dream utilise des couleurs pour communiquer. Voici ce que signifie chaque indication :",
         "colors": {
+          "noDeviceKey": {
+            "title": "Rouge (respiration)",
+            "description": "La première configuration du Kidoo n'a pas encore été faite. Appuyez sur le bouton pour activer le Bluetooth et configurer le device."
+          },
           "startup": {
             "title": "Orange/Jaune (démarrage)",
             "description": "Le Kidoo est en cours de démarrage. Patientez quelques secondes."
@@ -215,7 +219,7 @@
       "title": "Configuration WiFi",
       "requiresDirectConnection": "Connexion directe nécessaire",
       "step1": {
-        "title": "Connexion BLE",
+        "title": "Connexion",
         "loading": "Pour modifier le WiFi, mettez le Kidoo en mode appairage en appuyant 3 secondes sur le bouton reset. Il doit s'allumer en mode respiration bleu.",
         "success": "Connexion BLE établie",
         "error": {
@@ -226,7 +230,7 @@
         }
       },
       "step2": {
-        "title": "Identifiants WiFi"
+        "title": "Wi-Fi"
       },
       "step3": {
         "title": "Configuration",

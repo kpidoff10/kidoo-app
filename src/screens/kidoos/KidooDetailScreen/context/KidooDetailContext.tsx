@@ -87,7 +87,14 @@ export function KidooDetailProvider({ kidoo, kidooId, children }: KidooDetailPro
         if (kidoo?.macAddress) {
           checkOnline.mutateAsync({ id: kidooId, skipDeviceStateUpdate: isPubNubConnected })
             .then((result) => {
-              if (!result.isOnline) {
+              // Vérifier le cache React Query pour voir le statut temps réel (mis à jour par PubNub)
+              const cachedKidoos = queryClient.getQueryData<Kidoo[]>(KIDOOS_KEY);
+              const cachedKidoo = cachedKidoos?.find((k) => k.id === kidooId);
+              const isReallyOnline = cachedKidoo?.isConnected ?? result.isOnline;
+
+              // Ne montrer le toast offline que si le device est vraiment hors ligne
+              // (pas juste une API lente vs PubNub temps réel)
+              if (!isReallyOnline) {
                 showToast.warning({
                   title: t('kidoos.detail.offline.title', { defaultValue: 'Kidoo hors ligne' }),
                   message: t('kidoos.detail.offline.message', {
