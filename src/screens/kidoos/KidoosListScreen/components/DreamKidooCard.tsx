@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback, useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Animated, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Animated, ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, Accordion } from '@/components/ui';
@@ -137,42 +137,50 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKido
           onRef={(ref) => { accordionRef.current = ref; }}
         >
           {customActions.map((action) => {
-            const actionColor =
-              action.id === 'dream-activate' || action.icon === 'play'
-                ? '#10B981'
-                : colors.primary;
+            const isActivate = action.icon === 'play';
+            const actionBgColor = isActivate ? '#10B981' : colors.primary;
             const isPending = dreamActivate.isPending;
             const isDisabled = action.disabled || isPending;
+
             return (
               <View key={action.id} style={styles.customActionRow}>
-                <TouchableOpacity
+                <Pressable
                   onPress={action.onPress}
                   disabled={isDisabled}
-                  activeOpacity={0.7}
-                  style={[
-                    styles.actionIconButton,
+                  style={({ pressed }) => [
+                    styles.actionButton,
                     {
-                      backgroundColor: isDisabled ? colors.border : actionColor,
-                      opacity: isDisabled ? 0.5 : 1,
+                      backgroundColor: isDisabled
+                        ? colors.border
+                        : actionBgColor,
+                      opacity: pressed && !isDisabled ? 0.85 : isDisabled ? 0.6 : 1,
                     },
                   ]}
                 >
-                  {isPending ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <Ionicons name={action.icon as any} size={20} color="#FFFFFF" />
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={action.onPress}
-                  disabled={isDisabled}
-                  activeOpacity={0.7}
-                  style={styles.actionLabelContainer}
-                >
-                  <Text style={[styles.actionButtonText, { color: colors.text, opacity: isDisabled ? 0.5 : 1 }]}>
-                    {isPending ? 'Chargement...' : action.label}
-                  </Text>
-                </TouchableOpacity>
+                  <View style={styles.actionButtonContent}>
+                    {isPending ? (
+                      <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                      <Ionicons
+                        name={action.icon as any}
+                        size={18}
+                        color="#FFFFFF"
+                        style={styles.actionIcon}
+                      />
+                    )}
+                    <Text
+                      style={[
+                        styles.actionButtonText,
+                        {
+                          color: '#FFFFFF',
+                          opacity: isDisabled ? 0.8 : 1,
+                        }
+                      ]}
+                    >
+                      {isPending ? t('common.loading') : action.label}
+                    </Text>
+                  </View>
+                </Pressable>
               </View>
             );
           })}
@@ -187,6 +195,7 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKido
     colors,
     dreamActivate.isPending,
     handleAccordionToggle,
+    t,
   ]);
 
   return (
@@ -229,27 +238,30 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     width: '100%',
   },
-  actionIconButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  actionButton: {
+    flex: 1,
+    height: 56,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 5,
   },
-  actionLabelContainer: {
-    flex: 1,
-    marginLeft: 12,
+  actionButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'flex-start',
-    height: 48,
+    gap: 10,
+  },
+  actionIcon: {
+    marginRight: 2,
   },
   actionButtonText: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
+    letterSpacing: 0.3,
   },
 });
