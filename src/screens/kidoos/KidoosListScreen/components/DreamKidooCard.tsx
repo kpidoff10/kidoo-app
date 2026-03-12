@@ -138,7 +138,7 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKido
         >
           {customActions.map((action) => {
             const isActivate = action.icon === 'play';
-            const actionBgColor = isActivate ? '#10B981' : colors.primary;
+            const actionColor = isActivate ? '#10B981' : colors.primary;
             const isPending = dreamActivate.isPending;
             const isDisabled = action.disabled || isPending;
 
@@ -150,21 +150,19 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKido
                   style={({ pressed }) => [
                     styles.actionButton,
                     {
-                      backgroundColor: isDisabled
-                        ? colors.border
-                        : actionBgColor,
-                      opacity: pressed && !isDisabled ? 0.85 : isDisabled ? 0.6 : 1,
+                      borderColor: isDisabled ? colors.border : actionColor,
+                      opacity: pressed && !isDisabled ? 0.8 : isDisabled ? 0.5 : 1,
                     },
                   ]}
                 >
                   <View style={styles.actionButtonContent}>
                     {isPending ? (
-                      <ActivityIndicator size="small" color="#FFFFFF" />
+                      <ActivityIndicator size="small" color={isDisabled ? colors.border : actionColor} />
                     ) : (
                       <Ionicons
                         name={action.icon as any}
                         size={18}
-                        color="#FFFFFF"
+                        color={isDisabled ? colors.border : actionColor}
                         style={styles.actionIcon}
                       />
                     )}
@@ -172,7 +170,7 @@ export function DreamKidooCard({ kidoo, onPress, refreshTrigger = 0 }: DreamKido
                       style={[
                         styles.actionButtonText,
                         {
-                          color: '#FFFFFF',
+                          color: isDisabled ? colors.border : actionColor,
                           opacity: isDisabled ? 0.8 : 1,
                         }
                       ]}
@@ -242,13 +240,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 56,
     borderRadius: 12,
+    borderWidth: 2,
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 5,
   },
   actionButtonContent: {
     flexDirection: 'row',
