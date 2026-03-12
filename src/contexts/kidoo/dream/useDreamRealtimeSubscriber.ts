@@ -137,14 +137,23 @@ export function useDreamRealtimeSubscriber({
         } else if (msgType === 'routine') {
           const routine = parsed!.routine as string | undefined;
           const state = parsed!.state as string | undefined;
+          if (__DEV__) console.log('[DreamRealtimeSubscriber] routine message:', { routine, state, kidooId });
           if (routine && state) {
             const deviceState = routineStateToDeviceState(routine, state);
+            if (__DEV__) console.log('[DreamRealtimeSubscriber] updating deviceState:', deviceState);
             next.info[kidooId] = { ...(prev.info[kidooId] as object), deviceState };
             onRoutineState(kidooId, deviceState);
           }
         } else if (msgType === 'nighttime-alert-toggled') {
           const enabled = parsed!.enabled === true;
           onNighttimeAlertToggled?.(kidooId, enabled);
+        } else if (msgType === 'status') {
+          // Device reconnected to PubNub (status: online)
+          const status = parsed!.status as string | undefined;
+          if (status === 'online') {
+            if (__DEV__) console.log('[DreamRealtimeSubscriber] device online:', kidooId);
+            onRoutineState(kidooId, 'idle');
+          }
         }
 
         return next;

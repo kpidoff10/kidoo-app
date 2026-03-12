@@ -24,8 +24,6 @@ export function CurrentModeCard({ labelKey, icon, borderColor, backgroundColor }
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  console.log('labelKey', labelKey);
-
   return (
     <Card
       variant="default"
