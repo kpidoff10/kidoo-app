@@ -5,11 +5,12 @@
 
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { Title, Text, Toast } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { ResetPasswordForm } from './ResetPasswordForm';
-import { Toast } from '@/components/ui';
 import { apiClient } from '@/services/api';
 
 type ResetPasswordRouteProp = RouteProp<{ ResetPassword: { email: string; token?: string } }, 'ResetPassword'>;
@@ -19,6 +20,7 @@ export function ResetPasswordScreen() {
   const route = useRoute<ResetPasswordRouteProp>();
   const { t } = useTranslation();
   const { colors, spacing } = useTheme();
+  const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
 
   const { email, token } = route.params || {};
@@ -70,17 +72,26 @@ export function ResetPasswordScreen() {
 
   return (
     <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
     >
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing[4] },
+          { padding: spacing[6], paddingBottom: insets.bottom + 24 },
         ]}
-        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <View style={[styles.content]}>
+        <View style={styles.header}>
+          <Title level="h1" center>
+            {t('auth.resetPassword.title')}
+          </Title>
+          <Text color="secondary" center style={{ marginTop: spacing[2] }}>
+            {t('auth.resetPassword.description')}
+          </Text>
+        </View>
+
+        <View style={[styles.formContainer, { marginTop: spacing[10] }]}>
           <ResetPasswordForm
             onSubmit={handleResetPassword}
             onLoginPress={handleLoginPress}
@@ -100,7 +111,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
   },
-  content: {
+  header: {
+    alignItems: 'center',
+  },
+  formContainer: {
     width: '100%',
   },
 });

@@ -53,12 +53,6 @@ export function ResetPasswordForm({
 
   return (
     <View style={styles.form}>
-      <View style={{ marginBottom: spacing[6] }}>
-        <Text style={{ fontSize: 16, marginBottom: spacing[2] }}>
-          {t('auth.resetPassword.description')}
-        </Text>
-      </View>
-
       <Controller
         control={control}
         name="newPassword"

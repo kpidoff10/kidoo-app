@@ -45,12 +45,6 @@ export function ForgotPasswordForm({
 
   return (
     <View style={styles.form}>
-      <View style={{ marginBottom: spacing[6] }}>
-        <Text style={{ fontSize: 16, marginBottom: spacing[2] }}>
-          {t('auth.forgotPassword.description')}
-        </Text>
-      </View>
-
       <Controller
         control={control}
         name="email"

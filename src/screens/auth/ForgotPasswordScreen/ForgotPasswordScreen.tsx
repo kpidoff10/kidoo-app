@@ -5,17 +5,19 @@
 
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { Title, Text, Toast } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { ForgotPasswordForm } from './ForgotPasswordForm';
-import { Toast } from '@/components/ui';
 import { apiClient } from '@/services/api';
 
 export function ForgotPasswordScreen() {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { colors, spacing } = useTheme();
+  const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleForgotPassword = async (data: { email: string }) => {
@@ -54,17 +56,26 @@ export function ForgotPasswordScreen() {
 
   return (
     <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
     >
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing[4] },
+          { padding: spacing[6], paddingBottom: insets.bottom + 24 },
         ]}
-        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <View style={[styles.content]}>
+        <View style={styles.header}>
+          <Title level="h1" center>
+            {t('auth.forgotPassword.title')}
+          </Title>
+          <Text color="secondary" center style={{ marginTop: spacing[2] }}>
+            {t('auth.forgotPassword.description')}
+          </Text>
+        </View>
+
+        <View style={[styles.formContainer, { marginTop: spacing[10] }]}>
           <ForgotPasswordForm
             onSubmit={handleForgotPassword}
             onLoginPress={handleLoginPress}
@@ -84,7 +95,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
   },
-  content: {
+  header: {
+    alignItems: 'center',
+  },
+  formContainer: {
     width: '100%',
   },
 });
