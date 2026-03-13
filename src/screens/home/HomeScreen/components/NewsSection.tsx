@@ -97,12 +97,12 @@ export function NewsSection({ initialLimit = INITIAL_LOAD }: NewsSectionProps) {
       {post.imageUrl && (
         <Image
           source={{ uri: post.imageUrl }}
-          style={styles.cardImage}
+          style={[styles.cardImage, { width: '100%', height: 180 }]}
         />
       )}
 
       {/* Content */}
-      <View style={[styles.cardContent, { padding: spacing[3] }]}>
+      <View style={[styles.cardContent, { padding: spacing[3], width: '100%' }]}>
         {/* Type Badge */}
         <View
           style={[
@@ -225,15 +225,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     overflow: 'hidden',
-    flexDirection: 'row',
   },
   cardImage: {
-    width: 100,
-    height: 100,
     backgroundColor: '#f0f0f0',
   },
   cardContent: {
-    flex: 1,
+    width: '100%',
   },
   badge: {
     alignSelf: 'flex-start',
