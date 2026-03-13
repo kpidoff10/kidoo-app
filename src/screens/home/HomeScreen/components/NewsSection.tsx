@@ -11,6 +11,7 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { useTheme } from '@/theme';
 import { Text, Title, InfoBottomSheet } from '@/components/ui';
@@ -205,14 +206,21 @@ export function NewsSection({ initialLimit = INITIAL_LOAD }: NewsSectionProps) {
           type="info"
           title={selectedPost.title}
           message={selectedPost.excerpt || ''}
+          scrollable={true}
           children={
-            <View style={{ marginTop: spacing[3], marginHorizontal: spacing[3] }}>
+            <ScrollView
+              scrollEnabled={true}
+              nestedScrollEnabled={true}
+              showsVerticalScrollIndicator={true}
+              style={{ maxHeight: 300 }}
+              contentContainerStyle={{ paddingHorizontal: spacing[3] }}
+            >
               <HtmlRenderer
                 html={selectedPost.content}
                 textColor={colors.text}
                 backgroundColor={colors.card}
               />
-            </View>
+            </ScrollView>
           }
           actions={[
             {
@@ -221,6 +229,7 @@ export function NewsSection({ initialLimit = INITIAL_LOAD }: NewsSectionProps) {
               variant: 'outline',
             },
           ]}
+          onDismiss={() => setSelectedPost(null)}
         />
       )}
     </>

@@ -55,6 +55,11 @@ export interface InfoBottomSheetProps {
   actions: InfoBottomSheetAction[];
 
   /**
+   * Permet le scroll du contenu sans fermer la BottomSheet
+   */
+  scrollable?: boolean;
+
+  /**
    * Callback appelé lors de la fermeture
    */
   onDismiss?: () => void;
@@ -86,6 +91,7 @@ export function InfoBottomSheet({
   message,
   children,
   actions,
+  scrollable = false,
   onDismiss,
 }: InfoBottomSheetProps) {
   const { colors, spacing } = useTheme();
@@ -128,6 +134,7 @@ export function InfoBottomSheet({
       ref={bottomSheet.ref}
       name={bottomSheet.id}
       detents={['auto']}
+      scrollable={scrollable}
       onDismiss={handleDismiss}
       onDidDismiss={bottomSheet.handleDidDismiss}
     >

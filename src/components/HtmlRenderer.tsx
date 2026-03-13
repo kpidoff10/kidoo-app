@@ -117,46 +117,12 @@ export function HtmlRenderer({
   }
 
   function parseInline(text: string, color: string, key: { current: number }): React.ReactNode {
-    const parts: React.ReactNode[] = [];
-    let lastIndex = 0;
+    // Vérifie s'il y a du formattage
+    const hasFormatting = /<(strong|b|em|i)[^>]*>/.test(text);
 
-    // Regex pour strong/b, em/i
-    const regex = /(<strong[^>]*>|<b>|<\/strong>|<\/b>|<em[^>]*>|<i>|<\/em>|<\/i>)/g;
-    let match;
-    let inStrong = false;
-    let inItalic = false;
-
-    while ((match = regex.exec(text)) !== null) {
-      // Ajoute le texte avant le tag
-      if (match.index > lastIndex) {
-        const plainText = text.substring(lastIndex, match.index);
-        if (plainText) {
-          parts.push(plainText);
-        }
-      }
-
-      const tag = match[0].toLowerCase();
-      if (tag === '<strong>' || tag === '<b>') {
-        inStrong = true;
-      } else if (tag === '</strong>' || tag === '</b>') {
-        inStrong = false;
-      } else if (tag === '<em>' || tag === '<i>') {
-        inItalic = true;
-      } else if (tag === '</em>' || tag === '</i>') {
-        inItalic = false;
-      }
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    // Ajoute le texte restant
-    if (lastIndex < text.length) {
-      parts.push(text.substring(lastIndex));
-    }
-
-    // Si pas de formattage, retourner le texte simple
-    if (parts.every(p => typeof p === 'string')) {
-      return parts.join('');
+    if (!hasFormatting) {
+      // Pas de formattage, retourner le texte nettoyé
+      return text.replace(/<[^>]*>/g, '');
     }
 
     // Sinon parser et retourner les éléments
@@ -165,12 +131,12 @@ export function HtmlRenderer({
 
   function parseInlineWithFormatting(text: string, color: string, key: { current: number }): React.ReactNode[] {
     const parts: React.ReactNode[] = [];
-    let currentText = '';
     let inStrong = false;
     let inItalic = false;
     let lastIndex = 0;
 
-    const regex = /(<strong[^>]*>|<b>|<\/strong>|<\/b>|<em[^>]*>|<i>|<\/em>|<\/i>)/g;
+    // Regex pour toutes les balises (pas seulement strong/em)
+    const regex = /<\/?[^>]*>/g;
     let match;
 
     while ((match = regex.exec(text)) !== null) {
@@ -209,6 +175,7 @@ export function HtmlRenderer({
       } else if (tag === '</em>' || tag === '</i>') {
         inItalic = false;
       }
+      // Tous les autres tags sont ignorés/supprimés
 
       lastIndex = match.index + match[0].length;
     }
