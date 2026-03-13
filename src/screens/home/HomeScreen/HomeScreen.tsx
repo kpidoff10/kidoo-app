@@ -2,10 +2,11 @@
  * Home Screen
  */
 
-import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import { Title, Text, Card } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { useKidoos, useProfile } from '@/hooks';
@@ -18,6 +19,18 @@ export function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { data: user } = useProfile();
   const { data: kidoos } = useKidoos();
+  const queryClient = useQueryClient();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['posts'] });
+      await queryClient.refetchQueries({ queryKey: ['posts'] });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const kidoosList = Array.isArray(kidoos) ? kidoos : [];
   const onlineKidoos = kidoosList.filter((k) => k.isConnected).length;
@@ -30,6 +43,13 @@ export function HomeScreen() {
         styles.content,
         { padding: spacing[4], paddingBottom: insets.bottom + 24 },
       ]}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={handleRefresh}
+          tintColor={colors.primary}
+        />
+      }
     >
       <WelcomeCard userName={user?.name || ''} />
 
