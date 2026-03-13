@@ -48,6 +48,32 @@
       "hasAccount": "Already have an account?",
       "login": "Sign in"
     },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "description": "Enter your email to receive a reset link",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "submit": "Send reset link",
+      "rememberPassword": "Remember your password?",
+      "backToLogin": "Back to login",
+      "success": "Email sent",
+      "checkEmail": "Check your email for the reset link",
+      "error": "Error sending email"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "description": "Create a new password for your account",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Create a password",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "submit": "Reset my password",
+      "rememberPassword": "Remember your password?",
+      "backToLogin": "Back to login",
+      "success": "Password reset",
+      "successMessage": "Your password has been reset successfully. Sign in with your new password.",
+      "error": "Error resetting password"
+    },
     "errors": {
       "invalidCredentials": "Invalid email or password",
       "emailRequired": "Email is required",
