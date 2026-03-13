@@ -35,6 +35,10 @@ export function LoginScreen() {
     navigation.navigate('Register' as never);
   };
 
+  const handleForgotPasswordPress = () => {
+    navigation.navigate('ForgotPassword' as never);
+  };
+
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -60,6 +64,7 @@ export function LoginScreen() {
           <LoginForm
             onSubmit={handleLogin}
             onRegisterPress={handleRegisterPress}
+            onForgotPasswordPress={handleForgotPasswordPress}
             isLoading={isLoading}
           />
         </View>

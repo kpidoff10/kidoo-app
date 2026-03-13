@@ -21,10 +21,11 @@ type LoginFormData = z.infer<typeof loginSchema>;
 interface LoginFormProps {
   onSubmit: (data: LoginFormData) => Promise<void>;
   onRegisterPress: () => void;
+  onForgotPasswordPress: () => void;
   isLoading: boolean;
 }
 
-export function LoginForm({ onSubmit, onRegisterPress, isLoading }: LoginFormProps) {
+export function LoginForm({ onSubmit, onRegisterPress, onForgotPasswordPress, isLoading }: LoginFormProps) {
   const { t } = useTranslation();
   const { spacing } = useTheme();
 
@@ -72,10 +73,18 @@ export function LoginForm({ onSubmit, onRegisterPress, isLoading }: LoginFormPro
             onChangeText={onChange}
             onBlur={onBlur}
             error={errors.password ? t(errors.password.message as string) : undefined}
-            containerStyle={{ marginBottom: spacing[6] }}
+            containerStyle={{ marginBottom: spacing[2] }}
           />
         )}
       />
+
+      <View style={[styles.forgotPasswordContainer, { marginBottom: spacing[6] }]}>
+        <TouchableOpacity onPress={onForgotPasswordPress}>
+          <Text color="primary" style={{ fontSize: 12 }}>
+            {t('auth.login.forgotPassword')}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <Button
         title={t('auth.login.submit')}
@@ -100,6 +109,9 @@ export function LoginForm({ onSubmit, onRegisterPress, isLoading }: LoginFormPro
 const styles = StyleSheet.create({
   form: {
     width: '100%',
+  },
+  forgotPasswordContainer: {
+    alignItems: 'flex-end',
   },
   footer: {
     flexDirection: 'row',
