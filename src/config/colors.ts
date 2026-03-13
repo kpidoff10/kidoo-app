@@ -37,7 +37,7 @@ export const DEFAULT_COLORS = DREAM_COLORS;
  */
 export const BEDTIME_EFFECTS = [
   { value: 'pulse', label: 'Pulsation' },
-  { value: 'rainbow_soft', label: 'Arc-en-ciel doux' },
+  { value: 'rainbow-soft', label: 'Arc-en-ciel doux' },
   { value: 'breathe', label: 'Respiration' },
   { value: 'nightlight', label: 'Veilleuse' },
 ] as const;
@@ -48,7 +48,7 @@ export const BEDTIME_EFFECTS = [
  */
 export const DEFAULT_COLOR_EFFECTS = [
   { value: 'pulse', label: 'Pulsation' },
-  { value: 'rainbow_soft', label: 'Arc-en-ciel doux' },
+  { value: 'rainbow-soft', label: 'Arc-en-ciel doux' },
   { value: 'breathe', label: 'Respiration' },
   { value: 'rotate', label: 'Rotation' },
   { value: 'nightlight', label: 'Veilleuse' },

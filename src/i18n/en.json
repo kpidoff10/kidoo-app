@@ -80,6 +80,13 @@
         "bedtime": "Night",
         "wakeup": "Wake-up in progress",
         "manual": "Manual"
+      },
+      "env": {
+        "temperature": "Temperature",
+        "humidity": "Humidity",
+        "loading": "Loading…",
+        "error": "Sensor loading error",
+        "notEvaluable": "Not available"
       }
     },
     "actions": {

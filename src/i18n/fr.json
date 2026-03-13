@@ -106,6 +106,13 @@
         "bedtime": "Nuit",
         "wakeup": "Réveil en cours",
         "manual": "Manuel"
+      },
+      "env": {
+        "temperature": "Température",
+        "humidity": "Humidité",
+        "loading": "Chargement…",
+        "error": "Erreur chargement capteur",
+        "notEvaluable": "Non évaluable"
       }
     },
     "dream": {
@@ -172,7 +179,7 @@
             "description": "Votre enfant a appuyé sur la veilleuse pendant au moins 1 seconde. L'alerte a été envoyée sur votre téléphone — il s'est peut-être réveillé."
           },
           "red": {
-            "title": "Rouge continu",
+            "title": "Rouge (pulse)",
             "description": "La configuration n'a pas encore été faite."
           },
           "configLoaded": {

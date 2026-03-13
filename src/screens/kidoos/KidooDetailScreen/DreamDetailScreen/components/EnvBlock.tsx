@@ -22,14 +22,18 @@ function EnvCell({
   unit,
   label,
   accentColor,
+  isInvalid,
 }: {
   icon: keyof typeof Ionicons.glyphMap;
   value: string;
   unit: string;
   label: string;
   accentColor: string;
+  isInvalid?: boolean;
 }) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
+
   return (
     <View style={[styles.cell, { backgroundColor: accentColor + '18', borderColor: accentColor + '40' }]}>
       <Ionicons name={icon} size={22} color={accentColor} style={styles.cellIcon} />
@@ -37,8 +41,8 @@ function EnvCell({
         <Text variant="caption" color="secondary" style={styles.cellLabel}>
           {label}
         </Text>
-        <Text variant="body" bold style={{ color: colors.text }}>
-          {value} {unit}
+        <Text variant="body" bold style={{ color: isInvalid ? colors.error : colors.text }}>
+          {isInvalid ? t('kidoos.detail.env.notEvaluable', { defaultValue: 'Non évaluable' }) : `${value} ${unit}`}
         </Text>
       </View>
     </View>
@@ -89,6 +93,9 @@ export function EnvBlock({ marginTop }: EnvBlockProps) {
 
   if (!hasTemp && !hasHumidity) return null;
 
+  const isTempInvalid = hasTemp && (data.temperatureC! > 100 || data.temperatureC! < -50);
+  const isHumidityInvalid = hasHumidity && (data.humidityPercent! > 100 || data.humidityPercent! < 0);
+
   return (
     <View style={[styles.row, { marginTop: top }]}>
       {hasTemp && (
@@ -98,6 +105,7 @@ export function EnvBlock({ marginTop }: EnvBlockProps) {
           unit="°C"
           label={t('kidoos.detail.env.temperature', { defaultValue: 'Température' })}
           accentColor="#E67E22"
+          isInvalid={isTempInvalid}
         />
       )}
       {hasHumidity && (
@@ -107,6 +115,7 @@ export function EnvBlock({ marginTop }: EnvBlockProps) {
           unit="%"
           label={t('kidoos.detail.env.humidity', { defaultValue: 'Humidité' })}
           accentColor="#3498DB"
+          isInvalid={isHumidityInvalid}
         />
       )}
     </View>
