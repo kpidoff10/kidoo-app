@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useTheme } from '@/theme';
 import { Text, Title, InfoBottomSheet } from '@/components/ui';
+import { HtmlRenderer } from '@/components/HtmlRenderer';
 import { usePosts } from '@/hooks/usePosts';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import { Post } from '@/api';
@@ -197,13 +198,22 @@ export function NewsSection({ initialLimit = INITIAL_LOAD }: NewsSectionProps) {
         />
       </View>
 
-      {/* Detail BottomSheet */}
+      {/* Detail BottomSheet with HTML Content */}
       {selectedPost && (
         <InfoBottomSheet
           bottomSheet={detailSheet}
           type="info"
           title={selectedPost.title}
-          message={selectedPost.excerpt || undefined}
+          message={selectedPost.excerpt || ''}
+          children={
+            <View style={{ marginTop: spacing[3], marginHorizontal: spacing[3] }}>
+              <HtmlRenderer
+                html={selectedPost.content}
+                textColor={colors.text}
+                backgroundColor={colors.card}
+              />
+            </View>
+          }
           actions={[
             {
               label: 'Fermer',

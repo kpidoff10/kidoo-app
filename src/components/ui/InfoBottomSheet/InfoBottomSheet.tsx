@@ -45,6 +45,11 @@ export interface InfoBottomSheetProps {
   message?: string;
 
   /**
+   * Contenu personnalisé à afficher entre le message et les actions
+   */
+  children?: React.ReactNode;
+
+  /**
    * Liste des actions (boutons) à afficher en bas
    */
   actions: InfoBottomSheetAction[];
@@ -79,6 +84,7 @@ export function InfoBottomSheet({
   type = 'info',
   title,
   message,
+  children,
   actions,
   onDismiss,
 }: InfoBottomSheetProps) {
@@ -163,6 +169,13 @@ export function InfoBottomSheet({
           </Text>
         )}
       </View>
+
+      {/* Custom content */}
+      {children && (
+        <View style={{ marginTop: spacing[4] }}>
+          {children}
+        </View>
+      )}
 
       {/* Actions */}
       <View style={[styles.actionsContainer, { marginTop: spacing[6] }]}>
