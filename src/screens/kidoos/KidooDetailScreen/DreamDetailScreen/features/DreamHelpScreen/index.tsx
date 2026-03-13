@@ -58,6 +58,7 @@ const COLOR_ITEMS: ColorItem[] = [
     color: '#FF0000',
     titleKey: 'kidoos.dream.help.colors.red.title',
     descriptionKey: 'kidoos.dream.help.colors.red.description',
+    pulse: true,
   },
   {
     color: '#22C55E',
