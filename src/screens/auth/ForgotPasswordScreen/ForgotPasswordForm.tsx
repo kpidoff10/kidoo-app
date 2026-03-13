@@ -4,12 +4,12 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { TextInput, Button, Text } from '@/components/ui';
+import { TextInput, Button } from '@/components/ui';
 import { useTheme } from '@/theme';
 
 const forgotPasswordSchema = z.object({
@@ -20,13 +20,11 @@ type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 interface ForgotPasswordFormProps {
   onSubmit: (data: ForgotPasswordFormData) => Promise<void>;
-  onLoginPress: () => void;
   isLoading: boolean;
 }
 
 export function ForgotPasswordForm({
   onSubmit,
-  onLoginPress,
   isLoading,
 }: ForgotPasswordFormProps) {
   const { t } = useTranslation();
@@ -71,15 +69,6 @@ export function ForgotPasswordForm({
         disabled={isLoading}
         fullWidth
       />
-
-      <View style={[styles.footer, { marginTop: spacing[6] }]}>
-        <Text color="secondary">{t('auth.forgotPassword.rememberPassword')}</Text>
-        <TouchableOpacity onPress={onLoginPress}>
-          <Text color="primary" bold style={{ marginLeft: spacing[1] }}>
-            {t('auth.forgotPassword.backToLogin')}
-          </Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -87,10 +76,5 @@ export function ForgotPasswordForm({
 const styles = StyleSheet.create({
   form: {
     width: '100%',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });

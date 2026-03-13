@@ -8,12 +8,13 @@ import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 're
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { Title, Text, Toast } from '@/components/ui';
+import { Title, Text } from '@/components/ui';
+import { showToast } from '@/components/ui/Toast';
 import { useTheme } from '@/theme';
 import { ResetPasswordForm } from './ResetPasswordForm';
-import { apiClient } from '@/services/api';
+import { apiClient } from '@/api';
 
-type ResetPasswordRouteProp = RouteProp<{ ResetPassword: { email: string; token?: string } }, 'ResetPassword'>;
+type ResetPasswordRouteProp = RouteProp<{ ResetPassword: { email: string } }, 'ResetPassword'>;
 
 export function ResetPasswordScreen() {
   const navigation = useNavigation<any>();
@@ -23,51 +24,37 @@ export function ResetPasswordScreen() {
   const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { email, token } = route.params || {};
+  const { email } = route.params || {};
 
-  const handleResetPassword = async (data: { newPassword: string; confirmPassword: string }) => {
+  const handleResetPassword = async (data: { code: string; newPassword: string; confirmPassword: string }) => {
     try {
       setIsLoading(true);
 
-      // Si pas de token en param, demander à l'utilisateur
-      if (!token) {
-        Toast.show({
-          type: 'error',
-          text1: t('common.error'),
-          text2: 'Token manquant',
-        });
-        return;
-      }
-
       const response = await apiClient.put('/api/auth/request-password-reset', {
-        token,
+        token: data.code,
         newPassword: data.newPassword,
       });
 
-      if (response.ok) {
-        Toast.show({
-          type: 'success',
-          text1: t('auth.resetPassword.success'),
-          text2: t('auth.resetPassword.successMessage'),
-        });
+      // Axios retourne la réponse directement si succès (status 2xx)
+      // Les erreurs sont catchées dans le bloc catch
+      showToast.success({
+        title: t('auth.resetPassword.success'),
+        message: t('auth.resetPassword.successMessage'),
+      });
 
-        // Rediriger vers login
-        navigation.navigate('Login');
-      }
-    } catch (error) {
+      // Rediriger vers login
+      navigation.navigate('Login');
+    } catch (error: any) {
       console.error('Reset password error:', error);
-      Toast.show({
-        type: 'error',
-        text1: t('common.error'),
-        text2: t('auth.resetPassword.error'),
+      // Afficher le message d'erreur de l'API si disponible
+      const errorMessage = error.response?.data?.error || t('auth.resetPassword.error');
+      showToast.error({
+        title: t('common.error'),
+        message: errorMessage,
       });
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleLoginPress = () => {
-    navigation.navigate('Login');
   };
 
   return (
@@ -94,7 +81,6 @@ export function ResetPasswordScreen() {
         <View style={[styles.formContainer, { marginTop: spacing[10] }]}>
           <ResetPasswordForm
             onSubmit={handleResetPassword}
-            onLoginPress={handleLoginPress}
             isLoading={isLoading}
           />
         </View>

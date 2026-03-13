@@ -50,26 +50,24 @@
     },
     "forgotPassword": {
       "title": "Forgot password",
-      "description": "Enter your email to receive a reset link",
+      "description": "Enter your email to receive a reset code",
       "email": "Email",
       "emailPlaceholder": "your@email.com",
-      "submit": "Send reset link",
-      "rememberPassword": "Remember your password?",
-      "backToLogin": "Back to login",
+      "submit": "Send reset code",
       "success": "Email sent",
-      "checkEmail": "Check your email for the reset link",
+      "checkEmail": "Check your email for the reset code",
       "error": "Error sending email"
     },
     "resetPassword": {
       "title": "Reset password",
-      "description": "Create a new password for your account",
+      "description": "Enter the code sent to your email and create a new password",
+      "code": "Reset code",
+      "codePlaceholder": "Enter the code",
       "newPassword": "New password",
       "newPasswordPlaceholder": "Create a password",
       "confirmPassword": "Confirm password",
       "confirmPasswordPlaceholder": "Confirm your password",
       "submit": "Reset my password",
-      "rememberPassword": "Remember your password?",
-      "backToLogin": "Back to login",
       "success": "Password reset",
       "successMessage": "Your password has been reset successfully. Sign in with your new password.",
       "error": "Error resetting password"
@@ -81,7 +79,9 @@
       "passwordRequired": "Password is required",
       "passwordTooShort": "Password must be at least 8 characters",
       "passwordMismatch": "Passwords do not match",
-      "nameRequired": "Name is required"
+      "nameRequired": "Name is required",
+      "codeRequired": "Code is required",
+      "codeInvalid": "Code must be 6 digits"
     }
   },
   "home": {

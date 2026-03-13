@@ -3,16 +3,19 @@
  * Permet à l'utilisateur de réinitialiser son mot de passe avec le token
  */
 
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { PasswordInput, Button, Text } from '@/components/ui';
+import { PasswordInput, Button, TextInput } from '@/components/ui';
 import { useTheme } from '@/theme';
 
 const resetPasswordSchema = z.object({
+  code: z.string()
+    .min(1, 'auth.errors.codeRequired')
+    .min(6, 'auth.errors.codeInvalid'),
   newPassword: z.string()
     .min(8, 'auth.errors.passwordTooShort')
     .min(1, 'auth.errors.passwordRequired'),
@@ -27,13 +30,11 @@ type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 interface ResetPasswordFormProps {
   onSubmit: (data: ResetPasswordFormData) => Promise<void>;
-  onLoginPress: () => void;
   isLoading: boolean;
 }
 
 export function ResetPasswordForm({
   onSubmit,
-  onLoginPress,
   isLoading,
 }: ResetPasswordFormProps) {
   const { t } = useTranslation();
@@ -46,6 +47,7 @@ export function ResetPasswordForm({
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
+      code: '',
       newPassword: '',
       confirmPassword: '',
     },
@@ -53,6 +55,24 @@ export function ResetPasswordForm({
 
   return (
     <View style={styles.form}>
+      <Controller
+        control={control}
+        name="code"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label={t('auth.resetPassword.code')}
+            placeholder={t('auth.resetPassword.codePlaceholder')}
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={errors.code ? t(errors.code.message as string) : undefined}
+            keyboardType="numeric"
+            maxLength={6}
+            containerStyle={{ marginBottom: spacing[4] }}
+          />
+        )}
+      />
+
       <Controller
         control={control}
         name="newPassword"
@@ -92,15 +112,6 @@ export function ResetPasswordForm({
         disabled={isLoading}
         fullWidth
       />
-
-      <View style={[styles.footer, { marginTop: spacing[6] }]}>
-        <Text color="secondary">{t('auth.resetPassword.rememberPassword')}</Text>
-        <TouchableOpacity onPress={onLoginPress}>
-          <Text color="primary" bold style={{ marginLeft: spacing[1] }}>
-            {t('auth.resetPassword.backToLogin')}
-          </Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -108,10 +119,5 @@ export function ResetPasswordForm({
 const styles = StyleSheet.create({
   form: {
     width: '100%',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });

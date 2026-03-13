@@ -8,10 +8,11 @@ import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 're
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { Title, Text, Toast } from '@/components/ui';
+import { Title, Text } from '@/components/ui';
+import { showToast } from '@/components/ui/Toast';
 import { useTheme } from '@/theme';
 import { ForgotPasswordForm } from './ForgotPasswordForm';
-import { apiClient } from '@/services/api';
+import { apiClient } from '@/api';
 
 export function ForgotPasswordScreen() {
   const navigation = useNavigation<any>();
@@ -28,30 +29,17 @@ export function ForgotPasswordScreen() {
         email: data.email,
       });
 
-      if (response.ok) {
-        Toast.show({
-          type: 'success',
-          text1: t('auth.forgotPassword.success'),
-          text2: t('auth.forgotPassword.checkEmail'),
-        });
-
-        // Naviguer vers l'écran ResetPassword avec l'email
-        navigation.navigate('ResetPassword', { email: data.email });
-      }
+      // Naviguer vers l'écran ResetPassword avec l'email
+      navigation.navigate('ResetPassword', { email: data.email });
     } catch (error) {
       console.error('Forgot password error:', error);
-      Toast.show({
-        type: 'error',
-        text1: t('common.error'),
-        text2: t('auth.forgotPassword.error'),
+      showToast.error({
+        title: t('common.error'),
+        message: t('auth.forgotPassword.error'),
       });
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleLoginPress = () => {
-    navigation.navigate('Login');
   };
 
   return (
@@ -78,7 +66,6 @@ export function ForgotPasswordScreen() {
         <View style={[styles.formContainer, { marginTop: spacing[10] }]}>
           <ForgotPasswordForm
             onSubmit={handleForgotPassword}
-            onLoginPress={handleLoginPress}
             isLoading={isLoading}
           />
         </View>
