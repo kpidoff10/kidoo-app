@@ -10,6 +10,7 @@ import { Title, Text, Card } from '@/components/ui';
 import { useTheme } from '@/theme';
 import { useKidoos, useProfile } from '@/hooks';
 import { WelcomeCard } from './components/WelcomeCard';
+import { NewsSection } from './components/NewsSection';
 
 export function HomeScreen() {
   const { t } = useTranslation();
@@ -61,6 +62,9 @@ export function HomeScreen() {
           </Text>
         </Card>
       )}
+
+      {/* News Section */}
+      <NewsSection />
     </ScrollView>
   );
 }

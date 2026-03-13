@@ -427,5 +427,14 @@
         "message": "{{kidooName}} est maintenant en ligne"
       }
     }
+  },
+  "news": {
+    "title": "Actualités",
+    "types": {
+      "update": "Mise à jour",
+      "promo": "Promotion",
+      "feature": "Nouveauté",
+      "news": "Actualité"
+    }
   }
 }

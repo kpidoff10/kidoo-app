@@ -8,4 +8,6 @@ export type { LoginRequest, RegisterRequest, AuthResponse, User } from './auth';
 export { kidoosApi } from './kidoos';
 export type { Kidoo, CreateKidooRequest, UpdateKidooRequest, KidooEnvResponse } from './kidoos';
 export { firmwareApi, isNewerFirmwareVersion } from './firmware';
+export { postsApi } from './posts';
+export type { Post } from './posts';
 export type { ApiResponse } from './types';

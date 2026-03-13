@@ -309,7 +309,11 @@
   "errors": {
     "generic": "An error occurred",
     "network": "Connection error",
-    "server": "Server error",
+    "server": {
+      "internalError": "An error occurred",
+      "serviceUnavailable": "Service unavailable",
+      "badGateway": "Communication error"
+    },
     "notFound": "Not found",
     "unauthorized": "Unauthorized",
     "tryAgain": "Please try again",
@@ -332,11 +336,6 @@
       "notFound": "Resource not found",
       "alreadyExists": "Resource already exists",
       "conflict": "Resource conflict"
-    },
-    "server": {
-      "internalError": "An error occurred",
-      "serviceUnavailable": "Service unavailable",
-      "badGateway": "Communication error"
     },
     "kidoo": {
       "notFound": "Kidoo not found",
@@ -372,6 +371,15 @@
         "title": "Device online",
         "message": "{{kidooName}} is now online"
       }
+    }
+  },
+  "news": {
+    "title": "News",
+    "types": {
+      "update": "Update",
+      "promo": "Promotion",
+      "feature": "New Feature",
+      "news": "News"
     }
   }
 }
