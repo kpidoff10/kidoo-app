@@ -6,6 +6,8 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
+import moment from 'moment';
+import 'moment/locale/fr';
 
 import fr from './fr.json';
 import en from './en.json';
@@ -28,18 +30,31 @@ const getDeviceLanguage = (): string => {
   return deviceLang;
 };
 
-i18n.use(initReactI18next).init({
-  resources,
-  lng: getDeviceLanguage(),
-  fallbackLng: 'fr',
-  
-  interpolation: {
-    escapeValue: false, // React gère déjà l'échappement
-  },
-  
-  react: {
-    useSuspense: false, // Évite les problèmes avec React Native
-  },
+const initialLang = getDeviceLanguage();
+
+i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: initialLang,
+    fallbackLng: 'fr',
+
+    interpolation: {
+      escapeValue: false, // React gère déjà l'échappement
+    },
+
+    react: {
+      useSuspense: false, // Évite les problèmes avec React Native
+    },
+  })
+  .then(() => {
+    // Configurer moment avec la langue initiale
+    moment.locale(initialLang);
+  });
+
+// Listener pour changer la locale moment quand la langue change
+i18n.on('languageChanged', (lng) => {
+  moment.locale(lng);
 });
 
 export default i18n;

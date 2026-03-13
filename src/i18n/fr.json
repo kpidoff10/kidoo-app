@@ -98,7 +98,7 @@
     "online": "En ligne",
     "offline": "Hors ligne",
     "model": "Modèle",
-    "lastSeen": "Vu il y a {{time}}",
+    "lastSeen": "Vu {{time}}",
     "addKidoo": "Nouveau Kidoo détecté",
     "add": "Ajouter",
     "addKidooMessage": "Voulez-vous ajouter ce Kidoo à votre liste ?",

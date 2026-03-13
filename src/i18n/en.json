@@ -98,7 +98,7 @@
     "online": "Online",
     "offline": "Offline",
     "model": "Model",
-    "lastSeen": "Seen {{time}} ago",
+    "lastSeen": "Seen {{time}}",
     "detail": {
       "currentMode": "Current mode",
       "deviceState": {
