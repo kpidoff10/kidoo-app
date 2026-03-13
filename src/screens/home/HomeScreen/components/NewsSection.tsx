@@ -14,8 +14,9 @@ import {
   ScrollView,
 } from 'react-native';
 import { useTheme } from '@/theme';
-import { Text, Title, InfoBottomSheet } from '@/components/ui';
+import { Text, Title, BottomSheet } from '@/components/ui';
 import { HtmlRenderer } from '@/components/HtmlRenderer';
+import { Ionicons } from '@expo/vector-icons';
 import { usePosts } from '@/hooks/usePosts';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import { Post } from '@/api';
@@ -199,38 +200,98 @@ export function NewsSection({ initialLimit = INITIAL_LOAD }: NewsSectionProps) {
         />
       </View>
 
-      {/* Detail BottomSheet with HTML Content */}
+      {/* Detail BottomSheet with Image and Content */}
       {selectedPost && (
-        <InfoBottomSheet
-          bottomSheet={detailSheet}
-          type="info"
-          title={selectedPost.title}
-          message={selectedPost.excerpt || ''}
-          scrollable={true}
-          children={
-            <ScrollView
-              scrollEnabled={true}
-              nestedScrollEnabled={true}
-              showsVerticalScrollIndicator={true}
-              style={{ maxHeight: 300 }}
-              contentContainerStyle={{ paddingHorizontal: spacing[3] }}
+        <BottomSheet
+          ref={detailSheet.ref}
+          name={detailSheet.id}
+          detents={['auto']}
+          onDismiss={() => {
+            setSelectedPost(null);
+            detailSheet.handleDidDismiss({} as any);
+          }}
+        >
+          {/* Post Image or Info Icon */}
+          {selectedPost.imageUrl ? (
+            <Image
+              source={{ uri: selectedPost.imageUrl }}
+              style={{ width: '100%', height: 200 }}
+            />
+          ) : (
+            <View
+              style={{
+                width: '100%',
+                height: 120,
+                backgroundColor: colors.primary + '15',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
             >
-              <HtmlRenderer
-                html={selectedPost.content}
-                textColor={colors.text}
-                backgroundColor={colors.card}
-              />
-            </ScrollView>
-          }
-          actions={[
-            {
-              label: 'Fermer',
-              onPress: () => detailSheet.close(),
-              variant: 'outline',
-            },
-          ]}
-          onDismiss={() => setSelectedPost(null)}
-        />
+              <Ionicons name="information-circle" size={48} color={colors.primary} />
+            </View>
+          )}
+
+          {/* Title */}
+          <Title
+            level="h3"
+            style={{ marginHorizontal: spacing[4], marginTop: spacing[4], marginBottom: spacing[2] }}
+          >
+            {selectedPost.title}
+          </Title>
+
+          {/* Excerpt */}
+          {selectedPost.excerpt && (
+            <Text
+              color="secondary"
+              style={{ marginHorizontal: spacing[4], marginBottom: spacing[3] }}
+            >
+              {selectedPost.excerpt}
+            </Text>
+          )}
+
+          {/* Content - Scrollable */}
+          <ScrollView
+            scrollEnabled={true}
+            nestedScrollEnabled={true}
+            showsVerticalScrollIndicator={true}
+            style={{ height: '60%', marginHorizontal: spacing[4] }}
+            contentContainerStyle={{ paddingVertical: spacing[2] }}
+          >
+            <HtmlRenderer
+              html={selectedPost.content}
+              textColor={colors.text}
+              backgroundColor={colors.card}
+            />
+          </ScrollView>
+
+          {/* Close Button */}
+          <View
+            style={{
+              paddingHorizontal: spacing[4],
+              paddingVertical: spacing[4],
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                paddingVertical: spacing[3],
+                paddingHorizontal: spacing[4],
+                backgroundColor: colors.primary + '20',
+                borderRadius: 8,
+              }}
+              onPress={() => detailSheet.close()}
+            >
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: colors.primary,
+                  fontWeight: '600',
+                }}
+              >
+                Fermer
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </BottomSheet>
       )}
     </>
   );
