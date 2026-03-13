@@ -5,6 +5,8 @@
 // Auth
 export { LoginScreen } from './auth/LoginScreen';
 export { RegisterScreen } from './auth/RegisterScreen';
+export { ForgotPasswordScreen } from './auth/ForgotPasswordScreen';
+export { ResetPasswordScreen } from './auth/ResetPasswordScreen';
 
 // Home
 export { HomeScreen } from './home/HomeScreen';

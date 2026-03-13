@@ -11,7 +11,7 @@ import { useTheme } from '@/theme';
 import { useAuth, BluetoothProvider, KidooProvider, KidooRealtimeProvider, KidooModelsRealtimeProvider } from '@/contexts';
 import { BluetoothSheets } from '@/contexts/bluetooth/BluetoothSheets';
 import { ScreenLoader } from '@/components/ui';
-import { LoginScreen, RegisterScreen, EditProfileScreen, KidooDetailScreen, BedtimeConfigScreen, WakeupConfigScreen, DefaultColorConfigScreen, DreamHelpScreen, NotificationsScreen } from '@/screens';
+import { LoginScreen, RegisterScreen, EditProfileScreen, KidooDetailScreen, BedtimeConfigScreen, WakeupConfigScreen, DefaultColorConfigScreen, DreamHelpScreen, NotificationsScreen, ForgotPasswordScreen, ResetPasswordScreen } from '@/screens';
 import { AppNavigator } from './AppNavigator';
 import { RootStackParamList } from './types';
 
@@ -166,6 +166,28 @@ export function RootNavigator() {
           <Stack.Screen
             name="Register"
             component={RegisterScreen}
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerBackTitle: '',
+              headerTransparent: true,
+              headerTintColor: colors.text,
+            }}
+          />
+          <Stack.Screen
+            name="ForgotPassword"
+            component={ForgotPasswordScreen}
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerBackTitle: '',
+              headerTransparent: true,
+              headerTintColor: colors.text,
+            }}
+          />
+          <Stack.Screen
+            name="ResetPassword"
+            component={ResetPasswordScreen}
             options={{
               headerShown: true,
               headerTitle: '',

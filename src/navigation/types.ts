@@ -6,6 +6,8 @@ export type RootStackParamList = {
   // Auth screens
   Login: undefined;
   Register: undefined;
+  ForgotPassword: undefined;
+  ResetPassword: { email: string; token?: string };
 
   // Main app
   MainTabs: undefined;
