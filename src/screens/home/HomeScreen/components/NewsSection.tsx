@@ -189,15 +189,23 @@ export function NewsSection({ initialLimit = INITIAL_LOAD }: NewsSectionProps) {
           📰 Actualités
         </Title>
 
-        <FlatList
-          data={posts}
-          renderItem={renderPostCard}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={false}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={renderFooter}
-        />
+        {/* Scrollable News List */}
+        <ScrollView
+          scrollEnabled={true}
+          showsVerticalScrollIndicator={false}
+          style={styles.newsListContainer}
+          contentContainerStyle={{ paddingBottom: spacing[3] }}
+        >
+          <FlatList
+            data={posts}
+            renderItem={renderPostCard}
+            keyExtractor={(item) => item.id}
+            scrollEnabled={false}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={renderFooter}
+          />
+        </ScrollView>
       </View>
 
       {/* Detail BottomSheet with Image and Content */}
@@ -206,16 +214,14 @@ export function NewsSection({ initialLimit = INITIAL_LOAD }: NewsSectionProps) {
           ref={detailSheet.ref}
           name={detailSheet.id}
           detents={['auto']}
-          onDismiss={() => {
-            setSelectedPost(null);
-            detailSheet.handleDidDismiss({} as any);
-          }}
+          onDismiss={() => setSelectedPost(null)}
+          onDidDismiss={detailSheet.handleDidDismiss}
         >
           {/* Post Image or Info Icon */}
           {selectedPost.imageUrl ? (
             <Image
               source={{ uri: selectedPost.imageUrl }}
-              style={{ width: '100%', height: 200 }}
+              style={{ width: '100%', height: 120 }}
             />
           ) : (
             <View
@@ -300,6 +306,9 @@ export function NewsSection({ initialLimit = INITIAL_LOAD }: NewsSectionProps) {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+  },
+  newsListContainer: {
+    maxHeight: 400,
   },
   card: {
     borderRadius: 12,
