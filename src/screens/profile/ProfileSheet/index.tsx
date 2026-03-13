@@ -3,13 +3,13 @@
  * Bottom sheet pour afficher/modifier le profil
  */
 
-import React, { useCallback, useRef, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useCallback, useRef } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { Text, Button, BottomSheet } from '@/components/ui';
+import { Text, Button, BottomSheet, InfoBottomSheet } from '@/components/ui';
 import { spacing, useTheme } from '@/theme';
 import { useAuth } from '@/contexts';
 import { useBottomSheet, useProfile } from '@/hooks';
@@ -27,28 +27,23 @@ export function ProfileSheet({ bottomSheet, onClose }: ProfileSheetProps) {
     const { data: user } = useProfile();
     const navigation = useNavigation();
 
+    // Bottom sheet pour le dialogue de confirmation de déconnexion
+    const logoutConfirmSheet = useBottomSheet();
+
     // Compteur d'appuis pour activer le mode développeur
     const tapCountRef = useRef(0);
     const tapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleLogout = useCallback(() => {
-      Alert.alert(
-        t('profile.logout'),
-        t('profile.logoutConfirm'),
-        [
-          { text: t('common.cancel'), style: 'cancel' },
-          {
-            text: t('profile.logout'),
-            style: 'destructive',
-            onPress: async () => {
-              await logout();
-              await bottomSheet.close();
-              onClose?.();
-            },
-          },
-        ]
-      );
-    }, [logout, bottomSheet, onClose, t]);
+      logoutConfirmSheet.open();
+    }, [logoutConfirmSheet]);
+
+    const handleConfirmLogout = useCallback(async () => {
+      await logoutConfirmSheet.close();
+      await logout();
+      await bottomSheet.close();
+      onClose?.();
+    }, [logout, bottomSheet, onClose, logoutConfirmSheet]);
 
     const handleDismiss = useCallback(() => {
       // Mettre à jour l'état du hook
@@ -134,6 +129,26 @@ export function ProfileSheet({ bottomSheet, onClose }: ProfileSheetProps) {
             </Text>
           </TouchableOpacity>
       </BottomSheet>
+
+      {/* Logout Confirmation Dialog */}
+      <InfoBottomSheet
+        bottomSheet={logoutConfirmSheet}
+        type="error"
+        title={t('profile.logout')}
+        message={t('profile.logoutConfirm')}
+        actions={[
+          {
+            label: t('common.cancel'),
+            onPress: () => logoutConfirmSheet.close(),
+            variant: 'outline',
+          },
+          {
+            label: t('profile.logout'),
+            onPress: handleConfirmLogout,
+            variant: 'primary',
+          },
+        ]}
+      />
     </>
     );
 }
