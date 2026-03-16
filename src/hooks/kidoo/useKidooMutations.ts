@@ -18,6 +18,8 @@ export function useCreateKidoo() {
       queryClient.setQueryData<Kidoo[]>(KIDOOS_KEY, (old) =>
         old ? [...old, newKidoo] : [newKidoo]
       );
+      // Recharger la config PubNub realtime pour ajouter le nouveau kidoo aux subscriptions
+      queryClient.invalidateQueries({ queryKey: ['kidoos', 'realtime-config'] });
     },
     onError: () => {
       showToast.error({

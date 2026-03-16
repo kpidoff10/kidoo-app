@@ -16,7 +16,7 @@ export { KIDOO_MODELS, getKidooModel, isKidooModelId };
 export type { KidooModelId, KidooModel };
 
 /** Noms BLE diffusés par le firmware (pour détecter le modèle depuis device.name) */
-export const BLE_MODEL_NAMES = ['Kidoo-Basic', 'Kidoo-Dream'] as const;
+export const BLE_MODEL_NAMES = ['Kidoo-Basic', 'Kidoo-Dream', 'Kidoo-Sound'] as const;
 
 /**
  * Convertir un nom BLE (détecté depuis device.name) vers l'id modèle API / base (KidooModelId).
@@ -25,6 +25,7 @@ export function convertBleModelToApiModel(bleName: string): KidooModelId {
   const normalized = bleName.toLowerCase();
   if (normalized.includes('basic')) return 'basic';
   if (normalized.includes('dream')) return 'dream';
+  if (normalized.includes('sound')) return 'sound';
   return 'basic';
 }
 
@@ -42,7 +43,9 @@ export function getKidooModelDisplayName(model: KidooModelId | string): string {
 export function getKidooModelIcon(model: KidooModelId | string): string {
   const m = getKidooModel(model);
   if (!m) return 'cube-outline';
-  return m.id === 'dream' ? 'sparkles-outline' : 'cube-outline';
+  if (m.id === 'dream') return 'sparkles-outline';
+  if (m.id === 'sound') return 'musical-notes-outline';
+  return 'cube-outline';
 }
 
 /** @deprecated Utiliser KidooModelId */
